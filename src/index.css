@@ -1,9 +1,6 @@
 @import "tailwindcss";
 
-/*
- * 야차철학 디자인 시스템 (Figma: 2026 신촌 데모데이 1팀 — color 159:1408, Font 159:1522)
- * Tailwind 기본 팔레트는 비우고 디자인 토큰만 사용한다.
- */
+
 @theme {
   --color-*: initial;
   --color-white: #ffffff;
@@ -45,7 +42,7 @@
 
   --font-sans: "Noto Sans KR Variable", system-ui, sans-serif;
 
-  /* Headlines (Figma 표기는 SemiBold지만 실제 스타일은 Bold 700) */
+  /* Headlines */
   --text-headline-sb1: 36px;
   --text-headline-sb1--line-height: 1.3;
   --text-headline-sb1--letter-spacing: 0.02em;
