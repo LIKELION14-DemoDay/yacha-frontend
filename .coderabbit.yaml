@@ -22,6 +22,7 @@ reviews:
         ### 화면(page) 컴포넌트
         - 파일명은 PascalCase를 사용해야 합니다.
         - export default 되는 컴포넌트 이름과 파일명이 일치해야 합니다. (예: StyleGuide.tsx → StyleGuide)
+        - 컴포넌트는 반드시 화살표 함수로 작성해야 합니다.
         - 여러 화면에서 재사용될 수 있는 UI 조각은 src/components로 분리하도록 제안해주세요.
         - API 요청(fetch, axios 등)이 이 파일에 직접 작성되어 있다면 src/api로 옮기도록 제안해주세요.
 
@@ -29,6 +30,7 @@ reviews:
       instructions: >
         ### 재사용 컴포넌트
         - 파일명은 PascalCase를 사용해야 하고, 파일명과 컴포넌트 이름이 일치해야 합니다.
+        - 컴포넌트는 반드시 화살표 함수로 작성해야 합니다.
         - props는 별도 타입/인터페이스로 선언해야 합니다. (예: XxxProps)
         - any 타입 사용을 피하고 필요한 타입을 명시하도록 제안해주세요.
 
@@ -43,8 +45,10 @@ reviews:
       instructions: >
         ### 공통 (TSX)
         - 컴포넌트·파일명은 PascalCase, 함수·변수명은 camelCase를 사용해야 합니다.
+        - 컴포넌트는 반드시 화살표 함수로 작성해야 합니다.
         - any 타입 사용을 피하고 필요한 타입을 명시하도록 제안해주세요.
         - 인라인 style 속성보다 Tailwind 클래스 사용을 권장해주세요.
+        - 조건부 클래스 문자열을 직접 이어붙이는 경우 cn() 유틸리티 사용을 제안해주세요.
         - 커스텀 CSS 클래스명(Tailwind 유틸리티가 아닌 것)은 kebab-case를 사용해야 합니다.
 
     - path: "**/*.ts"
