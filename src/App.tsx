@@ -1,7 +1,5 @@
-import StyleGuide from './pages/StyleGuide'
-
 function App() {
-  return <StyleGuide />
+  return <div />
 }
 
 export default App
