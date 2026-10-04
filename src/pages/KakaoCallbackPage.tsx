@@ -1,3 +1,9 @@
+/**
+ * 카카오 로그인 완료 후 Redirect되는 OAuth 콜백 페이지
+ * URL에서 카카오 인가 코드(code)와 state를 추출하고,
+ * state 검증 후 인가 코드를 백엔드로 전달하여 로그인 처리를 완료
+ */
+
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { kakaoLogin } from "../apis/auth";

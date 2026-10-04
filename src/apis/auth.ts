@@ -1,3 +1,6 @@
+/**
+ * 인증 관련 백엔드 API 요청을 관리하는 파일
+ */
 import api from "./client";
 
 export const kakaoLogin = async (code: string, redirectUri: string) => {

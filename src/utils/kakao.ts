@@ -1,3 +1,9 @@
+/**
+ * 카카오 REST OAuth 로그인을 처리하는 유틸리티 파일
+ * 카카오 인증 URL을 생성하고 로그인 페이지로 이동시키며,
+ * Redirect URI 생성과 OAuth CSRF 방지를 위한 state 생성 및 검증을 담당
+ */
+
 const KAKAO_REST_API_KEY = import.meta.env.VITE_KAKAO_REST_API_KEY;
 
 const KAKAO_STATE_KEY = "kakao_oauth_state";
