@@ -1,3 +1,26 @@
+# yacha-frontend
+
+## 파일 구조
+
+```
+src/
+├── apis/                       # 백엔드 API 통신 관련 모듈
+│   ├── client.ts               # Axios 공통 인스턴스 및 API 기본 설정
+│   └── auth.ts                 # 로그인 등 인증 관련 API 요청
+│
+├── pages/                      # 라우팅되는 페이지 단위 컴포넌트
+│   ├── HomePage.tsx            # 메인 홈 페이지
+│   ├── LoginPage.tsx           # 로그인 및 소셜 로그인 진입 페이지
+└── KakaoCallbackPage.tsx   # 카카오 OAuth 인가 코드 콜백 처리
+│
+├── utils/                      # 공통 유틸리티 함수
+│   └── kakao.ts                # 카카오 REST OAuth 로그인 처리
+│
+├── App.tsx                     # 페이지 라우팅 및 애플리케이션 구조
+├── main.tsx                    # React 애플리케이션 진입점
+└── index.css                   # 전역 스타일
+```
+
 # 협업 세팅
 
 ## 과정
