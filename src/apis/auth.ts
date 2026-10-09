@@ -11,3 +11,12 @@ export const kakaoLogin = async (code: string, redirectUri: string) => {
 
   return response.data;
 };
+
+export const googleLogin = async (code: string, redirectUri: string) => {
+  const response = await api.post("/api/v1/auth/social/google", {
+    code,
+    redirectUri,
+  });
+
+  return response.data;
+};

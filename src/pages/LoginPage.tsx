@@ -1,3 +1,5 @@
+import googleLogo from "../assets/google-logo.svg";
+import { startGoogleLogin } from "../utils/google";
 import { startKakaoLogin } from "../utils/kakao";
 
 function LoginPage() {
@@ -11,6 +13,15 @@ function LoginPage() {
         className="flex h-13 w-full max-w-80 items-center justify-center gap-2 rounded-xl bg-yellow text-body-m3 text-black"
       >
         카카오로 로그인
+      </button>
+
+      <button
+        type="button"
+        onClick={startGoogleLogin}
+        className="flex h-13 w-full max-w-80 items-center justify-center gap-2 rounded-xl bg-neutral-001 text-body-m3 text-black"
+      >
+        <img src={googleLogo} alt="" />
+        구글로 로그인
       </button>
     </main>
   );
