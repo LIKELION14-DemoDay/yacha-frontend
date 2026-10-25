@@ -2,10 +2,29 @@
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
+
+    <!-- 브라우저 탭 아이콘 -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>yacha-frontend</title>
+
+    <!-- 모바일 화면 및 PWA 전체 화면 대응 -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+
+    <!-- PWA 테마 색상 -->
+    <meta name="theme-color" content="#111111" />
+
+    <!-- iOS 홈 화면 아이콘 -->
+    <link rel="apple-touch-icon" href="/applogo.png" />
+
+    <!-- iOS 홈 화면 앱 이름 -->
+    <meta name="apple-mobile-web-app-title" content="야차판" />
+
+    <!-- 페이지 제목 -->
+    <title>yachapan</title>
   </head>
+
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>

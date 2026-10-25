@@ -34,7 +34,7 @@ export default defineConfig({
           },
           {
             src: "/applogo.png",
-            sizes: "512x512",
+            sizes: "200x200",
             type: "image/png",
             purpose: "any",
           },
