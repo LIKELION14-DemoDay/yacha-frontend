@@ -72,7 +72,7 @@ function SignInPage() {
     setConfirmationChecked(true);
     if (!isPasswordValid || !passwordsMatch) return;
 
-    navigate("/complete");
+    navigate("/complete", { state: { nickname: nickname.trim() } });
   };
 
   return (

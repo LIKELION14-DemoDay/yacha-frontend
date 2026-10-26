@@ -6,6 +6,7 @@ import SignInPage from "./pages/SignInPage";
 import CompleteSignInPage from "./pages/CompleteSigninPage";
 import KakaoCallbackPage from "./pages/KakaoCallbackPage";
 import GoogleCallbackPage from "./pages/GoogleCallbackPage";
+import HomePage from "./pages/HomePage";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
       <Route path="/complete" element={<CompleteSignInPage />} />
       <Route path="/oauth/kakao" element={<KakaoCallbackPage />} />
       <Route path="/oauth/google" element={<GoogleCallbackPage />} />
+      <Route path="/home" element={<HomePage />} />
     </Routes>
   );
 }
