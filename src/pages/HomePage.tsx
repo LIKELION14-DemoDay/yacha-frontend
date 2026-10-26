@@ -1,21 +1,127 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+
+import brandLogo from "../assets/brand-logo.svg";
+import onboardingImage from "../assets/onboarding.png";
+import LongButton from "../components/Button";
+
+const AUTO_PLAY_DELAY = 4_000;
+
+const onboardingSlides = [
+  {
+    title: (
+      <>
+        야차철학에
+        <br />
+        오신 것을 환영합니다.
+      </>
+    ),
+    description: (
+      <>
+        야차철학은 생각이 다른 사람과 철학으로
+        <br />
+        맞붙는 1:1 토론 배틀 플랫폼입니다.
+      </>
+    ),
+  },
+  {
+    title: (
+      <>
+        하루에 한 번씩
+        <br />
+        철학을 공부해보세요.
+      </>
+    ),
+    description: (
+      <>
+        금주의 이슈와 관련하여 매주 새로운 철학
+        <br />
+        관련 학습이 가능해요.
+      </>
+    ),
+  },
+] as const;
+
+function StatusBar() {
+  return <div className="flex h-14 items-center justify-between"></div>;
+}
 
 function HomePage() {
   const navigate = useNavigate();
+  const [currentSlide, setCurrentSlide] = useState(0);
 
-  const handleLoginClick = () => {
-    navigate("/login");
-  };
+  useEffect(() => {
+    if (onboardingSlides.length < 2) return;
+
+    const intervalId = window.setInterval(() => {
+      setCurrentSlide(
+        (previousSlide) => (previousSlide + 1) % onboardingSlides.length,
+      );
+    }, AUTO_PLAY_DELAY);
+
+    return () => window.clearInterval(intervalId);
+  }, []);
+
+  const slide = onboardingSlides[currentSlide];
 
   return (
-    <main className="flex min-h-screen items-center justify-center">
-      <button
-        className="rounded-lg bg-main px-6 py-3 text-white"
-        type="button"
-        onClick={handleLoginClick}
-      >
-        로그인
-      </button>
+    <main className="mx-auto flex h-dvh min-h-[667px] w-full max-w-[402px] flex-col overflow-hidden bg-secondary">
+      <StatusBar />
+
+      <section className="flex shrink-0 flex-col gap-6">
+        <div className="flex flex-col items-start self-stretch px-6 py-4">
+          <img src={brandLogo} alt="야차철학" />
+        </div>
+
+        <div className="flex flex-col items-start gap-3 px-6 py-5">
+          <h1 className="text-headline-sb3 whitespace-nowrap text-white">
+            {slide.title}
+          </h1>
+          <p className="text-subhead-m5 whitespace-nowrap text-neutral-006">
+            {slide.description}
+          </p>
+        </div>
+      </section>
+
+      <section className="flex min-h-0 flex-1 pt-[49px] pb-[81px]">
+        <img
+          src={onboardingImage}
+          alt="두 사람이 서로 토론하는 모습"
+          className="h-full max-h-[256px] w-full object-contain"
+        />
+      </section>
+      <section className="flex h-[161px] shrink-0 flex-col gap-5">
+        <div
+          className="flex h-7 shrink-0 items-center justify-center gap-2.5 p-2.5"
+          aria-label={`${onboardingSlides.length}개 중 ${currentSlide + 1}번째 화면`}
+        >
+          {onboardingSlides.map((_, index) => {
+            const isActive = index === currentSlide;
+
+            return (
+              <button
+                key={index}
+                type="button"
+                aria-label={`${index + 1}번째 화면으로 이동`}
+                aria-current={isActive ? "step" : undefined}
+                onClick={() => setCurrentSlide(index)}
+                className={`h-2 shrink-0 cursor-pointer rounded-full transition-[width,background-color] duration-300 ${
+                  isActive ? "w-5 bg-main" : "w-2 bg-neutral-004"
+                }`}
+              />
+            );
+          })}
+        </div>
+
+        <div className="px-6 pt-2.5 pb-[50px]">
+          <LongButton
+            className="!bg-main !text-white hover:!bg-main-006"
+            onClick={() => navigate("/login")}
+          >
+            시작하기
+          </LongButton>
+        </div>
+      </section>
     </main>
   );
 }
