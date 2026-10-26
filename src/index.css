@@ -138,4 +138,15 @@
   body {
     @apply bg-white font-sans text-text-1 antialiased;
   }
+
+  /* 브라우저 자동완성 시에도 어두운 배경과 입력 상태별 글자색을 유지 */
+  input:-webkit-autofill {
+    box-shadow: inset 0 0 0 1000px var(--color-secondary);
+    -webkit-text-fill-color: var(--color-neutral-006);
+    caret-color: var(--color-neutral-002);
+  }
+
+  input:-webkit-autofill:focus {
+    -webkit-text-fill-color: var(--color-neutral-002);
+  }
 }
