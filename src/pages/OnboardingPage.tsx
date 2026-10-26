@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import brandLogo from "../assets/brand-logo.svg";
 import onboardingImage from "../assets/onboarding.png";
 import LongButton from "../components/Button";
+import StatusBar from "../components/StatusBar";
 
 const OnboardingIntro = lazy(() => import("../components/OnboardingIntro"));
 
@@ -56,10 +57,6 @@ const onboardingSlides = [
     ),
   },
 ] as const;
-
-function StatusBar() {
-  return <div className="flex h-14 items-center justify-between"></div>;
-}
 
 function OnboardingPage() {
   const navigate = useNavigate();
