@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router-dom";
+
 import arrowRight from "../assets/arrow-right.svg";
 import googleLogo from "../assets/google-logo.svg";
 import kakaoLogin from "../assets/kakao_login.svg";
@@ -9,6 +11,8 @@ import { startGoogleLogin } from "../utils/google";
 import { startKakaoLogin } from "../utils/kakao";
 
 function LoginPage() {
+  const navigate = useNavigate();
+
   return (
     <main className="mx-auto flex h-dvh min-h-166.75 w-full max-w-100.5 flex-col overflow-hidden bg-secondary">
       <StatusBar />
@@ -49,7 +53,11 @@ function LoginPage() {
             비밀번호 찾기
           </button>
           <span aria-hidden="true">|</span>
-          <button type="button" className="cursor-pointer">
+          <button
+            type="button"
+            onClick={() => navigate("/signin")}
+            className="cursor-pointer"
+          >
             회원가입
           </button>
         </div>
