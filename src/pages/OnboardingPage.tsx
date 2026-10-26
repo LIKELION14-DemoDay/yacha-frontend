@@ -61,7 +61,7 @@ function StatusBar() {
   return <div className="flex h-14 items-center justify-between"></div>;
 }
 
-function HomePage() {
+function OnboardingPage() {
   const navigate = useNavigate();
   const [showIntro, setShowIntro] = useState(shouldShowIntro);
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -152,7 +152,7 @@ function HomePage() {
         <div className="px-6 pt-2.5 pb-20.25">
           <LongButton
             className="!bg-main !text-white hover:!bg-main-006"
-            onClick={() => navigate("/login")}
+            onClick={() => navigate("/balance")}
           >
             시작하기
           </LongButton>
@@ -162,4 +162,4 @@ function HomePage() {
   );
 }
 
-export default HomePage;
+export default OnboardingPage;
