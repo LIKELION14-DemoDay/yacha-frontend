@@ -1,6 +1,5 @@
 @import "tailwindcss";
 
-
 @theme {
   --color-*: initial;
   --color-white: #ffffff;
@@ -51,10 +50,18 @@
   --text-headline-sb2--line-height: 1.3;
   --text-headline-sb2--letter-spacing: 0.01em;
   --text-headline-sb2--font-weight: 700;
-  --text-headline-sb3: 24px;
+  --text-headline-sb3: 32px;
   --text-headline-sb3--line-height: 1.3;
   --text-headline-sb3--letter-spacing: 0.01em;
-  --text-headline-sb3--font-weight: 700;
+  --text-headline-sb3--font-weight: 500;
+  --text-headline-sb4: 24px;
+  --text-headline-sb4--line-height: 1.3;
+  --text-headline-sb4--letter-spacing: 0.01em;
+  --text-headline-sb4--font-weight: 700;
+  --text-headline-sb5: 24px;
+  --text-headline-sb5--line-height: 1.3;
+  --text-headline-sb5--letter-spacing: 0.01em;
+  --text-headline-sb5--font-weight: 500;
 
   /* Subhead */
   --text-subhead-b1: 24px;
@@ -120,7 +127,11 @@
 }
 
 @utility bg-gradient-dark {
-  background-image: linear-gradient(to bottom, var(--color-neutral-100), var(--color-main-100));
+  background-image: linear-gradient(
+    to bottom,
+    var(--color-neutral-100),
+    var(--color-main-100)
+  );
 }
 
 @layer base {
