@@ -6,10 +6,15 @@ import { clearAccessToken, setAccessToken } from "./tokenStore";
 import type { ApiResponse, TokenResponse } from "./types";
 
 export const kakaoLogin = async (code: string, redirectUri: string) => {
-  const response = await api.post("/api/v1/auth/social/kakao", {
-    code,
-    redirectUri,
-  });
+  const response = await api.post<ApiResponse<TokenResponse>>(
+    "/api/v1/auth/social/kakao",
+    {
+      code,
+      redirectUri,
+    },
+  );
+
+  setAccessToken(response.data.data.accessToken);
 
   return response.data;
 };
