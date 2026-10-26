@@ -1,11 +1,26 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import brandLogo from "../assets/brand-logo.svg";
 import onboardingImage from "../assets/onboarding.png";
 import LongButton from "../components/Button";
 
-const AUTO_PLAY_DELAY = 4_000;
+const OnboardingIntro = lazy(() => import("../components/OnboardingIntro"));
+
+const AUTO_PLAY_DELAY = 10_000;
+const INTRO_STORAGE_KEY = "yacha-onboarding-intro-played";
+
+function shouldShowIntro() {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    return false;
+  }
+
+  try {
+    return sessionStorage.getItem(INTRO_STORAGE_KEY) !== "true";
+  } catch {
+    return true;
+  }
+}
 
 const onboardingSlides = [
   {
@@ -48,10 +63,20 @@ function StatusBar() {
 
 function HomePage() {
   const navigate = useNavigate();
+  const [showIntro, setShowIntro] = useState(shouldShowIntro);
   const [currentSlide, setCurrentSlide] = useState(0);
 
+  const finishIntro = useCallback(() => {
+    try {
+      sessionStorage.setItem(INTRO_STORAGE_KEY, "true");
+    } catch {
+      // 저장소가 제한된 환경에서도 온보딩으로 전환합니다.
+    }
+    setShowIntro(false);
+  }, []);
+
   useEffect(() => {
-    if (onboardingSlides.length < 2) return;
+    if (showIntro || onboardingSlides.length < 2) return;
 
     const intervalId = window.setInterval(() => {
       setCurrentSlide(
@@ -60,12 +85,23 @@ function HomePage() {
     }, AUTO_PLAY_DELAY);
 
     return () => window.clearInterval(intervalId);
-  }, []);
+  }, [showIntro]);
 
   const slide = onboardingSlides[currentSlide];
 
+  if (showIntro) {
+    return (
+      <main className="relative mx-auto flex h-dvh min-h-166.75 w-full max-w-100.5 flex-col overflow-hidden bg-secondary">
+        <StatusBar />
+        <Suspense fallback={null}>
+          <OnboardingIntro onComplete={finishIntro} />
+        </Suspense>
+      </main>
+    );
+  }
+
   return (
-    <main className="mx-auto flex h-dvh min-h-[667px] w-full max-w-[402px] flex-col overflow-hidden bg-secondary">
+    <main className="mx-auto flex h-dvh min-h-166.75 w-full max-w-100.5 flex-col overflow-hidden bg-secondary">
       <StatusBar />
 
       <section className="flex shrink-0 flex-col gap-6">
@@ -83,14 +119,14 @@ function HomePage() {
         </div>
       </section>
 
-      <section className="flex min-h-0 flex-1 pt-[49px] pb-[81px]">
+      <section className="flex min-h-0 flex-1 pt-12.25 pb-20.25">
         <img
           src={onboardingImage}
           alt="두 사람이 서로 토론하는 모습"
-          className="h-full max-h-[256px] w-full object-contain"
+          className="h-full max-h-64 w-full object-contain"
         />
       </section>
-      <section className="flex h-[161px] shrink-0 flex-col gap-5">
+      <section className="flex h-40.25 shrink-0 flex-col gap-5">
         <div
           className="flex h-7 shrink-0 items-center justify-center gap-2.5 p-2.5"
           aria-label={`${onboardingSlides.length}개 중 ${currentSlide + 1}번째 화면`}
@@ -113,7 +149,7 @@ function HomePage() {
           })}
         </div>
 
-        <div className="px-6 pt-2.5 pb-[50px]">
+        <div className="px-6 pt-2.5 pb-20.25">
           <LongButton
             className="!bg-main !text-white hover:!bg-main-006"
             onClick={() => navigate("/login")}
