@@ -71,6 +71,8 @@ function SignInPage() {
     setPasswordChecked(true);
     setConfirmationChecked(true);
     if (!isPasswordValid || !passwordsMatch) return;
+
+    navigate("/complete");
   };
 
   return (

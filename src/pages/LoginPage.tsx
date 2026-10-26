@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import arrowRight from "../assets/arrow-right.svg";
 import googleLogo from "../assets/google-logo.svg";
 import kakaoLogin from "../assets/kakao_login.svg";
-import loginLogo from "../assets/login-logo.svg";
+import loginLogo from "../assets/login-logo.svg?raw";
 import LongButton from "../components/Button";
 import InputContainer from "../components/InputContainer";
 import StatusBar from "../components/StatusBar";
@@ -18,7 +18,12 @@ function LoginPage() {
       <StatusBar />
 
       <section className="flex shrink-0 flex-col items-center pt-30 pb-10">
-        <img src={loginLogo} alt="야차철학" />
+        <span
+          className="text-white"
+          role="img"
+          aria-label="야차철학"
+          dangerouslySetInnerHTML={{ __html: loginLogo }}
+        />
       </section>
 
       <section className="shrink-0">
