@@ -12,6 +12,7 @@ import MyPage from "./pages/MyPage/MyPage";
 import MySettingPage from "./pages/MyPage/MySettingPage";
 import GamePage from "./pages/GamePage/GamePage";
 import StanceSelectPage from "./pages/GamePage/StanceSelectPage";
+import WaitingPage from "./pages/GamePage/WaitingPage";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
       <Route path="/mypage" element={<MyPage />} />
       <Route path="/my/setting" element={<MySettingPage />} />
       <Route path="/game/select" element={<StanceSelectPage />} />
+      <Route path="/game/waiting/:sessionId" element={<WaitingPage />} />
       <Route path="/game/:sessionId" element={<GamePage />} />
     </Routes>
   );
