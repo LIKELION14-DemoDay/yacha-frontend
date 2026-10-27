@@ -9,6 +9,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { leaveSession } from "../../apis/sessions";
 import type { ChatSender } from "../../components/ChatMessageList";
 import ConfirmModal from "../../components/ConfirmModal";
+import LogoLoading from "../../components/LogoLoading";
 import PhaseTimer from "../../components/PhaseTimer";
 import Toast from "../../components/Toast";
 import TopBar from "../../components/TopBar";
@@ -201,9 +202,11 @@ const GamePage = () => {
       ) : (
         // 채팅 외 구간 화면은 각 단계 작업에서 채움
         <div className="flex flex-1 items-center justify-center text-body-r6 text-neutral-006">
-          {gameState
-            ? "다음 단계를 준비 중이에요"
-            : "토론방에 들어가는 중이에요"}
+          {gameState ? (
+            "다음 단계를 준비 중이에요"
+          ) : (
+            <LogoLoading message="토론방에 들어가는 중이에요" />
+          )}
         </div>
       )}
 
