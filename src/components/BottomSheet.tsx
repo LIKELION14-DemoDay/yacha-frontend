@@ -35,12 +35,11 @@ const BottomSheet = ({
 
   return (
     <>
-      <button
-        type="button"
-        aria-label="닫기"
-        tabIndex={-1}
-        onClick={onCancel}
-        className={`fixed inset-0 z-40 cursor-default bg-black/60 transition-opacity duration-300 ${
+      {/* 어두운 바깥 영역 (닫기는 시트 안 버튼 · Esc 가 담당, 클릭은 열렸을 때만) */}
+      <div
+        aria-hidden="true"
+        onClick={open ? onCancel : undefined}
+        className={`fixed inset-0 z-40 bg-black/60 transition-opacity duration-300 ${
           open ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
       />

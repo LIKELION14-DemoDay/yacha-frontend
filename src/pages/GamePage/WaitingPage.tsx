@@ -2,7 +2,7 @@
  * 매칭 대기 페이지 (/game/waiting/:sessionId)
  * 방장이 상대를 기다리는 화면. 방장 알림(/user/queue/match)으로 매칭 · 봇 제안 · 만료를 받음
  */
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { cancelSession, switchToBot } from "../../apis/sessions";
@@ -17,9 +17,13 @@ import LogoLoading from "../../components/LogoLoading";
 import Toast from "../../components/Toast";
 import TopBar from "../../components/TopBar";
 import { useToast } from "../../hooks/useToast";
+import { getApiErrorCode } from "../../utils/apiError";
 
 // 만료 · 봇 실패 안내를 읽을 시간을 주고 홈으로 이동
 const LEAVE_DELAY_MS = 2000;
+
+// 대기 취소가 이 에러면 이미 끝난 방이라 그냥 홈으로
+const ENDED_SESSION_CODES = ["SESSION_NOT_WAITING", "SESSION_NOT_FOUND"];
 
 const WaitingPage = () => {
   const navigate = useNavigate();
@@ -29,15 +33,26 @@ const WaitingPage = () => {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isLeaveModalOpen, setIsLeaveModalOpen] = useState(false);
   const { toastMessage, showToast } = useToast();
+  const leaveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const clearLeaveTimeout = () => {
+    if (leaveTimeoutRef.current) clearTimeout(leaveTimeoutRef.current);
+  };
 
   const leaveWithToast = useCallback(
     (message: string) => {
       setIsSheetOpen(false);
       showToast(message);
-      setTimeout(() => navigate("/home"), LEAVE_DELAY_MS);
+      leaveTimeoutRef.current = setTimeout(
+        () => navigate("/home"),
+        LEAVE_DELAY_MS,
+      );
     },
     [navigate, showToast],
   );
+
+  // 화면을 떠나면 예약해 둔 홈 이동 취소
+  useEffect(() => clearLeaveTimeout, []);
 
   // 방장 알림: 매칭되면 토론방으로, 오래 기다리면 봇 제안, 5분 지나면 종료
   useEffect(() => {
@@ -77,14 +92,22 @@ const WaitingPage = () => {
     }
   };
 
-  // 대기 취소 후 홈으로
+  // 대기 취소 후 홈으로 (이미 끝난 방이면 그대로 홈, 그 외 실패는 대기 화면에 남음)
   const handleLeave = async () => {
     setIsLeaveModalOpen(false);
+    clearLeaveTimeout();
 
     try {
       await cancelSession(sessionId);
-    } finally {
       navigate("/home");
+    } catch (error) {
+      const code = getApiErrorCode(error);
+
+      if (code && ENDED_SESSION_CODES.includes(code)) {
+        navigate("/home");
+      } else {
+        showToast("나가지 못했어요. 다시 시도해 주세요.");
+      }
     }
   };
 

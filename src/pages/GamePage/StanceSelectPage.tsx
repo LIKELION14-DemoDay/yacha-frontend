@@ -2,13 +2,11 @@
  * 입장 선택 페이지 (/game/select?category=HUMAN)
  * 고른 카테고리의 랜덤 주제에 예(찬성) / 아니오(반대)를 고르고 방을 만듦
  */
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { createSession } from "../../apis/sessions";
 import { getRandomTopic } from "../../apis/topics";
-import type { ApiResponse } from "../../apis/types";
 import LongButton from "../../components/Button";
 import ChoiceOptions from "../../components/ChoiceOptions";
 import ChoiceQuestion from "../../components/ChoiceQuestion";
@@ -17,6 +15,7 @@ import TopBar from "../../components/TopBar";
 import { useToast } from "../../hooks/useToast";
 import type { Stance } from "../../types/session";
 import type { Topic, TopicCategory } from "../../types/topic";
+import { getApiErrorCode } from "../../utils/apiError";
 
 const CATEGORIES: TopicCategory[] = [
   "HUMAN",
@@ -32,11 +31,6 @@ const CATEGORIES: TopicCategory[] = [
 // 왼쪽 "예" = 찬성, 오른쪽 "아니오" = 반대
 const STANCES: [Stance, Stance] = ["AGREE", "DISAGREE"];
 
-const getErrorCode = (error: unknown) =>
-  axios.isAxiosError<ApiResponse<null>>(error)
-    ? error.response?.data?.error?.code
-    : undefined;
-
 const StanceSelectPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -46,21 +40,25 @@ const StanceSelectPage = () => {
   const [topic, setTopic] = useState<Topic | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isChangingTopic, setIsChangingTopic] = useState(false);
   const { toastMessage, showToast } = useToast();
 
-  // 주제 바꾸기: 방금 본 주제를 빼고 다시 받기
+  // 주제 바꾸기: 방금 본 주제를 빼고 다시 받기 (요청 중에는 다시 누를 수 없음)
   const changeTopic = async () => {
-    if (!topic) return;
+    if (!topic || isChangingTopic) return;
 
+    setIsChangingTopic(true);
     try {
       setTopic(await getRandomTopic(category, topic.id));
       setSelectedIndex(null);
     } catch (error) {
       showToast(
-        getErrorCode(error) === "TOPIC_NOT_FOUND"
+        getApiErrorCode(error) === "TOPIC_NOT_FOUND"
           ? "다른 주제가 없어요."
           : "주제를 불러오지 못했어요.",
       );
+    } finally {
+      setIsChangingTopic(false);
     }
   };
 
@@ -94,7 +92,7 @@ const StanceSelectPage = () => {
       navigate(`/game/waiting/${sessionId}`);
     } catch (error) {
       showToast(
-        getErrorCode(error) === "ALREADY_IN_SESSION"
+        getApiErrorCode(error) === "ALREADY_IN_SESSION"
           ? "이미 참여 중인 게임이 있어요."
           : "방을 만들지 못했어요.",
       );
@@ -102,7 +100,11 @@ const StanceSelectPage = () => {
     }
   };
 
-  const canConfirm = topic !== null && selectedIndex !== null && !isSubmitting;
+  const canConfirm =
+    topic !== null &&
+    selectedIndex !== null &&
+    !isSubmitting &&
+    !isChangingTopic;
 
   return (
     <main className="mx-auto flex h-dvh w-full max-w-100.5 flex-col bg-secondary">
@@ -126,7 +128,8 @@ const StanceSelectPage = () => {
       <button
         type="button"
         onClick={changeTopic}
-        className="shrink-0 cursor-pointer py-3 text-center text-subhead-r8 text-neutral-006 transition-colors hover:text-neutral-004"
+        disabled={!topic || isChangingTopic}
+        className="shrink-0 cursor-pointer py-3 text-center text-subhead-r8 text-neutral-006 transition-colors hover:text-neutral-004 disabled:cursor-not-allowed disabled:hover:text-neutral-006"
       >
         주제 바꾸기
       </button>
