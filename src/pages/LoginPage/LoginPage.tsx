@@ -1,14 +1,14 @@
 import { useNavigate } from "react-router-dom";
 
-import arrowRight from "../assets/arrow-right.svg";
-import googleLogo from "../assets/google-logo.svg";
-import kakaoLogin from "../assets/kakao_login.svg";
-import loginLogo from "../assets/login-logo.svg?raw";
-import LongButton from "../components/Button";
-import InputContainer from "../components/InputContainer";
-import StatusBar from "../components/StatusBar";
-import { startGoogleLogin } from "../utils/google";
-import { startKakaoLogin } from "../utils/kakao";
+import arrowRight from "../../assets/arrow-right.svg";
+import googleLogo from "../../assets/google-logo.svg";
+import kakaoLogin from "../../assets/kakao_login.svg";
+import loginLogo from "../../assets/login-logo.svg?raw";
+import LongButton from "../../components/Button";
+import InputContainer from "../../components/InputContainer";
+import StatusBar from "../../components/StatusBar";
+import { startGoogleLogin } from "../../utils/google";
+import { startKakaoLogin } from "../../utils/kakao";
 
 function LoginPage() {
   const navigate = useNavigate();
