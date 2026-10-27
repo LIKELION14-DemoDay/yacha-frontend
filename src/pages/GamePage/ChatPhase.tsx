@@ -11,6 +11,8 @@ interface ChatPhaseProps {
   isFinalNotice: boolean;
   onSend: (content: string) => boolean;
   canSend: boolean;
+  // 입력을 막은 이유 (예: 다시 연결하는 중)
+  inputPlaceholder?: string;
 }
 
 // 토론방 채팅 구간 (자유 채팅 → 마지막 30초 최종발언)
@@ -21,6 +23,7 @@ const ChatPhase = ({
   isFinalNotice,
   onSend,
   canSend,
+  inputPlaceholder,
 }: ChatPhaseProps) => {
   return (
     <>
@@ -45,7 +48,11 @@ const ChatPhase = ({
       />
 
       <div className="shrink-0 px-2.25 py-2.5">
-        <ChatInput onSend={onSend} disabled={!canSend} />
+        <ChatInput
+          onSend={onSend}
+          disabled={!canSend}
+          placeholder={inputPlaceholder}
+        />
       </div>
     </>
   );

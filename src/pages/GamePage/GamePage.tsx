@@ -9,18 +9,22 @@ import { useNavigate, useParams } from "react-router-dom";
 import { leaveSession } from "../../apis/sessions";
 import type { ChatSender } from "../../components/ChatMessageList";
 import PhaseTimer from "../../components/PhaseTimer";
+import Toast from "../../components/Toast";
 import TopBar from "../../components/TopBar";
 import {
   getClockOffset,
   usePhaseCountdown,
 } from "../../hooks/usePhaseCountdown";
 import { useSessionSocket } from "../../hooks/useSessionSocket";
+import { useToast } from "../../hooks/useToast";
 import type {
   SessionEvent,
   SessionMessage,
   SessionPhase,
+  SessionSocketError,
   SessionState,
 } from "../../types/session";
+import { getChatErrorMessage } from "../../utils/chatError";
 import ChatPhase from "./ChatPhase";
 
 // 구간별 전체 시간 (초) — 진행 막대 계산용
@@ -55,6 +59,7 @@ const GamePage = () => {
   const [gameState, setGameState] = useState<SessionState | null>(null);
   const [timing, setTiming] = useState<PhaseTiming | null>(null);
   const [chatMessages, setChatMessages] = useState<SessionMessage[]>([]);
+  const { toastMessage, showToast } = useToast();
 
   const handleSync = useCallback((state: SessionState) => {
     setGameState(state);
@@ -65,32 +70,46 @@ const GamePage = () => {
     });
   }, []);
 
-  const handleEvent = useCallback((event: SessionEvent) => {
-    switch (event.type) {
-      case "CHAT":
-        setChatMessages((messages) => addMessage(messages, event));
-        break;
-      case "PHASE_CHANGED":
-        setTiming({
-          phase: event.phase,
-          endsAt: event.endsAt,
-          clockOffset: getClockOffset(event.serverNow),
-        });
-        break;
-      case "FINAL_NOTICE":
-        setTiming((current) =>
-          current ? { ...current, endsAt: event.endsAt } : current,
-        );
-        break;
-      // 주장 공개 · 상대 연결 끊김 · 게임 종료는 해당 단계 작업에서 처리
-      default:
-        break;
-    }
-  }, []);
+  const handleEvent = useCallback(
+    (event: SessionEvent) => {
+      switch (event.type) {
+        case "CHAT":
+          setChatMessages((messages) => addMessage(messages, event));
+          break;
+        case "PHASE_CHANGED":
+          setTiming({
+            phase: event.phase,
+            endsAt: event.endsAt,
+            clockOffset: getClockOffset(event.serverNow),
+          });
+          break;
+        case "FINAL_NOTICE":
+          setTiming((current) =>
+            current ? { ...current, endsAt: event.endsAt } : current,
+          );
+          break;
+        case "OPPONENT_DISCONNECTED":
+          showToast("상대의 연결이 끊겼어요. 잠시 기다려 주세요.");
+          break;
+        case "OPPONENT_RECONNECTED":
+          showToast("상대가 다시 연결됐어요.");
+          break;
+        // 주장 공개 · 게임 종료는 해당 단계 작업에서 처리
+        default:
+          break;
+      }
+    },
+    [showToast],
+  );
+
+  const handleError = useCallback(
+    (error: SessionSocketError) => showToast(getChatErrorMessage(error)),
+    [showToast],
+  );
 
   const { connected, sendChat } = useSessionSocket(
     Number.isNaN(sessionId) ? null : sessionId,
-    { onEvent: handleEvent, onSync: handleSync },
+    { onEvent: handleEvent, onSync: handleSync, onError: handleError },
   );
 
   const remainingSeconds = usePhaseCountdown(
@@ -101,6 +120,20 @@ const GamePage = () => {
   const phase = timing?.phase;
   const isFinalNotice =
     phase === "CHAT" && remainingSeconds <= FINAL_NOTICE_SECONDS;
+  // 시간이 다 되면 다음 구간 알림이 오기 전이라도 입력을 막음
+  const isChatOver = remainingSeconds <= 0;
+  const canSend = connected && !isChatOver;
+
+  const handleSend = (content: string) => {
+    if (!canSend) return false;
+
+    const isSent = sendChat(content);
+    if (!isSent) {
+      showToast("연결이 끊겨 메시지를 보내지 못했어요.");
+    }
+
+    return isSent;
+  };
 
   // 상대 닉네임은 아직 서버에서 안 줘서 임시 이름으로 표시
   const getSender = (participantId: number): ChatSender => {
@@ -150,8 +183,15 @@ const GamePage = () => {
           myParticipantId={gameState.myParticipantId}
           getSender={getSender}
           isFinalNotice={isFinalNotice}
-          onSend={sendChat}
-          canSend={connected}
+          onSend={handleSend}
+          canSend={canSend}
+          inputPlaceholder={
+            isChatOver
+              ? "채팅이 끝났어요"
+              : connected
+                ? undefined
+                : "다시 연결하는 중이에요"
+          }
         />
       ) : (
         // 채팅 외 구간 화면은 각 단계 작업에서 채움
@@ -163,6 +203,8 @@ const GamePage = () => {
       )}
 
       <aside aria-label="광고 영역" className="h-20.75 shrink-0 bg-green" />
+
+      <Toast message={toastMessage} />
     </main>
   );
 };

@@ -9,9 +9,14 @@ interface ChatInputProps {
   // 보내기에 성공하면 true (입력창을 비움)
   onSend: (content: string) => boolean;
   disabled?: boolean;
+  placeholder?: string;
 }
 
-const ChatInput = ({ onSend, disabled = false }: ChatInputProps) => {
+const ChatInput = ({
+  onSend,
+  disabled = false,
+  placeholder = "메시지 입력",
+}: ChatInputProps) => {
   const [content, setContent] = useState("");
   const canSend = !disabled && content.trim().length > 0;
 
@@ -34,7 +39,7 @@ const ChatInput = ({ onSend, disabled = false }: ChatInputProps) => {
         value={content}
         maxLength={CHAT_MAX_LENGTH}
         disabled={disabled}
-        placeholder="메시지 입력"
+        placeholder={placeholder}
         aria-label="메시지 입력"
         onChange={(event) => setContent(event.target.value)}
         className="min-w-0 flex-1 bg-transparent text-subhead-m7 text-neutral-002 caret-main outline-none placeholder:text-neutral-006 disabled:cursor-not-allowed"
