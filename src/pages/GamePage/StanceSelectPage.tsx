@@ -1,0 +1,155 @@
+/**
+ * 입장 선택 페이지 (/game/select?category=HUMAN)
+ * 고른 카테고리의 랜덤 주제에 예(찬성) / 아니오(반대)를 고르고 방을 만듦
+ */
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+
+import { createSession } from "../../apis/sessions";
+import { getRandomTopic } from "../../apis/topics";
+import type { ApiResponse } from "../../apis/types";
+import LongButton from "../../components/Button";
+import ChoiceOptions from "../../components/ChoiceOptions";
+import ChoiceQuestion from "../../components/ChoiceQuestion";
+import Toast from "../../components/Toast";
+import TopBar from "../../components/TopBar";
+import { useToast } from "../../hooks/useToast";
+import type { Stance } from "../../types/session";
+import type { Topic, TopicCategory } from "../../types/topic";
+
+const CATEGORIES: TopicCategory[] = [
+  "HUMAN",
+  "RELATIONSHIP",
+  "ETHICS",
+  "SOCIETY",
+  "LIFE_AND_DEATH",
+  "TECH_AND_FUTURE",
+  "MONEY_AND_SUCCESS",
+  "TRUTH_AND_BELIEF",
+];
+
+// 왼쪽 "예" = 찬성, 오른쪽 "아니오" = 반대
+const STANCES: [Stance, Stance] = ["AGREE", "DISAGREE"];
+
+const getErrorCode = (error: unknown) =>
+  axios.isAxiosError<ApiResponse<null>>(error)
+    ? error.response?.data?.error?.code
+    : undefined;
+
+const StanceSelectPage = () => {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const categoryParam = searchParams.get("category");
+  const category = CATEGORIES.find((item) => item === categoryParam) ?? "HUMAN";
+
+  const [topic, setTopic] = useState<Topic | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toastMessage, showToast } = useToast();
+
+  // 주제 바꾸기: 방금 본 주제를 빼고 다시 받기
+  const changeTopic = async () => {
+    if (!topic) return;
+
+    try {
+      setTopic(await getRandomTopic(category, topic.id));
+      setSelectedIndex(null);
+    } catch (error) {
+      showToast(
+        getErrorCode(error) === "TOPIC_NOT_FOUND"
+          ? "다른 주제가 없어요."
+          : "주제를 불러오지 못했어요.",
+      );
+    }
+  };
+
+  // 첫 진입 때 주제 받아오기 (나가면 늦게 온 응답은 무시)
+  useEffect(() => {
+    let ignore = false;
+
+    getRandomTopic(category)
+      .then((nextTopic) => {
+        if (!ignore) setTopic(nextTopic);
+      })
+      .catch(() => {
+        if (!ignore) showToast("주제를 불러오지 못했어요.");
+      });
+
+    return () => {
+      ignore = true;
+    };
+  }, [category, showToast]);
+
+  const handleConfirm = async () => {
+    if (!topic || selectedIndex === null) return;
+
+    setIsSubmitting(true);
+    try {
+      const { sessionId } = await createSession({
+        roomType: "RANDOM",
+        topicId: topic.id,
+        stance: STANCES[selectedIndex],
+      });
+      navigate(`/game/waiting/${sessionId}`);
+    } catch (error) {
+      showToast(
+        getErrorCode(error) === "ALREADY_IN_SESSION"
+          ? "이미 참여 중인 게임이 있어요."
+          : "방을 만들지 못했어요.",
+      );
+      setIsSubmitting(false);
+    }
+  };
+
+  const canConfirm = topic !== null && selectedIndex !== null && !isSubmitting;
+
+  return (
+    <main className="mx-auto flex h-dvh w-full max-w-100.5 flex-col bg-secondary">
+      <TopBar title="랜덤 주제로 야차 뜨기" onBack={() => navigate(-1)} />
+
+      <section className="shrink-0 px-6 pt-20">
+        <ChoiceQuestion
+          question={topic?.statement ?? "주제를 불러오는 중이에요"}
+        />
+      </section>
+
+      <section className="flex min-h-0 flex-1 items-center px-6 pb-15">
+        <ChoiceOptions
+          options={["예", "아니오"]}
+          selectedIndex={selectedIndex}
+          onSelect={setSelectedIndex}
+          label="입장 선택"
+        />
+      </section>
+
+      <button
+        type="button"
+        onClick={changeTopic}
+        className="shrink-0 cursor-pointer py-3 text-center text-subhead-r8 text-neutral-006 transition-colors hover:text-neutral-004"
+      >
+        주제 바꾸기
+      </button>
+
+      <div className="shrink-0 px-6 pt-2.5 pb-12.5">
+        <LongButton
+          disabled={!canConfirm}
+          onClick={handleConfirm}
+          className={
+            canConfirm
+              ? "!bg-main !text-white hover:!bg-main-006"
+              : "!bg-main-009 !text-neutral-004"
+          }
+        >
+          확인
+        </LongButton>
+      </div>
+
+      <aside aria-label="광고 영역" className="h-20.75 shrink-0 bg-green" />
+
+      <Toast message={toastMessage} />
+    </main>
+  );
+};
+
+export default StanceSelectPage;

@@ -11,6 +11,7 @@ import OneminutePage from "./pages/OneminutePage";
 import MyPage from "./pages/MyPage/MyPage";
 import MySettingPage from "./pages/MyPage/MySettingPage";
 import GamePage from "./pages/GamePage/GamePage";
+import StanceSelectPage from "./pages/GamePage/StanceSelectPage";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
       <Route path="/oneminute" element={<OneminutePage />} />
       <Route path="/mypage" element={<MyPage />} />
       <Route path="/my/setting" element={<MySettingPage />} />
+      <Route path="/game/select" element={<StanceSelectPage />} />
       <Route path="/game/:sessionId" element={<GamePage />} />
     </Routes>
   );
