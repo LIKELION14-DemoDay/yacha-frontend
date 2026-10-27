@@ -3,6 +3,8 @@ interface PhaseTimerProps {
   remainingSeconds: number;
   // 이번 구간 전체 시간 (초)
   totalSeconds: number;
+  // 마감 임박이면 빨간 글씨 (예: 최종발언 30초)
+  isUrgent?: boolean;
 }
 
 const formatTime = (seconds: number) => {
@@ -13,7 +15,11 @@ const formatTime = (seconds: number) => {
   return `${minutes}:${rest}`;
 };
 
-const PhaseTimer = ({ remainingSeconds, totalSeconds }: PhaseTimerProps) => {
+const PhaseTimer = ({
+  remainingSeconds,
+  totalSeconds,
+  isUrgent = false,
+}: PhaseTimerProps) => {
   const progress =
     totalSeconds > 0
       ? Math.min(1, Math.max(0, remainingSeconds / totalSeconds))
@@ -24,7 +30,7 @@ const PhaseTimer = ({ remainingSeconds, totalSeconds }: PhaseTimerProps) => {
       <p
         role="timer"
         aria-label="남은 시간"
-        className="text-center text-headline-sb3 text-main"
+        className={`text-center text-headline-sb3 ${isUrgent ? "text-main" : "text-white"}`}
       >
         {formatTime(remainingSeconds)}
       </p>
