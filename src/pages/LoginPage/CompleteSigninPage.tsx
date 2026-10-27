@@ -1,8 +1,8 @@
 import { useLocation, useNavigate } from "react-router-dom";
 
-import loginLogo from "../assets/login-logo.svg?raw";
-import LongButton from "../components/Button";
-import StatusBar from "../components/StatusBar";
+import loginLogo from "../../assets/login-logo.svg?raw";
+import LongButton from "../../components/Button";
+import StatusBar from "../../components/StatusBar";
 
 function CompleteSigninPage() {
   const navigate = useNavigate();

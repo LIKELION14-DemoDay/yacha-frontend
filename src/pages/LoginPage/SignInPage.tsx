@@ -1,10 +1,10 @@
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 
-import angleLeft from "../assets/angle-left.svg";
-import LongButton from "../components/Button";
-import InputContainer from "../components/InputContainer";
-import StatusBar from "../components/StatusBar";
+import angleLeft from "../../assets/angle-left.svg";
+import LongButton from "../../components/Button";
+import InputContainer from "../../components/InputContainer";
+import StatusBar from "../../components/StatusBar";
 
 type SignUpStep = "nickname" | "email" | "password";
 type FieldName = SignUpStep | "passwordConfirmation";

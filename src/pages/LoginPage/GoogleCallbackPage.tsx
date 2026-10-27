@@ -6,8 +6,8 @@
 
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { googleLogin } from "../apis/auth";
-import { getGoogleRedirectUri, validateGoogleState } from "../utils/google";
+import { googleLogin } from "../../apis/auth";
+import { getGoogleRedirectUri, validateGoogleState } from "../../utils/google";
 
 function GoogleCallbackPage() {
   const navigate = useNavigate();
