@@ -74,6 +74,18 @@ export type WaitingRoomsResponse = {
   hasNext: boolean;
 };
 
+// GET /sessions/proposal ("랜덤 주제로 시작하기")
+// PROPOSAL: 대기 방 제안 → 승낙은 join, 거절은 reject
+// NEW_TOPIC: 한 바퀴 다 돌았거나 대기 방 없음 → 고른 카테고리의 새 주제로 주제 화면
+export type SessionProposal = {
+  result: "PROPOSAL" | "NEW_TOPIC";
+  // NEW_TOPIC 이면 null
+  sessionId: number | null;
+  topic: Topic;
+  // 들어가면 내가 맡게 되는 입장 (방장의 반대), NEW_TOPIC 이면 null
+  myStance: Stance | null;
+};
+
 export type SessionParticipant = {
   participantId: number;
   type: ParticipantType;
@@ -97,6 +109,24 @@ export type SessionState = {
   serverNow: string;
   myParticipantId: number;
   participants: SessionParticipant[];
+};
+
+/* ---------- 주장 · 반론 ---------- */
+
+// GET /sessions/{id}/memo 항목 (작성 구간 순서대로)
+export type SubmittedMemo = {
+  phase: SessionPhase;
+  content: string;
+  submittedAt: string;
+};
+
+// GET /sessions/{id}/hints
+// PENDING 이면 1.5초마다 다시 조회, READY · FAILED 면 멈춤
+// FAILED 면 "힌트 보기" 비활성화
+export type SessionHints = {
+  status: ResultStatus;
+  // 내 입장에 맞는 20자 이내 문장 3개 (READY 일 때만)
+  hints?: string[];
 };
 
 /* ---------- 결과 ---------- */
