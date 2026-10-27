@@ -1,4 +1,7 @@
-import { useEffect, useId } from "react";
+import { useId } from "react";
+
+import ModalButtons from "./ModalButtons";
+import { useEscapeKey } from "../hooks/useEscapeKey";
 
 interface ConfirmModalProps {
   open: boolean;
@@ -23,17 +26,7 @@ const ConfirmModal = ({
   const titleId = useId();
   const descriptionId = useId();
 
-  // Esc 를 누르면 취소
-  useEffect(() => {
-    if (!open) return;
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onCancel();
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [open, onCancel]);
+  useEscapeKey(open, onCancel);
 
   if (!open) return null;
 
@@ -57,23 +50,12 @@ const ConfirmModal = ({
           ) : null}
         </div>
 
-        <div className="flex w-full gap-5">
-          <button
-            type="button"
-            autoFocus
-            onClick={onCancel}
-            className="flex flex-1 cursor-pointer items-center justify-center rounded-[10px] bg-neutral-007 px-5 py-4 text-subhead-b6 text-white"
-          >
-            {cancelLabel}
-          </button>
-          <button
-            type="button"
-            onClick={onConfirm}
-            className="flex flex-1 cursor-pointer items-center justify-center rounded-[10px] bg-main px-5 py-4 text-subhead-b6 text-white"
-          >
-            {confirmLabel}
-          </button>
-        </div>
+        <ModalButtons
+          cancelLabel={cancelLabel}
+          confirmLabel={confirmLabel}
+          onCancel={onCancel}
+          onConfirm={onConfirm}
+        />
       </div>
     </div>
   );
