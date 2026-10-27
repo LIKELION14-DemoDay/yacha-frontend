@@ -46,16 +46,21 @@ export const useSessionSocket = (
       return;
     }
 
-    // 마지막으로 받은 메시지 번호 (놓친 메시지 조회 기준 · 중복 거르기)
+    // 가장 큰 메시지 번호 (놓친 메시지 조회 기준)
     let lastSeqNo = 0;
+    // 이미 넘긴 메시지 번호 (중복 거르기)
+    // 복구 응답을 기다리는 동안 새 메시지가 먼저 오면 lastSeqNo 가 커지므로,
+    // 번호 크기로 거르면 뒤늦게 온 놓친 메시지가 버려짐
+    const deliveredSeqNos = new Set<number>();
     let disposed = false;
 
     const handleEvent = (event: SessionEvent) => {
       if (event.type === "ARGUMENT" || event.type === "CHAT") {
-        if (event.seqNo <= lastSeqNo) {
+        if (deliveredSeqNos.has(event.seqNo)) {
           return;
         }
-        lastSeqNo = event.seqNo;
+        deliveredSeqNos.add(event.seqNo);
+        lastSeqNo = Math.max(lastSeqNo, event.seqNo);
       }
 
       callbacksRef.current.onEvent(event);

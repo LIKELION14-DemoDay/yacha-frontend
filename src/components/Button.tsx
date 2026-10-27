@@ -9,7 +9,6 @@ interface LongButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: LongButtonVariant;
 }
 
-// 각 variant의 디자인 시스템 색상 토큰 연결
 const variantClassNames: Record<LongButtonVariant, string> = {
   default: "bg-main-009 text-neutral-004 hover:bg-main hover:text-white",
   active: "bg-secondary text-white",
