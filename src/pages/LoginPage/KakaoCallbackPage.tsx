@@ -6,8 +6,8 @@
 
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { kakaoLogin } from "../apis/auth";
-import { getKakaoRedirectUri, validateKakaoState } from "../utils/kakao";
+import { kakaoLogin } from "../../apis/auth";
+import { getKakaoRedirectUri, validateKakaoState } from "../../utils/kakao";
 
 function KakaoCallbackPage() {
   const navigate = useNavigate();

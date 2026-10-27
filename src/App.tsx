@@ -1,12 +1,15 @@
 import { Routes, Route } from "react-router-dom";
 import OnboardingPage from "./pages/OnboardingPage";
 import BalanceGamePage from "./pages/BalanceGamePage";
-import LoginPage from "./pages/LoginPage";
-import SignInPage from "./pages/SignInPage";
-import CompleteSignInPage from "./pages/CompleteSigninPage";
-import KakaoCallbackPage from "./pages/KakaoCallbackPage";
-import GoogleCallbackPage from "./pages/GoogleCallbackPage";
+import LoginPage from "./pages/LoginPage/LoginPage";
+import SignInPage from "./pages/LoginPage/SignInPage";
+import CompleteSignInPage from "./pages/LoginPage/CompleteSigninPage";
+import KakaoCallbackPage from "./pages/LoginPage/KakaoCallbackPage";
+import GoogleCallbackPage from "./pages/LoginPage/GoogleCallbackPage";
 import HomePage from "./pages/HomePage";
+import OneminutePage from "./pages/OneminutePage";
+import MyPage from "./pages/MyPage/MyPage";
+import MySettingPage from "./pages/MyPage/MySettingPage";
 
 function App() {
   return (
@@ -19,6 +22,9 @@ function App() {
       <Route path="/oauth/kakao" element={<KakaoCallbackPage />} />
       <Route path="/oauth/google" element={<GoogleCallbackPage />} />
       <Route path="/home" element={<HomePage />} />
+      <Route path="/oneminute" element={<OneminutePage />} />
+      <Route path="/mypage" element={<MyPage />} />
+      <Route path="/my/setting" element={<MySettingPage />} />
     </Routes>
   );
 }
