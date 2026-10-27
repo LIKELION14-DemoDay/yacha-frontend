@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import angleLeft from "../assets/angle-left.svg";
-import balanceScale from "../assets/balance-scale-solid.svg";
-import linkIcon from "../assets/link-solid.svg";
-import logoLeft from "../assets/logo-left.svg";
-import logoRight from "../assets/logo-right.svg";
-import LongButton from "../components/Button";
-import StatusBar from "../components/StatusBar";
+import angleLeft from "../../assets/angle-left.svg";
+import balanceScale from "../../assets/balance-scale-solid.svg";
+import linkIcon from "../../assets/link-solid.svg";
+import logoLeft from "../../assets/logo-left.svg";
+import logoRight from "../../assets/logo-right.svg";
+import LongButton from "../../components/Button";
+import StatusBar from "../../components/StatusBar";
 
 // 프로필 API 연동 전 시안에 맞춘 예시 데이터입니다.
 const profile = {
@@ -20,9 +20,7 @@ const profile = {
 function ProfileHero() {
   return (
     <section className="relative h-24.5 shrink-0">
-      <div
-        className="absolute inset-0 bg-[radial-gradient(ellipse_55%_45%_at_50%_110%,#4d4747_0%,transparent_100%)]"
-      />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_55%_45%_at_50%_110%,#4d4747_0%,transparent_100%)]" />
       <img
         src={logoRight}
         alt=""
@@ -33,9 +31,7 @@ function ProfileHero() {
         alt=""
         className="absolute top-0 left-[calc(50%+48px)] h-9 w-11"
       />
-      <div
-        className="absolute bottom-0 left-1/2 flex size-20 -translate-x-1/2 items-center justify-center rounded-[5px] border-[0.5px] border-neutral-003 bg-neutral-001 text-[10px] text-neutral-006"
-      >
+      <div className="absolute bottom-0 left-1/2 flex size-20 -translate-x-1/2 items-center justify-center rounded-[5px] border-[0.5px] border-neutral-003 bg-neutral-001 text-[10px] text-neutral-006">
         profile
       </div>
     </section>
@@ -46,16 +42,10 @@ function BattleRecord() {
   return (
     <section className="flex shrink-0 flex-col gap-3 px-6">
       <div className="flex h-6 items-center gap-2">
-        <span
-          className="h-px min-w-0 flex-1 bg-linear-to-r from-secondary to-neutral-006"
-        />
-        <h2 className="text-subhead-r8 text-neutral-001">
-          전투 기록
-        </h2>
+        <span className="h-px min-w-0 flex-1 bg-linear-to-r from-secondary to-neutral-006" />
+        <h2 className="text-subhead-r8 text-neutral-001">전투 기록</h2>
         <img src={balanceScale} alt="" className="size-6 shrink-0" />
-        <span
-          className="h-px min-w-0 flex-1 bg-linear-to-r from-neutral-006 to-secondary"
-        />
+        <span className="h-px min-w-0 flex-1 bg-linear-to-r from-neutral-006 to-secondary" />
       </div>
 
       <dl className="flex justify-center gap-20">
@@ -114,9 +104,7 @@ function MyPage() {
 
       <ProfileHero />
 
-      <section
-        className="flex shrink-0 flex-col items-center gap-1 px-6 pt-4 pb-7"
-      >
+      <section className="flex shrink-0 flex-col items-center gap-1 px-6 pt-4 pb-7">
         <p className="text-subhead-r8 text-neutral-006">
           {profile.philosophyType}형
         </p>
@@ -127,12 +115,10 @@ function MyPage() {
 
       <div className="flex flex-1 flex-col gap-5 py-10">
         <section className="flex flex-col">
-          <h2 className="px-6 py-1 text-body-m3 text-neutral-006">
-            내 정보
-          </h2>
-          {/* 프로필 설정 페이지가 준비되면 이동 경로를 연결합니다. */}
+          <h2 className="px-6 py-1 text-body-m3 text-neutral-006">내 정보</h2>
           <button
             type="button"
+            onClick={() => navigate("/my/setting")}
             className="cursor-pointer border-b border-neutral-009 px-6 py-4 text-left text-body-r2"
           >
             내 프로필 설정

@@ -8,7 +8,8 @@ import KakaoCallbackPage from "./pages/KakaoCallbackPage";
 import GoogleCallbackPage from "./pages/GoogleCallbackPage";
 import HomePage from "./pages/HomePage";
 import OneminutePage from "./pages/OneminutePage";
-import MyPage from "./pages/MyPage";
+import MyPage from "./pages/MyPage/MyPage";
+import MySettingPage from "./pages/MyPage/MySettingPage";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
       <Route path="/home" element={<HomePage />} />
       <Route path="/oneminute" element={<OneminutePage />} />
       <Route path="/mypage" element={<MyPage />} />
+      <Route path="/my/setting" element={<MySettingPage />} />
     </Routes>
   );
 }
