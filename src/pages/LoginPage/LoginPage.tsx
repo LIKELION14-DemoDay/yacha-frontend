@@ -53,7 +53,7 @@ function LoginPage() {
       </section>
 
       <section className="flex h-30 shrink-0 flex-col">
-        <div className="flex items-center justify-center gap-10 py-2.5 text-body-r6 text-neutral-002">
+        <div className="flex items-center justify-center gap-10 py-2.5 text-body-r6 text-neutral-007">
           <button type="button" className="cursor-pointer">
             비밀번호 찾기
           </button>
@@ -70,7 +70,7 @@ function LoginPage() {
         <div className="flex items-center justify-center gap-1 pt-4 pb-10">
           <button
             type="button"
-            className="flex cursor-pointer items-center gap-1 text-body-r6 text-main"
+            className="flex cursor-pointer items-center gap-1 text-body-m3 text-main"
           >
             비회원으로 시작하기
             <img src={arrowRight} alt="" className="size-6" />
