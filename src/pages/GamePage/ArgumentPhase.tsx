@@ -46,6 +46,8 @@ interface ArgumentPhaseProps {
   title: string;
   // 내 입장 문장 (주제의 agreeText / disagreeText)
   stanceText: string;
+  // 반론 작성 때 위에 보여 줄 상대 주장 (있으면 내 입장 대신 표시)
+  opponentArgument?: string;
   remainingSeconds: number;
   // 힌트 보기 버튼 (주장 작성에서만)
   canUseHints?: boolean;
@@ -57,6 +59,7 @@ const ArgumentPhase = ({
   phase,
   title,
   stanceText,
+  opponentArgument,
   remainingSeconds,
   canUseHints = false,
   onError,
@@ -221,15 +224,30 @@ const ArgumentPhase = ({
 
   return (
     <>
-      <section className="shrink-0 py-2.5">
-        <h1 className="px-6 py-2.5 text-headline-sb5 text-white">{title}</h1>
-        <div className="flex flex-col px-6 py-1">
-          <p className="text-body-m3 text-neutral-007">내 입장</p>
-          <p className="text-body-m1 break-keep text-main">“{stanceText}”</p>
-        </div>
-      </section>
+      {opponentArgument === undefined ? (
+        <section className="shrink-0 py-2.5">
+          <h1 className="px-6 py-2.5 text-headline-sb5 text-white">{title}</h1>
+          <div className="flex flex-col px-6 py-1">
+            <p className="text-body-m3 text-neutral-007">내 입장</p>
+            <p className="text-body-m1 break-keep text-main">“{stanceText}”</p>
+          </div>
+        </section>
+      ) : (
+        <section className="shrink-0">
+          <h1 className="px-6 py-2.5 text-headline-sb5 text-white">{title}</h1>
+          <div className="flex flex-col gap-1 px-6.5 py-3">
+            <p className="text-subhead-m7 text-neutral-008">상대 입장</p>
+            {/* 긴 주장은 이 칸 안에서 스크롤 (얇은 스크롤 막대) */}
+            <p className="h-25 overflow-y-auto py-1 pr-5 text-body-r4 wrap-break-word whitespace-pre-wrap text-neutral-006 [scrollbar-color:var(--color-neutral-003)_var(--color-neutral-008)] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-[11px] [&::-webkit-scrollbar-thumb]:bg-neutral-003 [&::-webkit-scrollbar-track]:rounded-[10px] [&::-webkit-scrollbar-track]:bg-neutral-008">
+              {opponentArgument.trim() || "상대가 작성한 주장이 없어요"}
+            </p>
+          </div>
+        </section>
+      )}
 
-      <section className="flex min-h-0 flex-1 flex-col px-6">
+      <section
+        className={`flex min-h-0 flex-1 flex-col px-6 ${canUseHints ? "" : "pt-2 pb-8"}`}
+      >
         <CountedTextArea
           value={content}
           onChange={handleChange}
@@ -237,6 +255,7 @@ const ArgumentPhase = ({
           label={title}
           notice="상대에게는 제출 후 공개됩니다."
           disabled={isTimeOver}
+          spaced={!canUseHints}
         />
       </section>
 
