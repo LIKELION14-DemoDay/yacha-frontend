@@ -31,6 +31,7 @@ import { getChatErrorMessage } from "../../utils/chatError";
 import ArgumentPhase from "./ArgumentPhase";
 import ChatPhase from "./ChatPhase";
 import MatchedIntro from "./MatchedIntro";
+import RevealPhase from "./RevealPhase";
 
 // 구간별 전체 시간 (초) — 진행 막대 계산용
 const PHASE_SECONDS: Record<SessionPhase, number> = {
@@ -67,6 +68,10 @@ const GamePage = () => {
   const [gameState, setGameState] = useState<SessionState | null>(null);
   const [timing, setTiming] = useState<PhaseTiming | null>(null);
   const [chatMessages, setChatMessages] = useState<SessionMessage[]>([]);
+  // 공개된 주장 · 반론 (PREP 주장은 REVEAL 에, REBUTTAL 반론은 CHAT 시작 때 공개)
+  const [argumentMessages, setArgumentMessages] = useState<SessionMessage[]>(
+    [],
+  );
   const [isLeaveModalOpen, setIsLeaveModalOpen] = useState(false);
   const { toastMessage, showToast } = useToast();
 
@@ -93,6 +98,9 @@ const GamePage = () => {
             );
           }
           break;
+        case "ARGUMENT":
+          setArgumentMessages((messages) => addMessage(messages, event));
+          break;
         case "CHAT":
           setChatMessages((messages) => addMessage(messages, event));
           break;
@@ -114,7 +122,7 @@ const GamePage = () => {
         case "OPPONENT_RECONNECTED":
           showToast("상대가 다시 연결됐어요.");
           break;
-        // 주장 공개 · 게임 종료는 해당 단계 작업에서 처리
+        // 게임 종료는 결과 단계 작업에서 처리
         default:
           break;
       }
@@ -143,6 +151,7 @@ const GamePage = () => {
     remainingSeconds > PHASE_SECONDS.PREP - MATCHED_INTRO_SECONDS;
   const isWriting =
     (phase === "PREP" && !isMatchedIntro) || phase === "REBUTTAL";
+  const isReveal = phase === "REVEAL";
   const isFinalNotice =
     phase === "CHAT" && remainingSeconds <= FINAL_NOTICE_SECONDS;
   // 시간이 다 되면 다음 구간 알림이 오기 전이라도 입력을 막음
@@ -186,6 +195,15 @@ const GamePage = () => {
     (item) => item.participantId !== gameState.myParticipantId,
   );
 
+  // 공개된 주장 (아직 안 왔으면 null)
+  const getArgument = (participantId: number | undefined) =>
+    argumentMessages.find(
+      (message) =>
+        message.senderId === participantId && message.phase === "PREP",
+    )?.content ?? null;
+
+  const opponentName = opponent?.type === "AI" ? "AI" : "상대";
+
   const openLeaveModal = () => setIsLeaveModalOpen(true);
   const closeLeaveModal = useCallback(() => setIsLeaveModalOpen(false), []);
 
@@ -208,13 +226,13 @@ const GamePage = () => {
     >
       <div className="shrink-0 bg-secondary">
         <TopBar
-          // 작성 중에는 뒤로가기 없이 나가기만
-          onBack={isWriting ? undefined : openLeaveModal}
+          // 작성 · 주장 공개 중에는 뒤로가기 없이 나가기만
+          onBack={isWriting || isReveal ? undefined : openLeaveModal}
           backLabel="토론방 나가기"
           actionLabel="나가기"
           onAction={openLeaveModal}
         />
-        {phase && !isMatchedIntro ? (
+        {phase && !isMatchedIntro && !isReveal ? (
           <PhaseTimer
             remainingSeconds={remainingSeconds}
             totalSeconds={PHASE_SECONDS[phase]}
@@ -232,10 +250,24 @@ const GamePage = () => {
             content: getStanceText(me.stance),
           }}
           opponent={{
-            name: opponent.type === "AI" ? "AI" : "상대",
+            name: opponentName,
             stance: opponent.stance,
             content: getStanceText(opponent.stance),
           }}
+        />
+      ) : gameState && me && opponent && isReveal ? (
+        <RevealPhase
+          mine={{
+            name: "나",
+            stance: me.stance,
+            content: getArgument(me.participantId),
+          }}
+          opponent={{
+            name: opponentName,
+            stance: opponent.stance,
+            content: getArgument(opponent.participantId),
+          }}
+          remainingSeconds={remainingSeconds}
         />
       ) : gameState && me && isWriting ? (
         <ArgumentPhase
@@ -249,6 +281,11 @@ const GamePage = () => {
               : "근거를 작성해주세요."
           }
           stanceText={getStanceText(me.stance)}
+          opponentArgument={
+            phase === "REBUTTAL"
+              ? (getArgument(opponent?.participantId) ?? "")
+              : undefined
+          }
           remainingSeconds={remainingSeconds}
           canUseHints={phase === "PREP"}
           onError={showToast}
@@ -280,8 +317,8 @@ const GamePage = () => {
         </div>
       )}
 
-      {/* 작성 화면은 광고 없음, 제출 후 대기 화면의 광고는 ArgumentPhase 가 그림 */}
-      {isWriting ? null : (
+      {/* 작성 · 주장 공개 화면은 광고 없음, 제출 후 대기 화면의 광고는 ArgumentPhase 가 그림 */}
+      {isWriting || isReveal ? null : (
         <aside
           aria-label="광고 영역"
           className={`shrink-0 bg-green ${phase === "CHAT" ? "h-20.75" : "h-25"}`}

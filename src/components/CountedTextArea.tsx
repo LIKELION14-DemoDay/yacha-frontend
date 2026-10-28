@@ -10,6 +10,8 @@ interface CountedTextAreaProps {
   // 글자 수 오른쪽 안내
   notice?: string;
   disabled?: boolean;
+  // 글쓰기 칸과 글자 수 줄 사이를 8px 띄움 (반론 작성)
+  spaced?: boolean;
 }
 
 // 글자 수가 표시되는 글쓰기 칸 (주장 · 반론 작성)
@@ -22,6 +24,7 @@ const CountedTextArea = ({
   placeholder,
   notice,
   disabled = false,
+  spaced = false,
 }: CountedTextAreaProps) => {
   const countId = useId();
 
@@ -39,7 +42,7 @@ const CountedTextArea = ({
         disabled={disabled}
         aria-label={label}
         aria-describedby={countId}
-        className="min-h-0 w-full flex-1 resize-none rounded-[10px] bg-neutral-009 p-4 text-body-r4 text-neutral-004 outline-none placeholder:text-neutral-007 disabled:cursor-not-allowed"
+        className={`min-h-0 w-full flex-1 resize-none rounded-[10px] ${spaced ? "mb-2" : ""} bg-neutral-009 p-4 text-body-r4 text-neutral-004 outline-none placeholder:text-neutral-007 disabled:cursor-not-allowed`}
       />
 
       <div className="flex items-start justify-between gap-2 py-2 text-body-r4">

@@ -90,7 +90,7 @@ const HintModal = ({ open, hints, onClose, onPaste }: HintModalProps) => {
 
               <p
                 aria-live="polite"
-                className="w-full text-subhead-r8 break-keep text-neutral-005"
+                className="w-full text-subhead-r8 wrap-break-word text-neutral-005"
               >
                 {hints[index]}
               </p>

@@ -3,7 +3,7 @@
  * 고른 카테고리의 대기 방 목록을 보여주고, 방에 들어가거나 랜덤 주제로 시작함
  */
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
 import {
   getProposal,
@@ -68,6 +68,20 @@ const RoomListContent = ({ category }: { category: TopicCategory }) => {
   const [isProposing, setIsProposing] = useState(false);
   const [proposal, setProposal] = useState<SessionProposal | null>(null);
   const { toastMessage, showToast } = useToast();
+
+  // 매칭 대기에서 끝나고 돌아오면 넘겨받은 안내를 한 번 띄움 (뒤로 와도 다시 안 뜨게 지움)
+  const location = useLocation();
+  const returnedToast = (location.state as { toast?: string } | null)?.toast;
+
+  useEffect(() => {
+    if (!returnedToast) return;
+
+    showToast(returnedToast);
+    navigate(`${location.pathname}${location.search}`, {
+      replace: true,
+      state: null,
+    });
+  }, [returnedToast, showToast, navigate, location.pathname, location.search]);
 
   const listRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);

@@ -1,20 +1,48 @@
+import { useLayoutEffect, useRef } from "react";
+
 import chatTailMine from "../assets/chat-tail-mine.svg";
 import chatTailOpponent from "../assets/chat-tail-opponent.svg";
 import ProfilePlaceholder from "./ProfilePlaceholder";
 import type { Stance } from "../types/session";
 import { STANCE_LABEL } from "../utils/stance";
 
+// 줄인 본문 칸의 최대 높이 (max-h-21.5)
+const CLAMPED_BOX_HEIGHT_PX = 86;
+
 interface StanceBubbleProps {
   isMine: boolean;
   name: string;
   stance: Stance;
-  // 입장 문장 (예: 주제의 agreeText / disagreeText)
+  // 입장 문장 (예: 주제의 agreeText / disagreeText) 또는 공개된 주장
   content: string;
+  // 따옴표로 감싸기 (입장 문장), 주장 본문은 끔
+  quoted?: boolean;
+  // 4줄까지만 보이고 나머지는 … 으로 줄임
+  clamped?: boolean;
 }
 
-// 매칭 완료 화면의 입장 말풍선 (내 것은 빨강 · 오른쪽, 상대는 회색 · 왼쪽)
-const StanceBubble = ({ isMine, name, stance, content }: StanceBubbleProps) => {
+// 입장 말풍선 (내 것은 빨강 · 오른쪽, 상대는 회색 · 왼쪽) — 매칭 완료 · 주장 공개
+const StanceBubble = ({
+  isMine,
+  name,
+  stance,
+  content,
+  quoted = true,
+  clamped = false,
+}: StanceBubbleProps) => {
   const textColor = isMine ? "text-white" : "text-neutral-004";
+  const clampBoxRef = useRef<HTMLDivElement>(null);
+  const clampTextRef = useRef<HTMLParagraphElement>(null);
+
+  // 4줄을 넘겨 잘렸으면 칸 높이를 86px 로 고정
+  useLayoutEffect(() => {
+    const box = clampBoxRef.current;
+    const text = clampTextRef.current;
+    if (!box || !text) return;
+
+    const isTruncated = clamped && text.scrollHeight > text.clientHeight;
+    box.style.height = isTruncated ? `${CLAMPED_BOX_HEIGHT_PX}px` : "";
+  }, [clamped, content]);
 
   return (
     <div
@@ -31,7 +59,18 @@ const StanceBubble = ({ isMine, name, stance, content }: StanceBubbleProps) => {
           <span className="shrink-0">({STANCE_LABEL[stance]})</span>
         </p>
 
-        <p className={`text-subhead-m7 break-keep ${textColor}`}>“{content}”</p>
+        {/* 줄일 때는 본문 칸 최대 86px 안에 4줄 (넘쳐서 줄였을 때만 칸을 86px 로 채움) */}
+        <div
+          ref={clampBoxRef}
+          className={clamped ? "max-h-21.5 overflow-hidden" : undefined}
+        >
+          <p
+            ref={clampTextRef}
+            className={`text-subhead-m7 wrap-break-word whitespace-pre-wrap ${textColor} ${clamped ? "line-clamp-4" : ""}`}
+          >
+            {quoted ? `“${content}”` : content}
+          </p>
+        </div>
 
         <span
           aria-hidden="true"

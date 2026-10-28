@@ -83,7 +83,8 @@ const StanceSelectPage = () => {
         topicId: topic.id,
         stance: STANCES[selectedIndex],
       });
-      navigate(`/game/waiting/${sessionId}`);
+      // 매칭이 안 되면 이 카테고리의 방 찾기로 돌아가도록 같이 넘김
+      navigate(`/game/waiting/${sessionId}`, { state: { category } });
     } catch (error) {
       showToast(
         getApiErrorCode(error) === "ALREADY_IN_SESSION"
