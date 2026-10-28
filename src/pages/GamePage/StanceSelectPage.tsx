@@ -104,20 +104,26 @@ const StanceSelectPage = () => {
     <main className="mx-auto flex h-dvh w-full max-w-100.5 flex-col bg-secondary">
       <TopBar title="랜덤 주제로 야차 뜨기" onBack={() => navigate(-1)} />
 
-      <section className="shrink-0 px-6 pt-20">
-        <ChoiceQuestion
-          question={topic?.statement ?? "주제를 불러오는 중이에요"}
-        />
-      </section>
+      {/* 주제가 길어 화면이 모자라면 겹치지 않고 스크롤 */}
+      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <section className="shrink-0 px-6 pt-20">
+          <ChoiceQuestion
+            question={topic?.statement ?? "주제를 불러오는 중이에요"}
+          />
+        </section>
 
-      <section className="flex min-h-0 flex-1 items-center px-6 pb-15">
-        <ChoiceOptions
-          options={[topic?.agreeText ?? "예", topic?.disagreeText ?? "아니오"]}
-          selectedIndex={selectedIndex}
-          onSelect={setSelectedIndex}
-          label="입장 선택"
-        />
-      </section>
+        <section className="flex flex-1 items-center px-6 pt-8 pb-15">
+          <ChoiceOptions
+            options={[
+              topic?.agreeText ?? "예",
+              topic?.disagreeText ?? "아니오",
+            ]}
+            selectedIndex={selectedIndex}
+            onSelect={setSelectedIndex}
+            label="입장 선택"
+          />
+        </section>
+      </div>
 
       <button
         type="button"
