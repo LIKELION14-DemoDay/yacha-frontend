@@ -1,6 +1,8 @@
 import angleLeft from "../assets/angle-left.svg";
 
 interface TopBarProps {
+  // 뒤로가기 버튼 오른쪽 제목
+  title?: string;
   onBack?: () => void;
   backLabel?: string;
   // 오른쪽 텍스트 버튼 (예: 나가기)
@@ -9,6 +11,7 @@ interface TopBarProps {
 }
 
 const TopBar = ({
+  title,
   onBack,
   backLabel = "뒤로 가기",
   actionLabel,
@@ -16,14 +19,19 @@ const TopBar = ({
 }: TopBarProps) => {
   return (
     <header className="flex h-12 shrink-0 items-center justify-between px-6 py-2">
-      <button
-        type="button"
-        aria-label={backLabel}
-        onClick={onBack}
-        className="flex size-6 shrink-0 cursor-pointer items-center justify-center"
-      >
-        <img src={angleLeft} alt="" className="size-6" />
-      </button>
+      <div className="flex min-w-0 items-center gap-2.5">
+        <button
+          type="button"
+          aria-label={backLabel}
+          onClick={onBack}
+          className="flex size-6 shrink-0 cursor-pointer items-center justify-center"
+        >
+          <img src={angleLeft} alt="" className="size-6" />
+        </button>
+        {title ? (
+          <p className="truncate text-subhead-m5 text-white">{title}</p>
+        ) : null}
+      </div>
 
       {actionLabel ? (
         <button

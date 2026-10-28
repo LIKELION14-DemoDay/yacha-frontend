@@ -124,6 +124,20 @@
   --text-caption-r2--line-height: 1.3;
   --text-caption-r2--letter-spacing: -0.02em;
   --text-caption-r2--font-weight: 400;
+
+  /* Animation */
+  /* 매칭 대기 문구가 어두워졌다 밝아지기를 반복 (Figma 매칭 대기 프레임 기준) */
+  --animate-text-pulse: text-pulse 2.4s ease-in-out infinite;
+
+  @keyframes text-pulse {
+    0%,
+    100% {
+      color: var(--color-neutral-008);
+    }
+    50% {
+      color: var(--color-neutral-005);
+    }
+  }
 }
 
 @utility bg-gradient-dark {

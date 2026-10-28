@@ -8,6 +8,8 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { leaveSession } from "../../apis/sessions";
 import type { ChatSender } from "../../components/ChatMessageList";
+import ConfirmModal from "../../components/ConfirmModal";
+import LogoLoading from "../../components/LogoLoading";
 import PhaseTimer from "../../components/PhaseTimer";
 import Toast from "../../components/Toast";
 import TopBar from "../../components/TopBar";
@@ -59,6 +61,7 @@ const GamePage = () => {
   const [gameState, setGameState] = useState<SessionState | null>(null);
   const [timing, setTiming] = useState<PhaseTiming | null>(null);
   const [chatMessages, setChatMessages] = useState<SessionMessage[]>([]);
+  const [isLeaveModalOpen, setIsLeaveModalOpen] = useState(false);
   const { toastMessage, showToast } = useToast();
 
   const handleSync = useCallback((state: SessionState) => {
@@ -148,9 +151,12 @@ const GamePage = () => {
     };
   };
 
-  // 게임 중 나가면 바로 몰수패 (확인 팝업은 공통 팝업 작업 후 교체)
+  const openLeaveModal = () => setIsLeaveModalOpen(true);
+  const closeLeaveModal = useCallback(() => setIsLeaveModalOpen(false), []);
+
+  // 게임 중 나가면 바로 몰수패
   const handleLeave = async () => {
-    if (!window.confirm("지금 나가면 패배로 처리돼요. 나갈까요?")) return;
+    setIsLeaveModalOpen(false);
 
     try {
       await leaveSession(sessionId);
@@ -163,10 +169,10 @@ const GamePage = () => {
     <main className="mx-auto flex h-dvh w-full max-w-100.5 flex-col bg-neutral-009">
       <div className="shrink-0 bg-secondary">
         <TopBar
-          onBack={handleLeave}
+          onBack={openLeaveModal}
           backLabel="토론방 나가기"
           actionLabel="나가기"
-          onAction={handleLeave}
+          onAction={openLeaveModal}
         />
         {phase ? (
           <PhaseTimer
@@ -196,15 +202,27 @@ const GamePage = () => {
       ) : (
         // 채팅 외 구간 화면은 각 단계 작업에서 채움
         <div className="flex flex-1 items-center justify-center text-body-r6 text-neutral-006">
-          {gameState
-            ? "다음 단계를 준비 중이에요"
-            : "토론방에 들어가는 중이에요"}
+          {gameState ? (
+            "다음 단계를 준비 중이에요"
+          ) : (
+            <LogoLoading message="토론방에 들어가는 중이에요" />
+          )}
         </div>
       )}
 
       <aside aria-label="광고 영역" className="h-20.75 shrink-0 bg-green" />
 
       <Toast message={toastMessage} />
+
+      <ConfirmModal
+        open={isLeaveModalOpen}
+        title="쫄리면 나가시던지"
+        description="다시 돌아올 수 없습니다."
+        cancelLabel="계속하기"
+        confirmLabel="나가기"
+        onCancel={closeLeaveModal}
+        onConfirm={handleLeave}
+      />
     </main>
   );
 };
