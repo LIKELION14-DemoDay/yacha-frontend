@@ -19,6 +19,7 @@ import Toast from "../../components/Toast";
 import TopBar from "../../components/TopBar";
 import { useToast } from "../../hooks/useToast";
 import type { SessionProposal, WaitingRoom } from "../../types/session";
+import type { TopicCategory } from "../../types/topic";
 import { getApiErrorCode } from "../../utils/apiError";
 import { CATEGORY_LABEL, toCategory } from "../../utils/category";
 import { STANCE_LABEL } from "../../utils/stance";
@@ -37,10 +38,26 @@ const withObjectParticle = (word: string) => {
   return `${word}${hasFinalConsonant ? "을" : "를"}`;
 };
 
+// 카테고리가 바뀌면 목록 · 페이지 · 제안 상태를 처음부터 다시 시작
 const RoomListPage = () => {
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const category = toCategory(searchParams.get("category"));
+
+  return <RoomListContent key={category} category={category} />;
+};
+
+const RoomListContent = ({ category }: { category: TopicCategory }) => {
+  const navigate = useNavigate();
+
+  // 화면을 떠난 뒤(카테고리 변경 포함) 늦게 온 응답은 반영하지 않음
+  const isActiveRef = useRef(true);
+
+  useEffect(() => {
+    isActiveRef.current = true;
+    return () => {
+      isActiveRef.current = false;
+    };
+  }, []);
 
   // null 이면 첫 목록을 불러오는 중
   const [rooms, setRooms] = useState<WaitingRoom[] | null>(null);
@@ -86,6 +103,8 @@ const RoomListPage = () => {
         category,
         nextPage,
       );
+      if (!isActiveRef.current) return;
+
       setRooms((items) => {
         const current = items ?? [];
         const ids = new Set(current.map((room) => room.sessionId));
@@ -123,6 +142,7 @@ const RoomListPage = () => {
     setIsProposing(true);
     try {
       const nextProposal = await getProposal(category);
+      if (!isActiveRef.current) return;
 
       if (nextProposal.result === "NEW_TOPIC") {
         navigate(`/game/select?category=${category}`, {
@@ -143,6 +163,7 @@ const RoomListPage = () => {
     setIsJoining(true);
     try {
       await joinSession(sessionId);
+      // 들어간 방은 떠났어도 진행 중이므로 토론방으로 이동
       navigate(`/game/${sessionId}`);
       return true;
     } catch (error) {
@@ -245,6 +266,15 @@ const RoomListPage = () => {
               onClick={() => void joinRoom(room.sessionId)}
             />
           ))}
+
+          {rooms === null ? (
+            <p
+              role="status"
+              className="py-10 text-center text-body-r6 text-neutral-006"
+            >
+              야차판을 불러오는 중이에요
+            </p>
+          ) : null}
 
           {rooms?.length === 0 ? (
             <p className="py-10 text-center text-body-r6 text-neutral-006">
