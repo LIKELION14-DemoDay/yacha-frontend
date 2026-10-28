@@ -4,17 +4,7 @@ import { useNavigate } from "react-router-dom";
 import homeImage from "../assets/home-image1.png";
 import homeLogo from "../assets/home-logo.svg";
 import StatusBar from "../components/StatusBar";
-
-const debateTopics = [
-  "인간",
-  "관계",
-  "윤리",
-  "사회",
-  "삶과 죽음",
-  "미래 기술",
-  "돈과 성공",
-  "진실과 거짓",
-] as const;
+import { CATEGORIES, CATEGORY_LABEL } from "../utils/category";
 
 const philosophyCards = [
   {
@@ -34,10 +24,11 @@ const philosophyCards = [
   },
 ] as const;
 
-function TopicCard({ topic }: { topic: (typeof debateTopics)[number] }) {
+function TopicCard({ topic, onClick }: { topic: string; onClick: () => void }) {
   return (
     <button
       type="button"
+      onClick={onClick}
       className="group flex min-w-0 cursor-pointer flex-col items-center gap-1 text-body-r6 text-white"
       aria-label={`${topic} 주제 선택`}
     >
@@ -125,8 +116,12 @@ function HomePage() {
         </div>
 
         <div className="grid flex-1 grid-cols-4 gap-x-5 gap-y-5 px-6.5">
-          {debateTopics.map((topic) => (
-            <TopicCard key={topic} topic={topic} />
+          {CATEGORIES.map((category) => (
+            <TopicCard
+              key={category}
+              topic={CATEGORY_LABEL[category]}
+              onClick={() => navigate(`/game/rooms?category=${category}`)}
+            />
           ))}
         </div>
       </section>
