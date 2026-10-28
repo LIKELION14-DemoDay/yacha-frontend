@@ -14,6 +14,11 @@ export type ApiResponse<T> = {
   traceId: string;
 };
 
+export type LoginRequest = {
+  email: string;
+  password: string;
+};
+
 // 로그인 · 토큰 재발급 응답의 data
 export type TokenResponse = {
   accessToken: string;

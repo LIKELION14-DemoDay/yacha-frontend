@@ -3,7 +3,22 @@
  */
 import api, { refreshAccessToken } from "./client";
 import { clearAccessToken, setAccessToken } from "./tokenStore";
-import type { ApiResponse, TokenResponse } from "./types";
+import type { ApiResponse, LoginRequest, TokenResponse } from "./types";
+
+export const login = async (credentials: LoginRequest) => {
+  const response = await api.post<ApiResponse<TokenResponse>>(
+    "/api/v1/auth/login",
+    credentials,
+  );
+
+  if (!response.data.success || !response.data.data?.accessToken) {
+    throw new Error("로그인 응답에 액세스 토큰이 없습니다.");
+  }
+
+  setAccessToken(response.data.data.accessToken);
+
+  return response.data;
+};
 
 export const kakaoLogin = async (code: string, redirectUri: string) => {
   const response = await api.post<ApiResponse<TokenResponse>>(
