@@ -11,6 +11,7 @@ import OneminutePage from "./pages/OneminutePage";
 import MyPage from "./pages/MyPage/MyPage";
 import MySettingPage from "./pages/MyPage/MySettingPage";
 import GamePage from "./pages/GamePage/GamePage";
+import ResultPage from "./pages/GamePage/ResultPage";
 import RoomListPage from "./pages/GamePage/RoomListPage";
 import StanceSelectPage from "./pages/GamePage/StanceSelectPage";
 import WaitingPage from "./pages/GamePage/WaitingPage";
@@ -33,7 +34,7 @@ function App() {
       <Route path="/game/select" element={<StanceSelectPage />} />
       <Route path="/game/waiting/:sessionId" element={<WaitingPage />} />
       <Route path="/game/:sessionId" element={<GamePage />} />
-    </Routes>
+      <Route path="/game/:sessionId/result" element={<ResultPage />} />    </Routes>
   );
 }
 

@@ -75,14 +75,27 @@ const GamePage = () => {
   const [isLeaveModalOpen, setIsLeaveModalOpen] = useState(false);
   const { toastMessage, showToast } = useToast();
 
-  const handleSync = useCallback((state: SessionState) => {
-    setGameState(state);
-    setTiming({
-      phase: state.phase,
-      endsAt: state.endsAt,
-      clockOffset: getClockOffset(state.serverNow),
-    });
-  }, []);
+  // 판정이 시작되거나 게임이 끝나면 결과 페이지로 (뒤로 와도 토론방으로 안 돌아오게)
+  const goToResult = useCallback(() => {
+    navigate(`/game/${sessionId}/result`, { replace: true });
+  }, [navigate, sessionId]);
+
+  const handleSync = useCallback(
+    (state: SessionState) => {
+      if (state.status === "FINISHED" || state.phase === "JUDGING") {
+        goToResult();
+        return;
+      }
+
+      setGameState(state);
+      setTiming({
+        phase: state.phase,
+        endsAt: state.endsAt,
+        clockOffset: getClockOffset(state.serverNow),
+      });
+    },
+    [goToResult],
+  );
 
   const myParticipantId = gameState?.myParticipantId;
 
@@ -105,6 +118,10 @@ const GamePage = () => {
           setChatMessages((messages) => addMessage(messages, event));
           break;
         case "PHASE_CHANGED":
+          if (event.phase === "JUDGING") {
+            goToResult();
+            break;
+          }
           setTiming({
             phase: event.phase,
             endsAt: event.endsAt,
@@ -122,12 +139,15 @@ const GamePage = () => {
         case "OPPONENT_RECONNECTED":
           showToast("상대가 다시 연결됐어요.");
           break;
-        // 게임 종료는 결과 단계 작업에서 처리
+        // 상대가 나가 몰수승 · 봇 오류로 무효 등 판정 없이 끝난 경우도 결과 페이지에서 안내
+        case "SESSION_FINISHED":
+          goToResult();
+          break;
         default:
           break;
       }
     },
-    [myParticipantId, showToast],
+    [myParticipantId, showToast, goToResult],
   );
 
   const handleError = useCallback(

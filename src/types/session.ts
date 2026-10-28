@@ -7,7 +7,7 @@ import type { Topic, TopicCategory } from "./topic";
 
 export type Stance = "AGREE" | "DISAGREE";
 
-export type SessionStatus = "WAITING" | "IN_PROGRESS";
+export type SessionStatus = "WAITING" | "IN_PROGRESS" | "FINISHED";
 
 export type RoomType = "RANDOM";
 
