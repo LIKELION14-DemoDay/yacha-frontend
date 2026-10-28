@@ -2,7 +2,7 @@
  * 인증 관련 백엔드 API 요청을 관리하는 파일
  */
 import axios from "axios";
-import api, { refreshAccessToken } from "./client";
+import api, { REFRESH_TOKEN_PATH, refreshAccessToken } from "./client";
 import { clearAccessToken, setAccessToken } from "./tokenStore";
 import type {
   ApiResponse,
@@ -92,7 +92,7 @@ export const logout = async () => {
     const isExpiredSession =
       axios.isAxiosError(error) &&
       error.response?.status === 401 &&
-      error.config?.url?.endsWith("/api/v1/auth/token/refresh");
+      error.config?.url?.endsWith(REFRESH_TOKEN_PATH);
 
     if (!isExpiredSession) throw error;
   }
