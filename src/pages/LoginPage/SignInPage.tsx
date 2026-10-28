@@ -2,7 +2,7 @@ import axios from "axios";
 import { useRef, useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { signUp } from "../../apis/auth";
+import { checkEmailAvailability, signUp } from "../../apis/auth";
 import type { ApiResponse } from "../../apis/types";
 import angleLeft from "../../assets/angle-left.svg";
 import LongButton from "../../components/Button";
@@ -30,9 +30,13 @@ function SignInPage() {
   const [passwordChecked, setPasswordChecked] = useState(false);
   const [confirmationChecked, setConfirmationChecked] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isCheckingEmail, setIsCheckingEmail] = useState(false);
+  const [checkedEmail, setCheckedEmail] = useState<string | null>(null);
   const [emailServerError, setEmailServerError] = useState("");
   const [submitError, setSubmitError] = useState("");
   const isRequestPending = useRef(false);
+  const isBusy = isSubmitting || isCheckingEmail;
+  const normalizedEmail = email.trim().toLowerCase();
 
   const hasNickname = nickname.trim().length > 0;
   const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
@@ -53,12 +57,11 @@ function SignInPage() {
       ? "비밀번호가 일치하지 않습니다."
       : undefined;
   const isNextDisabled =
-    isSubmitting ||
+    isBusy ||
     !hasNickname ||
     (step === "email" && email.trim().length === 0);
 
   const clearServerErrors = () => {
-    setEmailServerError("");
     setSubmitError("");
   };
 
@@ -82,8 +85,40 @@ function SignInPage() {
       return;
     }
 
-    if (step === "email") {
-      setStep("password");
+    if (step === "email" || checkedEmail !== normalizedEmail) {
+      isRequestPending.current = true;
+      setIsCheckingEmail(true);
+      setEmailServerError("");
+
+      try {
+        const available = await checkEmailAvailability(normalizedEmail);
+        if (!available) {
+          setCheckedEmail(null);
+          setEmailServerError("이미 가입된 이메일입니다.");
+          setStep("email");
+          return;
+        }
+
+        setCheckedEmail(normalizedEmail);
+        setStep("password");
+      } catch (error: unknown) {
+        setCheckedEmail(null);
+        setStep("email");
+
+        if (axios.isAxiosError(error) && error.response?.status === 429) {
+          setEmailServerError("요청이 너무 많습니다. 잠시 후 다시 시도해주세요.");
+        } else if (axios.isAxiosError(error) && error.response?.status === 400) {
+          setEmailServerError("이메일의 형식과 길이를 확인해주세요.");
+        } else if (axios.isAxiosError(error) && !error.response) {
+          setEmailServerError("서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.");
+        } else {
+          setEmailServerError("이메일 중복 확인에 실패했습니다. 다시 시도해주세요.");
+        }
+      } finally {
+        isRequestPending.current = false;
+        setIsCheckingEmail(false);
+      }
+
       return;
     }
 
@@ -97,7 +132,7 @@ function SignInPage() {
     try {
       const response = await signUp({
         nickname: nickname.trim(),
-        email: email.trim(),
+        email: normalizedEmail,
         password,
       });
 
@@ -110,7 +145,9 @@ function SignInPage() {
         axios.isAxiosError<ApiResponse<null>>(error) &&
         error.response?.data?.error?.code === "EMAIL_ALREADY_EXISTS"
       ) {
+        setCheckedEmail(null);
         setEmailServerError("이미 가입된 이메일입니다.");
+        setStep("email");
       } else if (
         axios.isAxiosError<ApiResponse<null>>(error) &&
         error.response?.data?.error?.code === "VALIDATION_FAILED"
@@ -132,7 +169,7 @@ function SignInPage() {
       <form
         noValidate
         onSubmit={handleSubmit}
-        aria-busy={isSubmitting}
+        aria-busy={isBusy}
         className="flex min-h-0 flex-1 flex-col justify-between"
       >
         <div className="min-h-0 flex-1 overflow-y-auto">
@@ -141,7 +178,7 @@ function SignInPage() {
           <header className="flex h-12 items-center gap-2.5 px-6 py-2 text-white">
             <button
               type="button"
-              disabled={isSubmitting}
+              disabled={isBusy}
               onClick={handleBack}
               aria-label="로그인 페이지로 돌아가기"
               className="flex h-8 w-6 shrink-0 cursor-pointer items-center justify-center"
@@ -167,7 +204,7 @@ function SignInPage() {
               placeholder="닉네임을 입력해주세요."
               required
               value={nickname}
-              disabled={isSubmitting}
+              disabled={isBusy}
               onChange={(event) => {
                 setNickname(event.currentTarget.value);
                 clearServerErrors();
@@ -190,17 +227,25 @@ function SignInPage() {
                 placeholder="이메일@example.com"
                 required
                 value={email}
-                disabled={isSubmitting}
-                errorMessage={emailError}
+                disabled={isBusy}
+                errorMessage={
+                  emailError ? <span role="alert">{emailError}</span> : undefined
+                }
                 onChange={(event) => {
                   setEmail(event.currentTarget.value);
                   setEmailChecked(false);
+                  setCheckedEmail(null);
+                  setEmailServerError("");
+                  if (step === "password") setStep("email");
                   clearServerErrors();
                 }}
                 clearable={focusedField === "email"}
                 onClear={() => {
                   setEmail("");
                   setEmailChecked(false);
+                  setCheckedEmail(null);
+                  setEmailServerError("");
+                  if (step === "password") setStep("email");
                   clearServerErrors();
                 }}
                 onFocus={() => setFocusedField("email")}
@@ -223,7 +268,7 @@ function SignInPage() {
                     required
                     minLength={8}
                     value={password}
-                    disabled={isSubmitting}
+                    disabled={isBusy}
                     errorMessage={passwordError}
                     aria-describedby="signup-password-hint"
                     onChange={(event) => {
@@ -257,7 +302,7 @@ function SignInPage() {
                   placeholder="비밀번호를 한번 더 입력해주세요."
                   required
                   value={passwordConfirmation}
-                  disabled={isSubmitting}
+                  disabled={isBusy}
                   errorMessage={confirmationError}
                   onChange={(event) => {
                     setPasswordConfirmation(event.currentTarget.value);
@@ -296,7 +341,13 @@ function SignInPage() {
                 : "!bg-neutral-008 !text-white"
             }
           >
-            {isSubmitting ? "가입 중..." : step === "password" ? "시작하기" : "다음"}
+            {isCheckingEmail
+              ? "확인 중..."
+              : isSubmitting
+                ? "가입 중..."
+                : step === "password"
+                  ? "시작하기"
+                  : "다음"}
           </LongButton>
         </div>
       </form>

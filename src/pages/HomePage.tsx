@@ -159,7 +159,7 @@ function HomePage() {
 
         <div
           ref={philosophySliderRef}
-          className="flex snap-x snap-mandatory gap-3 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="flex snap-x snap-mandatory gap-3 overflow-x-auto scrollbar-width:none [&::-webkit-scrollbar]:hidden"
         >
           {philosophyCards.map((card) => (
             <PhilosophyCard key={card.question} card={card} />

@@ -6,6 +6,7 @@ import api, { REFRESH_TOKEN_PATH, refreshAccessToken } from "./client";
 import { clearAccessToken, setAccessToken } from "./tokenStore";
 import type {
   ApiResponse,
+  EmailAvailabilityResponse,
   LoginRequest,
   SignUpRequest,
   TokenResponse,
@@ -39,6 +40,20 @@ export const signUp = async (credentials: SignUpRequest) => {
   setAccessToken(response.data.data.accessToken);
 
   return response.data;
+};
+
+export const checkEmailAvailability = async (email: string) => {
+  const response = await api.get<ApiResponse<EmailAvailabilityResponse>>(
+    "/api/v1/auth/email/availability",
+    { params: { email: email.trim().toLowerCase() } },
+  );
+  const available = response.data?.data?.available;
+
+  if (!response.data?.success || typeof available !== "boolean") {
+    throw new Error("이메일 중복 확인 응답이 올바르지 않습니다.");
+  }
+
+  return available;
 };
 
 export const createGuest = async () => {

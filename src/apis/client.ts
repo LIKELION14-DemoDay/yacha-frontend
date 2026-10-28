@@ -27,6 +27,7 @@ const NO_REFRESH_PATHS = [
   "/api/v1/auth/social",
   "/api/v1/auth/signup",
   "/api/v1/auth/guest",
+  "/api/v1/auth/email/availability",
   "/api/v1/auth/password",
 ];
 
