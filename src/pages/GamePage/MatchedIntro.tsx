@@ -1,10 +1,16 @@
 /**
  * 매칭 완료 화면 (주장 작성 구간 처음 몇 초)
  * 서로의 입장을 말풍선으로 보여주고 곧 대결이 시작된다고 알림
+ * 잠시 뒤 내 말풍선은 오른쪽, 상대 말풍선은 왼쪽 화면 밖에서 날아와 부딪히듯 멈춤
  */
+import { useEffect, useState } from "react";
+
 import matchedLogo from "../../assets/matched-logo.svg";
 import StanceBubble from "../../components/StanceBubble";
 import type { Stance } from "../../types/session";
+
+// 화면이 뜨고 말풍선이 날아오기까지
+const BUBBLES_DELAY_MS = 100;
 
 type BubbleInfo = {
   name: string;
@@ -18,8 +24,18 @@ interface MatchedIntroProps {
 }
 
 const MatchedIntro = ({ mine, opponent }: MatchedIntroProps) => {
+  const [showBubbles, setShowBubbles] = useState(false);
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => setShowBubbles(true), BUBBLES_DELAY_MS);
+    return () => clearTimeout(timeoutId);
+  }, []);
+
+  const motionClassName =
+    "transition-transform duration-900 ease-spring motion-reduce:transition-none";
+
   return (
-    <section className="flex min-h-0 flex-1 flex-col justify-center gap-8 overflow-y-auto">
+    <section className="flex min-h-0 flex-1 flex-col justify-center gap-8 overflow-x-hidden overflow-y-auto">
       <div className="flex flex-col items-center">
         <div className="pb-6">
           <img src={matchedLogo} alt="" />
@@ -35,9 +51,17 @@ const MatchedIntro = ({ mine, opponent }: MatchedIntroProps) => {
       </div>
 
       <div className="flex flex-col gap-2">
-        <StanceBubble isMine {...mine} />
+        <div
+          className={`${motionClassName} ${showBubbles ? "translate-x-0" : "translate-x-[462.5px]"}`}
+        >
+          <StanceBubble isMine {...mine} />
+        </div>
         <p className="text-center text-body-r2 text-neutral-008">VS</p>
-        <StanceBubble isMine={false} {...opponent} />
+        <div
+          className={`${motionClassName} ${showBubbles ? "translate-x-0" : "-translate-x-[462.5px]"}`}
+        >
+          <StanceBubble isMine={false} {...opponent} />
+        </div>
       </div>
     </section>
   );
