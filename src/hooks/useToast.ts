@@ -4,7 +4,7 @@
  */
 import { useCallback, useEffect, useRef, useState } from "react";
 
-const TOAST_DURATION_MS = 2500;
+export const TOAST_DURATION_MS = 2500;
 
 export const useToast = () => {
   const [toastMessage, setToastMessage] = useState<string | null>(null);

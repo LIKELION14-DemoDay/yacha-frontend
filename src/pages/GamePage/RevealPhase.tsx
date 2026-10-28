@@ -29,6 +29,11 @@ const RevealPhase = ({
   opponent,
   remainingSeconds,
 }: RevealPhaseProps) => {
+  const seconds = Math.max(0, Math.ceil(remainingSeconds));
+  // 알림은 정해 둔 시점에서만 바뀌게 (매초 읽지 않도록)
+  const announcedSeconds =
+    seconds > 10 ? null : seconds > 5 ? 10 : seconds > 0 ? 5 : null;
+
   return (
     <section className="flex min-h-0 flex-1 flex-col overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       <div className="shrink-0 pt-2.5 pb-10">
@@ -61,11 +66,18 @@ const RevealPhase = ({
         />
       </div>
 
-      <p className="shrink-0 py-10 text-center text-subhead-r8 text-neutral-007">
-        <span className="text-main">
-          {Math.max(0, Math.ceil(remainingSeconds))}
-        </span>
-        초 뒤 반론 작성 페이지로 넘어갑니다.
+      {/* 화면에는 매초 줄어드는 숫자, 스크린 리더에는 10초 · 5초 남았을 때만 알림 */}
+      <p
+        aria-hidden="true"
+        className="shrink-0 py-10 text-center text-subhead-r8 text-neutral-007"
+      >
+        <span className="text-main">{seconds}</span>초 뒤 반론 작성 페이지로
+        넘어갑니다.
+      </p>
+      <p role="status" className="sr-only">
+        {announcedSeconds
+          ? `${announcedSeconds}초 뒤 반론 작성 페이지로 넘어갑니다.`
+          : ""}
       </p>
     </section>
   );
