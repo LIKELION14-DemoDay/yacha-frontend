@@ -38,7 +38,7 @@ const ConfirmModal = ({
         aria-modal="true"
         aria-labelledby={titleId}
         aria-describedby={description ? descriptionId : undefined}
-        className="flex h-50 w-full max-w-88.5 flex-col items-center justify-center gap-9 overflow-hidden rounded-[20px] border-t border-l border-neutral-007 bg-linear-to-b from-neutral-008 from-[11.5%] to-neutral-008/50 px-6.5 py-5"
+        className="flex h-50 w-full max-w-88.5 flex-col items-center justify-center gap-6 overflow-hidden rounded-[20px] border-t border-l border-neutral-007 bg-linear-to-b from-neutral-008 from-[11.5%] to-neutral-008/50 px-6.5 py-5"
       >
         <div className="flex flex-col items-center gap-1 text-center">
           <h2 id={titleId} className="text-subhead-m5 text-neutral-001">

@@ -22,6 +22,7 @@ import type { SessionProposal, WaitingRoom } from "../../types/session";
 import type { TopicCategory } from "../../types/topic";
 import { getApiErrorCode } from "../../utils/apiError";
 import { CATEGORY_LABEL, toCategory } from "../../utils/category";
+import { getCurrentSessionPath } from "../../utils/currentSession";
 import { STANCE_LABEL } from "../../utils/stance";
 
 const JOIN_ERROR_MESSAGES: Record<string, string> = {
@@ -196,6 +197,15 @@ const RoomListContent = ({ category }: { category: TopicCategory }) => {
       return true;
     } catch (error) {
       const code = getApiErrorCode(error);
+
+      // 이미 참여 중인 게임이 있으면 그 게임으로 이동
+      if (code === "ALREADY_IN_SESSION") {
+        const path = await getCurrentSessionPath().catch(() => null);
+        if (path) {
+          navigate(path, { replace: true });
+          return true;
+        }
+      }
 
       // 이미 시작된 방은 목록에서 뺌
       if (code === "SESSION_NOT_WAITING") {

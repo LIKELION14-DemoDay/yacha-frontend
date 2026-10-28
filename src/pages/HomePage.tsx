@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import homeImage from "../assets/home-image1.png";
 import homeLogo from "../assets/home-logo.svg";
 import StatusBar from "../components/StatusBar";
+import { useResumeSession } from "../hooks/useResumeSession";
 import { CATEGORIES, CATEGORY_LABEL } from "../utils/category";
 
 const philosophyCards = [
@@ -65,6 +66,8 @@ function PhilosophyCard({ card }: { card: (typeof philosophyCards)[number] }) {
 
 function HomePage() {
   const navigate = useNavigate();
+  // 참여 중인 게임이 있으면 그 화면으로 바로 이동
+  useResumeSession();
   const philosophySliderRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
