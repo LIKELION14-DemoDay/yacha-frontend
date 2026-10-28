@@ -41,6 +41,25 @@ export const signUp = async (credentials: SignUpRequest) => {
   return response.data;
 };
 
+export const createGuest = async () => {
+  const response = await api.post<ApiResponse<TokenResponse>>(
+    "/api/v1/auth/guest",
+  );
+  const token = response.data?.data?.accessToken;
+
+  if (
+    !response.data?.success ||
+    typeof token !== "string" ||
+    token.trim().length === 0
+  ) {
+    throw new Error("게스트 생성 응답에 유효한 액세스 토큰이 없습니다.");
+  }
+
+  setAccessToken(token);
+
+  return response.data;
+};
+
 export const kakaoLogin = async (code: string, redirectUri: string) => {
   const response = await api.post<ApiResponse<TokenResponse>>(
     "/api/v1/auth/social/kakao",
