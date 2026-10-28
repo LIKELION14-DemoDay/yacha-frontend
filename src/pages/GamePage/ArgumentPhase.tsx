@@ -4,11 +4,12 @@
  * 시간이 끝나기 직전 제출 안 한 내용이 있으면 자동 제출
  * 제출 전 글은 새로고침해도 남도록 sessionStorage 에, 제출한 글은 서버에서 다시 불러옴
  */
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { getHints, getMyMemos, submitMemo } from "../../apis/sessions";
 import LongButton from "../../components/Button";
 import CountedTextArea from "../../components/CountedTextArea";
+import HintModal from "../../components/HintModal";
 import type { SessionHints, SessionPhase } from "../../types/session";
 
 const ARGUMENT_MAX_LENGTH = 200;
@@ -70,6 +71,7 @@ const ArgumentPhase = ({
   const [isEditing, setIsEditing] = useState(false);
   const [hints, setHints] = useState<SessionHints | null>(null);
   const [isLoadingHints, setIsLoadingHints] = useState(false);
+  const [isHintOpen, setIsHintOpen] = useState(false);
 
   const isActiveRef = useRef(true);
   const autoSubmittedRef = useRef(false);
@@ -114,13 +116,15 @@ const ArgumentPhase = ({
   // 제출한 글 그대로면 상대를 기다리는 화면
   const isWaiting = isSubmitted && !isEditing;
 
-  // 시간이 끝나기 직전, 제출 안 한 내용이 있으면 한 번만 자동 제출
+  // 시간이 끝나기 직전, 제출 안 한 내용이 있으면 자동 제출
+  // 빈 글은 보내지 않음 (제출한 글을 빈 글로 덮어쓰지 않도록)
   useEffect(() => {
     if (
       autoSubmittedRef.current ||
       remainingSeconds > AUTO_SUBMIT_SECONDS ||
       isTimeOver ||
-      isSubmitted
+      isSubmitted ||
+      content.trim() === ""
     ) {
       return;
     }
@@ -131,7 +135,8 @@ const ArgumentPhase = ({
         if (isActiveRef.current) setSubmittedContent(content);
       })
       .catch(() => {
-        // 마감 후에는 서버가 정리하므로 따로 알리지 않음
+        // 실패하면 다음 초에 다시 시도
+        autoSubmittedRef.current = false;
       });
   }, [remainingSeconds, isTimeOver, isSubmitted, sessionId, content]);
 
@@ -150,8 +155,13 @@ const ArgumentPhase = ({
     }
   };
 
-  // 힌트는 만들어질 때까지 다시 조회 (실패하면 버튼 비활성화)
-  const loadHints = async () => {
+  // 힌트는 처음 열 때 한 번 받아 두고 다시 씀 (만드는 중이면 다시 조회, 실패하면 버튼 비활성화)
+  const openHints = async () => {
+    if (hints?.status === "READY") {
+      setIsHintOpen(true);
+      return;
+    }
+
     setIsLoadingHints(true);
     try {
       let result = await getHints(sessionId);
@@ -159,7 +169,14 @@ const ArgumentPhase = ({
         await new Promise((resolve) => setTimeout(resolve, HINT_POLL_MS));
         result = await getHints(sessionId);
       }
-      if (isActiveRef.current) setHints(result);
+      if (!isActiveRef.current) return;
+
+      setHints(result);
+      if (result.status === "READY" && result.hints?.length) {
+        setIsHintOpen(true);
+      } else {
+        onError("힌트를 만들지 못했어요.");
+      }
     } catch {
       onError("힌트를 불러오지 못했어요.");
     } finally {
@@ -167,8 +184,16 @@ const ArgumentPhase = ({
     }
   };
 
+  // 쓰던 글 뒤에 이어 붙임 (200자를 넘으면 잘림)
+  const pasteHint = (hint: string) => {
+    const separator = content && !/\s$/.test(content) ? " " : "";
+    handleChange(`${content}${separator}${hint}`.slice(0, ARGUMENT_MAX_LENGTH));
+    setIsHintOpen(false);
+  };
+
+  const closeHints = useCallback(() => setIsHintOpen(false), []);
+
   const hasHintFailed = hints?.status === "FAILED";
-  const readyHints = hints?.status === "READY" ? (hints.hints ?? []) : [];
 
   if (isWaiting) {
     return (
@@ -217,24 +242,23 @@ const ArgumentPhase = ({
 
       {canUseHints ? (
         <section className="shrink-0 px-6 pb-10">
-          {readyHints.length > 0 ? (
-            <ul className="flex flex-col gap-1 rounded-[10px] bg-neutral-009 p-4 text-body-r6 text-neutral-004">
-              {readyHints.map((hint) => (
-                <li key={hint}>· {hint}</li>
-              ))}
-            </ul>
-          ) : (
-            <button
-              type="button"
-              onClick={loadHints}
-              disabled={isLoadingHints || hasHintFailed}
-              className="w-25 cursor-pointer rounded-[10px] bg-neutral-008 px-5 py-4 text-subhead-b6 whitespace-nowrap text-white disabled:cursor-not-allowed disabled:text-neutral-006"
-            >
-              {isLoadingHints ? "..." : "힌트보기"}
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={openHints}
+            disabled={isLoadingHints || hasHintFailed || isTimeOver}
+            className="w-25 cursor-pointer rounded-[10px] bg-neutral-008 px-5 py-4 text-subhead-b6 whitespace-nowrap text-white disabled:cursor-not-allowed disabled:text-neutral-006"
+          >
+            {isLoadingHints ? "..." : "힌트보기"}
+          </button>
         </section>
       ) : null}
+
+      <HintModal
+        open={isHintOpen}
+        hints={hints?.hints ?? []}
+        onClose={closeHints}
+        onPaste={pasteHint}
+      />
 
       <div className="shrink-0 px-6 pt-2.5 pb-12.5">
         <LongButton
