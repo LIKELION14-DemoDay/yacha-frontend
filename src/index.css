@@ -126,7 +126,7 @@
   --text-caption-r2--font-weight: 400;
 
   /* Animation */
-  /* 매칭 대기 문구가 어두워졌다 밝아지기를 반복 (Figma 매칭 대기 프레임 기준) */
+  /* 매칭 대기 문구가 어두워졌다 밝아지기를 반복 */
   --animate-text-pulse: text-pulse 2.4s ease-in-out infinite;
 
   @keyframes text-pulse {

@@ -1,6 +1,7 @@
 /**
  * 주장 · 반론 작성 화면 (PREP · REBUTTAL 구간)
- * 다시 제출하면 덮어쓰고, 시간이 끝나기 직전 고친 내용이 있으면 자동 제출
+ * 제출하면 상대를 기다리는 화면, "수정하러 가기"로 다시 고쳐 제출하면 덮어씀
+ * 시간이 끝나기 직전 제출 안 한 내용이 있으면 자동 제출
  * 제출 전 글은 새로고침해도 남도록 sessionStorage 에, 제출한 글은 서버에서 다시 불러옴
  */
 import { useEffect, useRef, useState } from "react";
@@ -65,6 +66,8 @@ const ArgumentPhase = ({
   // 서버에 마지막으로 제출한 글 (아직 없으면 null)
   const [submittedContent, setSubmittedContent] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // 제출 후 "수정하러 가기"로 다시 작성 칸을 연 상태
+  const [isEditing, setIsEditing] = useState(false);
   const [hints, setHints] = useState<SessionHints | null>(null);
   const [isLoadingHints, setIsLoadingHints] = useState(false);
 
@@ -106,8 +109,10 @@ const ArgumentPhase = ({
 
   const isTimeOver = remainingSeconds <= 0;
   const isSubmitted = submittedContent !== null && submittedContent === content;
-  const canSubmit =
-    !isSubmitting && !isTimeOver && !isSubmitted && content.trim() !== "";
+  // 수정 중에는 그대로 다시 제출해도 대기 화면으로 돌아감
+  const canSubmit = !isSubmitting && !isTimeOver && content.trim() !== "";
+  // 제출한 글 그대로면 상대를 기다리는 화면
+  const isWaiting = isSubmitted && !isEditing;
 
   // 시간이 끝나기 직전, 제출 안 한 내용이 있으면 한 번만 자동 제출
   useEffect(() => {
@@ -134,7 +139,10 @@ const ArgumentPhase = ({
     setIsSubmitting(true);
     try {
       await submitMemo(sessionId, content);
-      if (isActiveRef.current) setSubmittedContent(content);
+      if (isActiveRef.current) {
+        setSubmittedContent(content);
+        setIsEditing(false);
+      }
     } catch {
       onError("제출하지 못했어요. 다시 시도해 주세요.");
     } finally {
@@ -161,6 +169,30 @@ const ArgumentPhase = ({
 
   const hasHintFailed = hints?.status === "FAILED";
   const readyHints = hints?.status === "READY" ? (hints.hints ?? []) : [];
+
+  if (isWaiting) {
+    return (
+      <>
+        <section className="flex min-h-0 flex-1 flex-col justify-center py-2.5 text-center">
+          <p role="status" className="px-6 py-2.5 text-headline-sb5 text-white">
+            상대방이 아직 작성 중입니다...
+          </p>
+          <div className="px-6 py-1">
+            <button
+              type="button"
+              onClick={() => setIsEditing(true)}
+              disabled={isTimeOver}
+              className="cursor-pointer text-body-m3 text-neutral-007 transition-colors hover:text-neutral-005 disabled:cursor-not-allowed"
+            >
+              수정하러 가기
+            </button>
+          </div>
+        </section>
+
+        <aside aria-label="광고 영역" className="h-25 shrink-0 bg-green" />
+      </>
+    );
+  }
 
   return (
     <>
@@ -214,11 +246,7 @@ const ArgumentPhase = ({
               : "!bg-main-009 !text-neutral-004"
           }
         >
-          {isSubmitted
-            ? "제출 완료"
-            : submittedContent === null
-              ? "제출하기"
-              : "다시 제출하기"}
+          {submittedContent === null ? "제출하기" : "다시 제출하기"}
         </LongButton>
       </div>
     </>

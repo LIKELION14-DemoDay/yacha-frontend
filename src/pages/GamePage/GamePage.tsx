@@ -219,6 +219,7 @@ const GamePage = () => {
             remainingSeconds={remainingSeconds}
             totalSeconds={PHASE_SECONDS[phase]}
             isUrgent={isFinalNotice}
+            inset={phase !== "CHAT"}
           />
         ) : null}
       </div>
@@ -279,9 +280,12 @@ const GamePage = () => {
         </div>
       )}
 
-      {/* 작성 화면은 글쓰기 칸을 넓게 쓰도록 광고 없음 (피그마 기준) */}
+      {/* 작성 화면은 광고 없음, 제출 후 대기 화면의 광고는 ArgumentPhase 가 그림 */}
       {isWriting ? null : (
-        <aside aria-label="광고 영역" className="h-20.75 shrink-0 bg-green" />
+        <aside
+          aria-label="광고 영역"
+          className={`shrink-0 bg-green ${phase === "CHAT" ? "h-20.75" : "h-25"}`}
+        />
       )}
 
       <Toast message={toastMessage} />

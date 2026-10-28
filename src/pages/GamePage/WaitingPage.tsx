@@ -125,19 +125,21 @@ const WaitingPage = () => {
         <LogoLoading message="대결 상대를 찾고 있습니다..." pulse />
       </section>
 
-      <div className="relative h-10 shrink-0">
-        <BottomSheet
-          open={isSheetOpen}
-          onOpen={() => setIsSheetOpen(true)}
-          title="봇으로 시작하시겠습니까?"
-          cancelLabel="계속 기다리기"
-          confirmLabel="봇으로 시작"
-          onCancel={closeSheet}
-          onConfirm={startWithBot}
-        />
-      </div>
+      <BottomSheet
+        open={isSheetOpen}
+        onOpen={() => setIsSheetOpen(true)}
+        title="상대방을 찾지 못했습니다."
+        description="봇으로 시작하시겠습니까?"
+        cancelLabel="계속 기다리기"
+        confirmLabel="봇으로 시작"
+        onCancel={closeSheet}
+        onConfirm={startWithBot}
+      />
 
-      <aside aria-label="광고 영역" className="h-20.75 shrink-0 bg-green" />
+      <aside
+        aria-label="광고 영역"
+        className="relative z-10 h-25 shrink-0 bg-green"
+      />
 
       <Toast message={toastMessage} />
 
