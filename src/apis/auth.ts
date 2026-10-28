@@ -1,6 +1,7 @@
 /**
  * 인증 관련 백엔드 API 요청을 관리하는 파일
  */
+import axios from "axios";
 import api, { refreshAccessToken } from "./client";
 import { clearAccessToken, setAccessToken } from "./tokenStore";
 import type {
@@ -81,8 +82,20 @@ export const restoreLogin = async () => {
 
 export const logout = async () => {
   try {
-    await api.post("/api/v1/auth/logout");
-  } finally {
-    clearAccessToken();
+    const response = await api.post<ApiResponse<string>>("/api/v1/auth/logout");
+
+    if (!response.data.success) {
+      throw new Error("로그아웃에 실패했습니다.");
+    }
+  } catch (error: unknown) {
+    // 재발급까지 401이면 인증을 복구할 수 없으므로 프론트에서도 로그아웃 처리합니다.
+    const isExpiredSession =
+      axios.isAxiosError(error) &&
+      error.response?.status === 401 &&
+      error.config?.url?.endsWith("/api/v1/auth/token/refresh");
+
+    if (!isExpiredSession) throw error;
   }
+
+  clearAccessToken();
 };
