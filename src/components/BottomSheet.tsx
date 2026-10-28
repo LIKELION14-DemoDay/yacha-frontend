@@ -5,6 +5,8 @@ import { useEscapeKey } from "../hooks/useEscapeKey";
 
 interface BottomSheetProps {
   open: boolean;
+  // 닫혀 있을 때 손잡이(40px)를 보여 줄지 (아니면 완전히 숨김)
+  peek?: boolean;
   // 닫혀 있을 때 손잡이를 누르면 열기
   onOpen: () => void;
   title: string;
@@ -16,10 +18,11 @@ interface BottomSheetProps {
   onConfirm: () => void;
 }
 
-// 화면 아래에 손잡이만 보이다가 위로 펼쳐지는 선택 창 (예: 봇으로 시작할지 묻기)
-// 부모가 relative 이고 높이 40px(h-10) 자리를 잡아 두면, 그 자리에서 위로 펼쳐짐
+// 아래에서 위로 펼쳐지는 선택 창 (예: 봇으로 시작할지 묻기)
+// relative 부모의 맨 아래에 붙어서 위로 자람. 펼칠 때는 빠르게 올라와 천천히 멈추고, 접을 때는 고르게 내려감
 const BottomSheet = ({
   open,
+  peek = false,
   onOpen,
   title,
   description,
@@ -33,13 +36,17 @@ const BottomSheet = ({
 
   useEscapeKey(open, onCancel);
 
+  const motionClassName = `duration-1000 motion-reduce:transition-none ${
+    open ? "ease-sheet-open" : "ease-sheet-close"
+  }`;
+
   return (
     <>
       {/* 어두운 바깥 영역 (닫기는 시트 안 버튼 · Esc 가 담당, 클릭은 열렸을 때만) */}
       <div
         aria-hidden="true"
         onClick={open ? onCancel : undefined}
-        className={`fixed inset-0 z-40 bg-black/60 transition-opacity duration-300 ${
+        className={`fixed inset-y-0 left-1/2 z-40 w-full max-w-100.5 -translate-x-1/2 bg-black/70 transition-opacity ${motionClassName} ${
           open ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
       />
@@ -49,12 +56,13 @@ const BottomSheet = ({
         aria-modal={open || undefined}
         aria-labelledby={titleId}
         aria-describedby={description ? descriptionId : undefined}
-        className={`absolute inset-x-0 bottom-0 z-50 overflow-hidden rounded-t-[20px] border-t border-l border-neutral-007 bg-linear-to-b from-neutral-008 from-[59.348%] to-neutral-008/50 shadow-[0_-23px_17.8px_0_rgba(0,0,0,0.25)] transition-[max-height] duration-300 ease-out motion-reduce:transition-none ${
-          open ? "max-h-100" : "max-h-10"
+        inert={!open && !peek}
+        className={`absolute inset-x-0 bottom-0 z-50 overflow-hidden rounded-t-[20px] border-t border-l border-neutral-007 bg-linear-to-b from-neutral-008 from-[59.348%] to-neutral-008/50 shadow-[0_-23px_17.8px_0_rgba(0,0,0,0.25)] transition-[max-height] ${motionClassName} ${
+          open ? "max-h-60.5" : peek ? "max-h-10" : "max-h-0 border-transparent"
         }`}
       >
-        {/* 여백은 안쪽에 둬야 닫혔을 때 40px 로 잘림 */}
-        <div className="flex flex-col items-center gap-9 px-6.5 pt-5 pb-18.75">
+        {/* 높이 · 여백은 안쪽에 둬야 닫혔을 때 잘린 만큼만 보임 */}
+        <div className="flex h-60.5 flex-col items-center gap-9 px-6.5 py-5">
           <button
             type="button"
             aria-label={open ? "창 닫기" : "창 열기"}

@@ -32,7 +32,7 @@ const ChatPhase = ({
           30초 동안 최종발언을 해주세요.
         </p>
       ) : (
-        <div className="flex shrink-0 items-center gap-2 px-6 py-2.5">
+        <div className="mt-2.5 flex shrink-0 items-center gap-2 px-6 py-2.5">
           <span aria-hidden="true" className="h-px flex-1 bg-neutral-007" />
           <p className="shrink-0 text-body-r6 text-neutral-004">
             지금부터 자유롭게 싸우세요!

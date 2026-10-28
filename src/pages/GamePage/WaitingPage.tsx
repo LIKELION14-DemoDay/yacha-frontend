@@ -31,6 +31,8 @@ const WaitingPage = () => {
   const sessionId = Number(params.sessionId);
 
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  // 봇 제안을 한 번 받은 뒤로는 닫아도 손잡이가 남아 다시 열 수 있음
+  const [hasBotPrompt, setHasBotPrompt] = useState(false);
   const [isLeaveModalOpen, setIsLeaveModalOpen] = useState(false);
   const { toastMessage, showToast } = useToast();
   const leaveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -64,6 +66,7 @@ const WaitingPage = () => {
           navigate(`/game/${event.sessionId}`);
           break;
         case "WAIT_PROMPT":
+          setHasBotPrompt(true);
           setIsSheetOpen(true);
           break;
         case "WAIT_EXPIRED":
@@ -125,11 +128,14 @@ const WaitingPage = () => {
         <LogoLoading message="대결 상대를 찾고 있습니다..." pulse />
       </section>
 
-      <div className="relative h-10 shrink-0">
+      {/* 시트는 광고 바로 위에서 자람 (광고는 가리지 않고 배경과 함께 어두워짐) */}
+      <div className="relative h-0 shrink-0">
         <BottomSheet
           open={isSheetOpen}
+          peek={hasBotPrompt}
           onOpen={() => setIsSheetOpen(true)}
-          title="봇으로 시작하시겠습니까?"
+          title="상대방을 찾지 못했습니다."
+          description="봇으로 시작하시겠습니까?"
           cancelLabel="계속 기다리기"
           confirmLabel="봇으로 시작"
           onCancel={closeSheet}
@@ -137,7 +143,7 @@ const WaitingPage = () => {
         />
       </div>
 
-      <aside aria-label="광고 영역" className="h-20.75 shrink-0 bg-green" />
+      <aside aria-label="광고 영역" className="h-25 shrink-0 bg-green" />
 
       <Toast message={toastMessage} />
 

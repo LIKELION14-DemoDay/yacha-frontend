@@ -242,7 +242,7 @@ const RoomListContent = ({ category }: { category: TopicCategory }) => {
 
       <section
         aria-labelledby="room-list-title"
-        className="flex min-h-0 flex-1 flex-col gap-4 rounded-t-2xl bg-neutral-009 pt-7"
+        className="flex min-h-0 flex-1 flex-col gap-4 rounded-2xl bg-neutral-009 pt-7"
       >
         <div className="flex shrink-0 flex-col gap-1 px-6">
           <h2 id="room-list-title" className="text-subhead-m5 text-white">
@@ -288,7 +288,7 @@ const RoomListContent = ({ category }: { category: TopicCategory }) => {
         </div>
       </section>
 
-      <aside aria-label="광고 영역" className="h-20.75 shrink-0 bg-green" />
+      <aside aria-label="광고 영역" className="h-17.5 shrink-0 bg-green" />
 
       <Toast message={toastMessage} />
 
