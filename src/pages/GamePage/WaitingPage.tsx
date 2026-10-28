@@ -3,7 +3,7 @@
  * 방장이 상대를 기다리는 화면. 방장 알림(/user/queue/match)으로 매칭 · 봇 제안 · 만료를 받음
  */
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import { cancelSession, switchToBot } from "../../apis/sessions";
 import {
@@ -17,6 +17,7 @@ import LogoLoading from "../../components/LogoLoading";
 import Toast from "../../components/Toast";
 import TopBar from "../../components/TopBar";
 import { useToast } from "../../hooks/useToast";
+import type { TopicCategory } from "../../types/topic";
 import { getApiErrorCode } from "../../utils/apiError";
 
 // 만료 · 봇 실패 안내를 읽을 시간을 주고 홈으로 이동
@@ -29,6 +30,9 @@ const WaitingPage = () => {
   const navigate = useNavigate();
   const params = useParams();
   const sessionId = Number(params.sessionId);
+  // 입장 선택에서 넘겨준 카테고리 (새로고침 등으로 없으면 홈으로)
+  const category = (useLocation().state as { category?: TopicCategory } | null)
+    ?.category;
 
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   // 봇 제안을 한 번 받은 뒤로는 닫아도 손잡이가 남아 다시 열 수 있음
@@ -41,16 +45,26 @@ const WaitingPage = () => {
     if (leaveTimeoutRef.current) clearTimeout(leaveTimeoutRef.current);
   };
 
+  // 방 찾기 화면으로 돌아가 안내를 띄움 (카테고리를 모르면 여기서 안내 후 홈으로)
   const leaveWithToast = useCallback(
     (message: string) => {
       setIsSheetOpen(false);
+
+      if (category) {
+        navigate(`/game/rooms?category=${category}`, {
+          replace: true,
+          state: { toast: message },
+        });
+        return;
+      }
+
       showToast(message);
       leaveTimeoutRef.current = setTimeout(
         () => navigate("/home"),
         LEAVE_DELAY_MS,
       );
     },
-    [navigate, showToast],
+    [category, navigate, showToast],
   );
 
   // 화면을 떠나면 예약해 둔 홈 이동 취소
