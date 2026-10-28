@@ -3,7 +3,7 @@
  * 고른 카테고리의 랜덤 주제에 예(찬성) / 아니오(반대)를 고르고 방을 만듦
  */
 import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
 import { createSession } from "../../apis/sessions";
 import { getRandomTopic } from "../../apis/topics";
@@ -14,30 +14,22 @@ import Toast from "../../components/Toast";
 import TopBar from "../../components/TopBar";
 import { useToast } from "../../hooks/useToast";
 import type { Stance } from "../../types/session";
-import type { Topic, TopicCategory } from "../../types/topic";
+import type { Topic } from "../../types/topic";
 import { getApiErrorCode } from "../../utils/apiError";
+import { toCategory } from "../../utils/category";
 
-const CATEGORIES: TopicCategory[] = [
-  "HUMAN",
-  "RELATIONSHIP",
-  "ETHICS",
-  "SOCIETY",
-  "LIFE_AND_DEATH",
-  "TECH_AND_FUTURE",
-  "MONEY_AND_SUCCESS",
-  "TRUTH_AND_BELIEF",
-];
-
-// 왼쪽 "예" = 찬성, 오른쪽 "아니오" = 반대
+// 왼쪽 agreeText(예) = 찬성, 오른쪽 disagreeText(아니오) = 반대
 const STANCES: [Stance, Stance] = ["AGREE", "DISAGREE"];
 
 const StanceSelectPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const categoryParam = searchParams.get("category");
-  const category = CATEGORIES.find((item) => item === categoryParam) ?? "HUMAN";
+  const category = toCategory(searchParams.get("category"));
+  // 방 찾기의 자동 제안(NEW_TOPIC)에서 넘어오면 받은 주제를 그대로 씀
+  const proposedTopic =
+    (useLocation().state as { topic?: Topic } | null)?.topic ?? null;
 
-  const [topic, setTopic] = useState<Topic | null>(null);
+  const [topic, setTopic] = useState<Topic | null>(proposedTopic);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isChangingTopic, setIsChangingTopic] = useState(false);
@@ -64,6 +56,8 @@ const StanceSelectPage = () => {
 
   // 첫 진입 때 주제 받아오기 (나가면 늦게 온 응답은 무시)
   useEffect(() => {
+    if (proposedTopic) return;
+
     let ignore = false;
 
     getRandomTopic(category)
@@ -77,7 +71,7 @@ const StanceSelectPage = () => {
     return () => {
       ignore = true;
     };
-  }, [category, showToast]);
+  }, [category, proposedTopic, showToast]);
 
   const handleConfirm = async () => {
     if (!topic || selectedIndex === null) return;
@@ -118,7 +112,7 @@ const StanceSelectPage = () => {
 
       <section className="flex min-h-0 flex-1 items-center px-6 pb-15">
         <ChoiceOptions
-          options={["예", "아니오"]}
+          options={[topic?.agreeText ?? "예", topic?.disagreeText ?? "아니오"]}
           selectedIndex={selectedIndex}
           onSelect={setSelectedIndex}
           label="입장 선택"
