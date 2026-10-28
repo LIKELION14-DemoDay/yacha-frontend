@@ -25,9 +25,12 @@ import type {
   SessionPhase,
   SessionSocketError,
   SessionState,
+  Stance,
 } from "../../types/session";
 import { getChatErrorMessage } from "../../utils/chatError";
+import ArgumentPhase from "./ArgumentPhase";
 import ChatPhase from "./ChatPhase";
+import MatchedIntro from "./MatchedIntro";
 
 // 구간별 전체 시간 (초) — 진행 막대 계산용
 const PHASE_SECONDS: Record<SessionPhase, number> = {
@@ -40,6 +43,9 @@ const PHASE_SECONDS: Record<SessionPhase, number> = {
 
 // 채팅 구간 마지막 30초는 최종발언
 const FINAL_NOTICE_SECONDS = 30;
+
+// 주장 작성 구간 처음 몇 초는 매칭 완료 화면
+const MATCHED_INTRO_SECONDS = 3;
 
 type PhaseTiming = {
   phase: SessionPhase;
@@ -73,9 +79,20 @@ const GamePage = () => {
     });
   }, []);
 
+  const myParticipantId = gameState?.myParticipantId;
+
   const handleEvent = useCallback(
     (event: SessionEvent) => {
       switch (event.type) {
+        case "ARGUMENT_SUBMITTED":
+          if (event.senderId !== myParticipantId) {
+            showToast(
+              event.phase === "REBUTTAL"
+                ? "상대가 반론을 제출했어요."
+                : "상대가 주장을 제출했어요.",
+            );
+          }
+          break;
         case "CHAT":
           setChatMessages((messages) => addMessage(messages, event));
           break;
@@ -102,7 +119,7 @@ const GamePage = () => {
           break;
       }
     },
-    [showToast],
+    [myParticipantId, showToast],
   );
 
   const handleError = useCallback(
@@ -121,6 +138,11 @@ const GamePage = () => {
   );
 
   const phase = timing?.phase;
+  const isMatchedIntro =
+    phase === "PREP" &&
+    remainingSeconds > PHASE_SECONDS.PREP - MATCHED_INTRO_SECONDS;
+  const isWriting =
+    (phase === "PREP" && !isMatchedIntro) || phase === "REBUTTAL";
   const isFinalNotice =
     phase === "CHAT" && remainingSeconds <= FINAL_NOTICE_SECONDS;
   // 시간이 다 되면 다음 구간 알림이 오기 전이라도 입력을 막음
@@ -151,6 +173,19 @@ const GamePage = () => {
     };
   };
 
+  // 입장 말풍선 · 작성 화면에 보일 입장 문장
+  const getStanceText = (stance: Stance) =>
+    stance === "AGREE"
+      ? (gameState?.topic.agreeText ?? "")
+      : (gameState?.topic.disagreeText ?? "");
+
+  const me = gameState?.participants.find(
+    (item) => item.participantId === gameState.myParticipantId,
+  );
+  const opponent = gameState?.participants.find(
+    (item) => item.participantId !== gameState.myParticipantId,
+  );
+
   const openLeaveModal = () => setIsLeaveModalOpen(true);
   const closeLeaveModal = useCallback(() => setIsLeaveModalOpen(false), []);
 
@@ -166,15 +201,20 @@ const GamePage = () => {
   };
 
   return (
-    <main className="mx-auto flex h-dvh w-full max-w-100.5 flex-col bg-neutral-009">
+    <main
+      className={`mx-auto flex h-dvh w-full max-w-100.5 flex-col ${
+        phase === "CHAT" ? "bg-neutral-009" : "bg-secondary"
+      }`}
+    >
       <div className="shrink-0 bg-secondary">
         <TopBar
-          onBack={openLeaveModal}
+          // 작성 중에는 뒤로가기 없이 나가기만
+          onBack={isWriting ? undefined : openLeaveModal}
           backLabel="토론방 나가기"
           actionLabel="나가기"
           onAction={openLeaveModal}
         />
-        {phase ? (
+        {phase && !isMatchedIntro ? (
           <PhaseTimer
             remainingSeconds={remainingSeconds}
             totalSeconds={PHASE_SECONDS[phase]}
@@ -183,7 +223,36 @@ const GamePage = () => {
         ) : null}
       </div>
 
-      {gameState && phase === "CHAT" ? (
+      {gameState && me && opponent && isMatchedIntro ? (
+        <MatchedIntro
+          mine={{
+            name: "나",
+            stance: me.stance,
+            content: getStanceText(me.stance),
+          }}
+          opponent={{
+            name: opponent.type === "AI" ? "AI" : "상대",
+            stance: opponent.stance,
+            content: getStanceText(opponent.stance),
+          }}
+        />
+      ) : gameState && me && isWriting ? (
+        <ArgumentPhase
+          // 구간이 바뀌면 작성 칸을 새로 시작
+          key={phase}
+          sessionId={sessionId}
+          phase={phase === "REBUTTAL" ? "REBUTTAL" : "PREP"}
+          title={
+            phase === "REBUTTAL"
+              ? "반론을 작성해주세요."
+              : "근거를 작성해주세요."
+          }
+          stanceText={getStanceText(me.stance)}
+          remainingSeconds={remainingSeconds}
+          canUseHints={phase === "PREP"}
+          onError={showToast}
+        />
+      ) : gameState && phase === "CHAT" ? (
         <ChatPhase
           messages={chatMessages}
           myParticipantId={gameState.myParticipantId}
@@ -210,7 +279,10 @@ const GamePage = () => {
         </div>
       )}
 
-      <aside aria-label="광고 영역" className="h-20.75 shrink-0 bg-green" />
+      {/* 작성 화면은 글쓰기 칸을 넓게 쓰도록 광고 없음 (피그마 기준) */}
+      {isWriting ? null : (
+        <aside aria-label="광고 영역" className="h-20.75 shrink-0 bg-green" />
+      )}
 
       <Toast message={toastMessage} />
 
