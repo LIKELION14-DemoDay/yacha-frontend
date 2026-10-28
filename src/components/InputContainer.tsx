@@ -43,7 +43,7 @@ const stateClassNames: Record<
     icon: "text-neutral-006",
   },
   selected: {
-    field: "border-neutral-004",
+    field: "border-neutral-004 bg-neutral-009",
     input: "text-neutral-002 placeholder:text-neutral-002",
     icon: "text-neutral-004",
   },
