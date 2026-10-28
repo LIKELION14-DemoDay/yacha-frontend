@@ -33,7 +33,7 @@ function BalanceGamePage() {
               <h1 className="text-headline-sb2 text-white">밸런스 게임</h1>
             </div>
 
-            <p className="text-body-r2 text-neutral-006">
+            <p className="text-body-r2 text-neutral-005">
               시작하기에 앞서 밸런스 게임을 통해
               <br />내 철학 유형을 파악해보세요.
             </p>
@@ -41,7 +41,7 @@ function BalanceGamePage() {
         </div>
       </section>
 
-      <section className="flex shrink-0 flex-col gap-3 px-6 pt-2.5 pb-12.5">
+      <section className="flex shrink-0 flex-col gap-3 px-6 pt-2.5 pb-17.5">
         <LongButton
           className="!bg-main !text-white hover:!bg-main-006"
           onClick={handleConfirm}
