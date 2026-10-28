@@ -72,7 +72,7 @@ const ChatMessageList = ({
       role="log"
       aria-label="채팅"
       aria-live="polite"
-      className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto py-2.5"
+      className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto py-2.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
     >
       {groupMessages(messages).map((group) => {
         const sender = getSender(group.senderId);
