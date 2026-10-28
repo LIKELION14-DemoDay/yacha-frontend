@@ -13,6 +13,8 @@ interface ChatMessageListProps {
   messages: SessionMessage[];
   myParticipantId: number;
   getSender: (participantId: number) => ChatSender;
+  // 위쪽 10px 여백 (최종발언 안내 띠 아래), 자유 채팅은 구분선 바로 아래부터
+  paddedTop?: boolean;
 }
 
 // 이 거리 안에서 보고 있으면 새 메시지가 올 때 맨 아래로 따라 내려감
@@ -41,6 +43,7 @@ const ChatMessageList = ({
   messages,
   myParticipantId,
   getSender,
+  paddedTop = false,
 }: ChatMessageListProps) => {
   const listRef = useRef<HTMLDivElement>(null);
   const isNearBottomRef = useRef(true);
@@ -72,7 +75,7 @@ const ChatMessageList = ({
       role="log"
       aria-label="채팅"
       aria-live="polite"
-      className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto py-2.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      className={`flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto pb-2.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${paddedTop ? "pt-2.5" : ""}`}
     >
       {groupMessages(messages).map((group) => {
         const sender = getSender(group.senderId);

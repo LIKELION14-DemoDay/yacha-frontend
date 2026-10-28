@@ -7,8 +7,10 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { getResult } from "../../apis/sessions";
+import crownGlowIcon from "../../assets/crown-glow.svg";
 import crownIcon from "../../assets/crown.svg";
 import yachaLogo from "../../assets/loading-logo.svg";
+import resultGlow from "../../assets/result-glow.svg";
 import LongButton from "../../components/Button";
 import LogoLoading from "../../components/LogoLoading";
 import ProfilePlaceholder from "../../components/ProfilePlaceholder";
@@ -150,7 +152,19 @@ const ResultPage = () => {
 
   return (
     // 작은 폰에서는 전체가 스크롤되고, 남는 높이는 광고 영역이 채움
-    <main className="mx-auto flex h-dvh w-full max-w-100.5 flex-col overflow-y-auto bg-secondary [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+    <main className="relative isolate mx-auto flex h-dvh w-full max-w-100.5 flex-col overflow-y-auto bg-secondary [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      {/* 위쪽 빨간 빛 번짐 배경 (화면 밖으로 넘치는 부분은 잘라서 가로 스크롤이 안 생기게) */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
+      >
+        <img
+          src={resultGlow}
+          alt=""
+          className="absolute -top-32 -left-11 size-[490px] max-w-none"
+        />
+      </div>
+
       <TopBar onBack={goHome} backLabel="홈으로" />
 
       <section className="flex shrink-0 flex-col items-center gap-3 pt-12.5">
@@ -172,29 +186,37 @@ const ResultPage = () => {
       <section aria-label="기준별 점수" className="shrink-0 pt-8 pb-5">
         <div className="relative flex items-center justify-between px-6 pt-5">
           <div className="flex w-[39px] flex-col items-center gap-[9px]">
-            <ProfilePlaceholder size="lg" />
+            <ProfilePlaceholder />
             <p className="w-full truncate text-center text-caption-r1 text-white">
               {getName(me)}
             </p>
           </div>
           <p className="text-right text-subhead-m7 text-neutral-007">VS</p>
           <div className="flex w-[39px] flex-col items-center gap-[9px]">
-            <ProfilePlaceholder size="lg" />
+            <ProfilePlaceholder />
             <p className="w-full truncate text-center text-caption-r1 text-white">
               {getName(opponent)}
             </p>
           </div>
 
+          {/* 승자 프로필 위 왕관 (빛 번짐 + 왕관 두 겹) */}
           {winnerId !== null ? (
-            <img
-              src={crownIcon}
-              alt="승자"
-              className={`absolute top-0 size-6 ${
+            <span
+              role="img"
+              aria-label="승자"
+              className={`absolute -top-0.75 size-6 ${
                 winnerId === me.participantId
                   ? "left-[31.5px]"
                   : "right-[31.5px]"
               }`}
-            />
+            >
+              <img
+                src={crownGlowIcon}
+                alt=""
+                className="absolute -top-[1.75px] -left-[2.5px] h-6.5 w-[29px] max-w-none"
+              />
+              <img src={crownIcon} alt="" className="absolute inset-0 size-6" />
+            </span>
           ) : null}
         </div>
 
@@ -229,10 +251,8 @@ const ResultPage = () => {
         </LongButton>
       </div>
 
-      <aside
-        aria-label="광고 영역"
-        className="min-h-17.5 flex-1 shrink-0 bg-green"
-      />
+      {/* 남는 높이만 채우고, 모자라면 줄어들어 스크롤이 생기지 않게 */}
+      <aside aria-label="광고 영역" className="min-h-0 flex-1 bg-green" />
     </main>
   );
 };

@@ -139,7 +139,7 @@ const WaitingPage = () => {
       />
 
       <section className="flex min-h-0 flex-1 items-center justify-center">
-        <LogoLoading message="대결 상대를 찾고 있습니다..." pulse />
+        <LogoLoading message="대결 상대를 찾고 있습니다..." pulse size="sm" />
       </section>
 
       {/* 시트는 광고 바로 위에서 자람 (광고는 가리지 않고 배경과 함께 어두워짐) */}

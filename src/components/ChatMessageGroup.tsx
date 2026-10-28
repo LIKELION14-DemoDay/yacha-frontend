@@ -26,9 +26,11 @@ const ChatMessageGroup = ({
       <div
         className={`flex min-w-0 flex-col gap-2 ${isMine ? "items-end" : "items-start"}`}
       >
-        <p className="flex gap-1 text-subhead-m7 text-neutral-004">
-          <span>{name}</span>
-          <span>({STANCE_LABEL[stance]})</span>
+        <p className="flex items-center gap-1 whitespace-nowrap">
+          <span className="text-subhead-m7 text-neutral-004">{name}</span>
+          <span className="text-subhead-r8 text-neutral-006">
+            ({STANCE_LABEL[stance]})
+          </span>
         </p>
 
         {messages.map((message, index) => (

@@ -28,6 +28,7 @@ import type {
   Stance,
 } from "../../types/session";
 import { getChatErrorMessage } from "../../utils/chatError";
+import { STANCE_LABEL } from "../../utils/stance";
 import ArgumentPhase from "./ArgumentPhase";
 import ChatPhase from "./ChatPhase";
 import MatchedIntro from "./MatchedIntro";
@@ -300,7 +301,8 @@ const GamePage = () => {
               ? "반론을 작성해주세요."
               : "근거를 작성해주세요."
           }
-          stanceText={getStanceText(me.stance)}
+          topicStatement={gameState.topic.statement}
+          stanceLabel={STANCE_LABEL[me.stance]}
           opponentArgument={
             phase === "REBUTTAL"
               ? (getArgument(opponent?.participantId) ?? "")

@@ -22,7 +22,7 @@ const RoomCard = ({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="flex w-full shrink-0 cursor-pointer items-center gap-5 rounded-[10px] border border-neutral-008 bg-neutral-008 px-3 py-3.5 text-left transition-colors hover:border-neutral-007 disabled:cursor-not-allowed"
+      className="flex w-full shrink-0 cursor-pointer items-center gap-3 rounded-[10px] border border-neutral-008 bg-neutral-008 px-3 py-3.5 text-left transition-colors hover:border-neutral-007 disabled:cursor-not-allowed"
     >
       <ProfilePlaceholder size="md" />
       <span className="flex min-w-0 flex-1 flex-col gap-1">
