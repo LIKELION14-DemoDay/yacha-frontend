@@ -31,7 +31,8 @@ const ConfirmModal = ({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-6">
+    // 어두운 배경은 앱 화면 폭 안에만
+    <div className="fixed inset-y-0 left-1/2 z-50 flex w-full max-w-100.5 -translate-x-1/2 items-center justify-center bg-black/70 px-6">
       <div
         role="alertdialog"
         aria-modal="true"
