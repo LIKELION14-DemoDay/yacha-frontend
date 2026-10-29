@@ -11,6 +11,7 @@ export type ApiResponse<T> = {
   success: boolean;
   data: T;
   error: ApiError | null;
+  // 서버 로그에서 요청을 추적하는 ID로, 콘텐츠 data와 별도로 전달됩니다.
   traceId: string;
 };
 

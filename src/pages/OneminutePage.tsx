@@ -1,9 +1,11 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { getPastPhilosophy, getThisWeekPhilosophy } from "../apis/philosophy";
 import angleLeft from "../assets/angle-left.svg";
 import OneminuteCard from "../components/OneminuteCard";
 import StatusBar from "../components/StatusBar";
+import type { PhilosophyArticle } from "../types/philosophy";
 
 const periods = [
   { id: "current", label: "금주의 1분 철학" },
@@ -12,32 +14,97 @@ const periods = [
 
 type Period = (typeof periods)[number]["id"];
 
-// API 연동 전 레이아웃과 북마크 표시를 확인하기 위한 예시 데이터입니다.
-const contents = [true, false, true, false, false].map(
-  (isBookmarked, index) => ({
-    id: index + 1,
-    category: "sort",
-    title: "Title",
-    philosophers: ["아리스토텔레스", "플라톤"],
-    isBookmarked,
-  }),
-);
-
-const contentsByPeriod = {
-  current: contents,
-  previous: [],
-};
-
 function OneMinutePage() {
   const navigate = useNavigate();
-  const [selectedPeriod, setSelectedPeriod] = useState<Period>("current");
+  const [request, setRequest] = useState<{
+    period: Period;
+    page: number;
+    attempt: number;
+  }>({ period: "current", page: 0, attempt: 0 });
+  const [articles, setArticles] = useState<PhilosophyArticle[]>([]);
+  const [hasNext, setHasNext] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<unknown>(null);
+  const isRequestPending = useRef(true);
   const listRef = useRef<HTMLElement>(null);
+  const selectedPeriod = request.period;
   const selectedLabel = periods.find(({ id }) => id === selectedPeriod)!.label;
-  const visibleContents = contentsByPeriod[selectedPeriod];
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    const load = async () => {
+      try {
+        const response =
+          request.period === "current"
+            ? await getThisWeekPhilosophy(controller.signal)
+            : await getPastPhilosophy(request.page, controller.signal);
+
+        if (controller.signal.aborted) return;
+
+        const { data } = response;
+        setArticles((current) => {
+          // 페이지 경계에 같은 글이 와도 중복 카드를 표시하지 않습니다.
+          const byId = new Map(
+            (request.page === 0 ? [] : current).map((article) => [
+              article.id,
+              article,
+            ]),
+          );
+          data.articles.forEach((article) => byId.set(article.id, article));
+          return [...byId.values()];
+        });
+        setHasNext("hasNext" in data && data.hasNext);
+      } catch (cause: unknown) {
+        if (controller.signal.aborted) return;
+
+        // traceId를 포함한 오류 원본을 보존하고 화면에는 안내를 추가하지 않습니다.
+        setError(cause);
+      } finally {
+        if (!controller.signal.aborted) {
+          isRequestPending.current = false;
+          setIsLoading(false);
+        }
+      }
+    };
+
+    void load();
+    return () => controller.abort();
+  }, [request]);
 
   const handlePeriodChange = (period: Period) => {
-    setSelectedPeriod(period);
+    if (period === selectedPeriod) return;
+
+    setArticles([]);
+    setHasNext(false);
+    isRequestPending.current = true;
+    setIsLoading(true);
+    setError(null);
+    setRequest({ period, page: 0, attempt: 0 });
     listRef.current?.scrollTo({ top: 0 });
+  };
+
+  const loadMore = () => {
+    if (selectedPeriod !== "previous" || isRequestPending.current || !hasNext) {
+      return;
+    }
+
+    isRequestPending.current = true;
+    setIsLoading(true);
+    setError(null);
+    setRequest((current) => ({
+      ...current,
+      // 실패한 페이지는 재시도하고, 성공한 페이지의 다음 장만 요청합니다.
+      page: error ? current.page : current.page + 1,
+      attempt: current.attempt + 1,
+    }));
+  };
+
+  const handleListScroll = () => {
+    const list = listRef.current;
+    if (list && list.scrollHeight - list.scrollTop - list.clientHeight <= 100) {
+      loadMore();
+    }
   };
 
   return (
@@ -90,22 +157,18 @@ function OneMinutePage() {
         ref={listRef}
         id="oneminute-content-list"
         aria-label={`${selectedLabel} 목록`}
+        aria-busy={isLoading}
+        onScroll={handleListScroll}
         tabIndex={0}
-        className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-6 [scrollbar-width:none] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-main [&::-webkit-scrollbar]:hidden"
+        className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-6 scrollbar-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-main [&::-webkit-scrollbar]:hidden"
       >
-        {visibleContents.length > 0 ? (
-          <ul className="flex flex-col gap-2 pb-2">
-            {visibleContents.map(({ id, ...content }) => (
-              <li key={id}>
-                <OneminuteCard {...content} />
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="py-10 text-center text-body-r4 text-neutral-005">
-            이전 콘텐츠가 없습니다.
-          </p>
-        )}
+        <ul className="flex flex-col gap-2 pb-2">
+          {articles.map((article) => (
+            <li key={article.id}>
+              <OneminuteCard article={article} />
+            </li>
+          ))}
+        </ul>
       </section>
 
       {/* 추후 광고를 삽입할 독립 영역입니다. */}
