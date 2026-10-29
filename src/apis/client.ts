@@ -12,7 +12,11 @@ import {
 } from "./tokenStore";
 import type { ApiResponse, TokenResponse } from "./types";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+// 로컬에서는 Vite 프록시를 거쳐 HttpOnly 쿠키를 같은 사이트에서 주고받습니다.
+export const API_BASE_URL = import.meta.env.DEV
+  ? ""
+  : import.meta.env.VITE_API_BASE_URL;
+export const REFRESH_TOKEN_PATH = "/api/v1/auth/token/refresh";
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -26,6 +30,7 @@ const NO_REFRESH_PATHS = [
   "/api/v1/auth/social",
   "/api/v1/auth/signup",
   "/api/v1/auth/guest",
+  "/api/v1/auth/email/availability",
   "/api/v1/auth/password",
 ];
 
@@ -42,12 +47,21 @@ export const refreshAccessToken = () => {
   if (!refreshPromise) {
     refreshPromise = axios
       .post<ApiResponse<TokenResponse>>(
-        `${API_BASE_URL}/api/v1/auth/token/refresh`,
+        `${API_BASE_URL}${REFRESH_TOKEN_PATH}`,
         null,
         { withCredentials: true },
       )
       .then((response) => {
-        const token = response.data.data.accessToken;
+        const token = response.data?.data?.accessToken;
+
+        if (
+          !response.data?.success ||
+          typeof token !== "string" ||
+          token.trim().length === 0
+        ) {
+          throw new Error("토큰 재발급 응답에 유효한 액세스 토큰이 없습니다.");
+        }
+
         setAccessToken(token);
         return token;
       })
@@ -86,6 +100,8 @@ api.interceptors.response.use(undefined, async (error: unknown) => {
 
   if (
     error.response?.status !== 401 ||
+    error.response?.data?.error?.code === "CURRENT_PASSWORD_MISMATCH" ||
+    originalRequest.signal?.aborted ||
     originalRequest._retry ||
     isNoRefreshPath
   ) {

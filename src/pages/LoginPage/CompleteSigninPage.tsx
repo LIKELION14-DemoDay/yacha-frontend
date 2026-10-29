@@ -39,7 +39,7 @@ function CompleteSigninPage() {
       <div className="flex shrink-0 flex-col gap-3 px-6 py-10">
         <LongButton
           className="!bg-main !text-white hover:!bg-main-006"
-          onClick={() => navigate("/home")}
+          onClick={() => navigate("/home", { replace: true })}
         >
           홈으로
         </LongButton>

@@ -8,6 +8,7 @@ import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { kakaoLogin } from "../../apis/auth";
 import { getKakaoRedirectUri, validateKakaoState } from "../../utils/kakao";
+import { getApiErrorMessage } from "../../utils/apiError";
 
 function KakaoCallbackPage() {
   const navigate = useNavigate();
@@ -27,20 +28,17 @@ function KakaoCallbackPage() {
       const error = params.get("error");
 
       if (error) {
-        console.error("카카오 로그인 취소 또는 실패:", error);
-        navigate("/login");
+        navigate("/login", { replace: true });
         return;
       }
 
       if (!code) {
-        console.error("카카오 인가 코드가 없습니다.");
-        navigate("/login");
+        navigate("/login", { replace: true });
         return;
       }
 
       if (!validateKakaoState(state)) {
-        console.error("카카오 OAuth state 검증에 실패했습니다.");
-        navigate("/login");
+        navigate("/login", { replace: true });
         return;
       }
 
@@ -48,21 +46,22 @@ function KakaoCallbackPage() {
         const redirectUri = getKakaoRedirectUri();
 
         const response = await kakaoLogin(code, redirectUri);
-
-        console.log("카카오 로그인 성공:", response);
-
-        navigate("/");
-      } catch (error) {
-        console.error("카카오 로그인 API 요청 실패:", error);
-
-        navigate("/login");
+        navigate(response.data.isNewUser ? "/my/setting" : "/home", {
+          replace: true,
+          state: response.data.isNewUser ? { initialSetup: true } : undefined,
+        });
+      } catch (error: unknown) {
+        navigate("/login", {
+          replace: true,
+          state: { socialError: getApiErrorMessage(error) },
+        });
       }
     };
 
     handleKakaoCallback();
   }, [navigate]);
 
-  return <div>카카오 로그인 처리 중...</div>;
+  return null;
 }
 
 export default KakaoCallbackPage;
