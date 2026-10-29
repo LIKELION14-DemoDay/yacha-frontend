@@ -17,6 +17,7 @@ import type { Stance } from "../../types/session";
 import type { Topic } from "../../types/topic";
 import { getApiErrorCode } from "../../utils/apiError";
 import { toCategory } from "../../utils/category";
+import { getCurrentSessionPath } from "../../utils/currentSession";
 
 // 왼쪽 agreeText(예) = 찬성, 오른쪽 disagreeText(아니오) = 반대
 const STANCES: [Stance, Stance] = ["AGREE", "DISAGREE"];
@@ -86,11 +87,17 @@ const StanceSelectPage = () => {
       // 매칭이 안 되면 이 카테고리의 방 찾기로 돌아가도록 같이 넘김
       navigate(`/game/waiting/${sessionId}`, { state: { category } });
     } catch (error) {
-      showToast(
-        getApiErrorCode(error) === "ALREADY_IN_SESSION"
-          ? "이미 참여 중인 게임이 있어요."
-          : "방을 만들지 못했어요.",
-      );
+      // 이미 참여 중인 게임이 있으면 그 게임으로 이동
+      if (getApiErrorCode(error) === "ALREADY_IN_SESSION") {
+        const path = await getCurrentSessionPath().catch(() => null);
+        if (path) {
+          navigate(path, { replace: true });
+          return;
+        }
+        showToast("이미 참여 중인 게임이 있어요.");
+      } else {
+        showToast("방을 만들지 못했어요.");
+      }
       setIsSubmitting(false);
     }
   };

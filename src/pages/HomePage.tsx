@@ -17,6 +17,7 @@ import Toast from "../components/Toast";
 import { skipBalanceGame } from "../apis/balanceGame";
 import { useUserProfile } from "../hooks/useUserProfile";
 import { useToast } from "../hooks/useToast";
+import { useResumeSession } from "../hooks/useResumeSession";
 import { getApiErrorMessage } from "../utils/apiError";
 import type { TopicCategory } from "../types/topic";
 import { CATEGORIES, CATEGORY_LABEL } from "../utils/category";
@@ -66,11 +67,7 @@ function TopicCard({
       className="group flex min-w-0 cursor-pointer flex-col items-center gap-1 text-body-r6 text-white"
       aria-label={`${topic} 주제 선택`}
     >
-      <img
-        src={icon}
-        alt=""
-        className="aspect-square w-full object-contain"
-      />
+      <img src={icon} alt="" className="aspect-square w-full object-contain" />
       <span className="w-full truncate text-center">{topic}</span>
     </button>
   );
@@ -100,6 +97,8 @@ function PhilosophyCard({ card }: { card: (typeof philosophyCards)[number] }) {
 
 function HomePage() {
   const navigate = useNavigate();
+  // 참여 중인 게임이 있으면 그 화면으로 바로 이동
+  useResumeSession();
   const philosophySliderRef = useRef<HTMLDivElement>(null);
   const { profile } = useUserProfile();
   const [balancePromptDismissed, setBalancePromptDismissed] = useState(false);

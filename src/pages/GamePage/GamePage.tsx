@@ -81,6 +81,8 @@ const GamePage = () => {
   // 상대 끊김 안내는 잠깐 미뤘다가 띄움 (그사이 다시 연결되면 취소)
   const disconnectToastTimeoutRef =
     useRef<ReturnType<typeof setTimeout>>(undefined);
+  // 다른 안내 뒤에 줄 서 있는 끊김 안내 취소 (다시 연결되면 띄우지 않음)
+  const cancelDisconnectToastRef = useRef<() => void>(undefined);
   // 끊김 안내를 실제로 띄웠을 때만 다시 연결 안내를 띄움
   const isOpponentAwayNoticedRef = useRef(false);
 
@@ -147,15 +149,26 @@ const GamePage = () => {
         // 입장 직후처럼 끊김 바로 뒤에 다시 연결되면 두 안내 모두 띄우지 않음
         case "OPPONENT_DISCONNECTED":
           clearTimeout(disconnectToastTimeoutRef.current);
+          cancelDisconnectToastRef.current?.();
           disconnectToastTimeoutRef.current = setTimeout(() => {
             disconnectToastTimeoutRef.current = undefined;
-            isOpponentAwayNoticedRef.current = true;
-            showToast("상대의 연결이 끊겼어요. 잠시 기다려 주세요.");
+            // 다른 안내(제출 오류 등)가 떠 있으면 끝난 뒤에 띄움
+            cancelDisconnectToastRef.current = showToast(
+              "상대의 연결이 끊겼어요. 잠시 기다려 주세요.",
+              {
+                queue: true,
+                onShow: () => {
+                  isOpponentAwayNoticedRef.current = true;
+                },
+              },
+            );
           }, DISCONNECT_NOTICE_DELAY_MS);
           break;
         case "OPPONENT_RECONNECTED":
           clearTimeout(disconnectToastTimeoutRef.current);
           disconnectToastTimeoutRef.current = undefined;
+          cancelDisconnectToastRef.current?.();
+          cancelDisconnectToastRef.current = undefined;
           if (isOpponentAwayNoticedRef.current) {
             isOpponentAwayNoticedRef.current = false;
             showToast("상대가 다시 연결됐어요.");

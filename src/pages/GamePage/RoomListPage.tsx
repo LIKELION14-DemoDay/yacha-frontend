@@ -17,11 +17,12 @@ import ConfirmModal from "../../components/ConfirmModal";
 import RoomCard from "../../components/RoomCard";
 import Toast from "../../components/Toast";
 import TopBar from "../../components/TopBar";
-import { TOAST_DURATION_MS, useToast } from "../../hooks/useToast";
+import { useToast } from "../../hooks/useToast";
 import type { SessionProposal, WaitingRoom } from "../../types/session";
 import type { TopicCategory } from "../../types/topic";
 import { getApiErrorCode } from "../../utils/apiError";
 import { CATEGORY_LABEL, toCategory } from "../../utils/category";
+import { getCurrentSessionPath } from "../../utils/currentSession";
 import { STANCE_LABEL } from "../../utils/stance";
 
 const JOIN_ERROR_MESSAGES: Record<string, string> = {
@@ -72,14 +73,11 @@ const RoomListContent = ({ category }: { category: TopicCategory }) => {
   // 매칭 대기에서 끝나고 돌아오면 넘겨받은 안내를 한 번 띄움 (뒤로 와도 다시 안 뜨게 지움)
   const location = useLocation();
   const returnedToast = (location.state as { toast?: string } | null)?.toast;
-  // 넘겨받은 안내를 띄운 시각 (목록 오류 안내가 이 안내를 바로 덮지 않게)
-  const returnedToastShownAtRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (!returnedToast) return;
 
     showToast(returnedToast);
-    returnedToastShownAtRef.current = Date.now();
     navigate(`${location.pathname}${location.search}`, {
       replace: true,
       state: null,
@@ -92,7 +90,6 @@ const RoomListContent = ({ category }: { category: TopicCategory }) => {
   // 첫 페이지 (나가면 늦게 온 응답은 무시)
   useEffect(() => {
     let ignore = false;
-    let errorTimeoutId: ReturnType<typeof setTimeout> | undefined;
 
     getWaitingRooms(category)
       .then(({ rooms: firstRooms, hasNext }) => {
@@ -103,21 +100,12 @@ const RoomListContent = ({ category }: { category: TopicCategory }) => {
       .catch(() => {
         if (ignore) return;
         setRooms([]);
-
-        // 넘겨받은 안내가 떠 있으면 다 보여준 뒤에 이어서 띄움
-        const shownAt = returnedToastShownAtRef.current;
-        const waitMs =
-          shownAt === null
-            ? 0
-            : Math.max(0, TOAST_DURATION_MS - (Date.now() - shownAt));
-        errorTimeoutId = setTimeout(() => {
-          if (!ignore) showToast("방 목록을 불러오지 못했어요.");
-        }, waitMs);
+        // 다른 안내(매칭 종료 등)가 떠 있으면 다 보여준 뒤에 이어서 띄움
+        showToast("방 목록을 불러오지 못했어요.", { queue: true });
       });
 
     return () => {
       ignore = true;
-      clearTimeout(errorTimeoutId);
     };
   }, [category, showToast]);
 
@@ -165,26 +153,34 @@ const RoomListContent = ({ category }: { category: TopicCategory }) => {
     return () => observer.disconnect();
   }, [loadMore, nextPage]);
 
-  // "랜덤 주제로 시작하기": 대기 방을 하나씩 제안, 없으면 새 주제로 입장 선택 화면
-  const requestProposal = async () => {
+  // 제안할 방이 있으면 모달, 없으면 새 주제로 입장 선택 화면
+  const showProposal = (nextProposal: SessionProposal) => {
+    if (nextProposal.result === "NEW_TOPIC") {
+      navigate(`/game/select?category=${category}`, {
+        state: { topic: nextProposal.topic },
+      });
+      return;
+    }
+    setProposal(nextProposal);
+  };
+
+  // 제안 요청 · 거절을 같은 흐름으로 처리 (늦게 온 응답은 무시)
+  const runProposal = async (fetchProposal: () => Promise<SessionProposal>) => {
     setIsProposing(true);
     try {
-      const nextProposal = await getProposal(category);
+      const nextProposal = await fetchProposal();
       if (!isActiveRef.current) return;
 
-      if (nextProposal.result === "NEW_TOPIC") {
-        navigate(`/game/select?category=${category}`, {
-          state: { topic: nextProposal.topic },
-        });
-        return;
-      }
-      setProposal(nextProposal);
+      showProposal(nextProposal);
     } catch {
       showToast("방을 찾지 못했어요.");
     } finally {
       setIsProposing(false);
     }
   };
+
+  // "랜덤 주제로 시작하기": 대기 방을 하나씩 제안
+  const requestProposal = () => runProposal(() => getProposal(category));
 
   // 성공하면 토론방으로, 실패하면 false
   const joinRoom = async (sessionId: number) => {
@@ -196,6 +192,15 @@ const RoomListContent = ({ category }: { category: TopicCategory }) => {
       return true;
     } catch (error) {
       const code = getApiErrorCode(error);
+
+      // 이미 참여 중인 게임이 있으면 그 게임으로 이동
+      if (code === "ALREADY_IN_SESSION") {
+        const path = await getCurrentSessionPath().catch(() => null);
+        if (path) {
+          navigate(path, { replace: true });
+          return true;
+        }
+      }
 
       // 이미 시작된 방은 목록에서 뺌
       if (code === "SESSION_NOT_WAITING") {
@@ -224,19 +229,14 @@ const RoomListContent = ({ category }: { category: TopicCategory }) => {
     }
   };
 
-  // 제안 거절 후 다음 방 제안
-  const declineProposal = async () => {
+  // 제안 거절 → 응답으로 온 다음 방 제안
+  const declineProposal = () => {
     if (!proposal?.sessionId) return;
 
     const { sessionId } = proposal;
     setProposal(null);
 
-    try {
-      await rejectProposal(sessionId);
-    } catch {
-      // 거절 기록이 안 남아도 다음 제안은 받을 수 있음
-    }
-    void requestProposal();
+    void runProposal(() => rejectProposal(sessionId));
   };
 
   const isBusy = isJoining || isProposing;
