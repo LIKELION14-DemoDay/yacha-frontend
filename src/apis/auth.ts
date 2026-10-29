@@ -2,12 +2,16 @@
  * 인증 관련 백엔드 API 요청을 관리하는 파일
  */
 import axios from "axios";
+import { ApiResponseError } from "../utils/apiError";
 import api, { REFRESH_TOKEN_PATH, refreshAccessToken } from "./client";
 import { clearAccessToken, setAccessToken } from "./tokenStore";
 import type {
   ApiResponse,
   EmailAvailabilityResponse,
   LoginRequest,
+  PasswordResetRequest,
+  PasswordResetVerificationRequest,
+  PasswordResetVerificationResponse,
   SignUpRequest,
   TokenResponse,
 } from "./types";
@@ -54,6 +58,51 @@ export const checkEmailAvailability = async (email: string) => {
   }
 
   return available;
+};
+
+export const requestPasswordReset = async (email: string) => {
+  const response = await api.post<ApiResponse<string>>(
+    "/api/v1/auth/password/reset-request",
+    { email: email.trim().toLowerCase() },
+  );
+
+  if (!response.data?.success) {
+    throw new ApiResponseError(response.data?.error);
+  }
+};
+
+export const verifyPasswordResetCode = async (
+  credentials: PasswordResetVerificationRequest,
+) => {
+  const response = await api.post<ApiResponse<PasswordResetVerificationResponse>>(
+    "/api/v1/auth/password/verify",
+    { email: credentials.email.trim().toLowerCase(), code: credentials.code },
+  );
+  if (!response.data?.success) {
+    throw new ApiResponseError(response.data?.error);
+  }
+
+  const token = response.data?.data?.resetToken;
+
+  if (typeof token !== "string" || token.trim().length === 0) {
+    throw new Error("인증번호 확인 응답에 유효한 재설정 토큰이 없습니다.");
+  }
+
+  return token;
+};
+
+export const resetPassword = async (credentials: PasswordResetRequest) => {
+  const response = await api.post<ApiResponse<string>>(
+    "/api/v1/auth/password/reset",
+    credentials,
+  );
+
+  if (!response.data?.success) {
+    throw new ApiResponseError(response.data?.error);
+  }
+
+  // 서버에서 모든 기기의 세션을 만료시키므로 현재 액세스 토큰도 삭제합니다.
+  clearAccessToken();
 };
 
 export const createGuest = async () => {
