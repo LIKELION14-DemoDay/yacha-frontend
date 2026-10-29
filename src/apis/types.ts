@@ -27,6 +27,20 @@ export type EmailAvailabilityResponse = {
   available: boolean;
 };
 
+export type PasswordResetVerificationRequest = {
+  email: string;
+  code: string;
+};
+
+export type PasswordResetVerificationResponse = {
+  resetToken: string;
+};
+
+export type PasswordResetRequest = {
+  token: string;
+  newPassword: string;
+};
+
 // 로그인 · 회원가입 · 토큰 재발급 응답의 data
 export type TokenResponse = {
   accessToken: string;
