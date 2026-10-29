@@ -2,7 +2,9 @@ import { useSyncExternalStore } from "react";
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import { getAccessToken, subscribeAccessToken } from "./apis/tokenStore";
 import OnboardingPage from "./pages/OnboardingPage";
-import BalanceGamePage from "./pages/BalanceGamePage";
+import BalanceGamePage from "./pages/BalanceGamePage/BalanceGamePage";
+import BalanceGamePlayPage from "./pages/BalanceGamePage/BalanceGamePlayPage";
+import BalanceGameResultPage from "./pages/BalanceGamePage/BalanceGameResultPage";
 import LoginPage from "./pages/LoginPage/LoginPage";
 import SignInPage from "./pages/LoginPage/SignInPage";
 import ResetPwPage from "./pages/LoginPage/ResetPwPage";
@@ -31,6 +33,8 @@ function App() {
     <Routes>
       <Route path="/" element={<OnboardingPage />} />
       <Route path="/balance" element={<BalanceGamePage />} />
+      <Route path="/balance/game" element={<BalanceGamePlayPage />} />
+      <Route path="/balance/result/:type" element={<BalanceGameResultPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signin" element={<SignInPage />} />
       <Route path="/resetpw" element={<ResetPwPage />} />

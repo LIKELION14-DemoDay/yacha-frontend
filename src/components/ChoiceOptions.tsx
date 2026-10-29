@@ -28,18 +28,18 @@ const ChoiceOptions = ({
 
         return (
           <button
-            key={option}
+            key={index}
             type="button"
             role="radio"
             aria-checked={isSelected}
             onClick={() => onSelect(index)}
-            className={`flex aspect-square min-w-0 flex-1 cursor-pointer flex-col items-center justify-center gap-4 overflow-hidden rounded-[20px] border px-2.5 py-5 transition ${
+            className={`flex aspect-square min-h-max min-w-0 flex-1 cursor-pointer flex-col items-center justify-center gap-4 overflow-hidden rounded-[20px] border px-2.5 py-5 transition ${
               isSelected
                 ? "z-10 scale-[1.053] border-white/50 bg-main shadow-[0_0_10.2px_0_var(--color-main)]"
                 : `border-transparent bg-neutral-009 ${isOtherSelected ? "scale-[0.947]" : ""}`
             }`}
           >
-            <img src={OPTION_ICONS[index]} alt="" className="size-11.5" />
+            <img src={OPTION_ICONS[index]} alt="" className="size-11.5 shrink-0" />
             <span className="w-full text-center text-subhead-m5 break-keep text-white">
               {option}
             </span>
