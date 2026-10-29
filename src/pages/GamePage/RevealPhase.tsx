@@ -2,6 +2,8 @@
  * 주장 공개 화면 (REVEAL 구간, 20초)
  * 양측 주장을 말풍선으로 보여주고, 남은 시간 뒤 반론 작성으로 넘어간다고 알림
  */
+import { useEffect, useRef } from "react";
+
 import StanceBubble from "../../components/StanceBubble";
 import type { Stance } from "../../types/session";
 
@@ -18,24 +20,37 @@ interface RevealPhaseProps {
   remainingSeconds: number;
 }
 
-// 공개 전 · 빈 제출일 때 말풍선에 보일 문구
-const getArgumentText = (content: string | null) => {
-  if (content === null) return "주장을 불러오는 중이에요";
-  return content.trim() || "작성한 주장이 없어요";
-};
+// 빈 제출일 때 말풍선에 보일 문구 (도착 전에는 말풍선을 숨겨 둠)
+const getArgumentText = (content: string | null) =>
+  content === null ? "" : content.trim() || "작성한 주장이 없어요";
 
 const RevealPhase = ({
   mine,
   opponent,
   remainingSeconds,
 }: RevealPhaseProps) => {
+  const isArrived = mine.content !== null && opponent.content !== null;
+  const motionClassName =
+    "transition-transform duration-900 ease-spring motion-reduce:transition-none";
   const seconds = Math.max(0, Math.ceil(remainingSeconds));
-  // 알림은 정해 둔 시점에서만 바뀌게 (매초 읽지 않도록)
-  const announcedSeconds =
-    seconds > 10 ? null : seconds > 5 ? 10 : seconds > 0 ? 5 : null;
+
+  // 스크린 리더 알림: 10초 · 5초 경계를 처음 지날 때 그 순간의 실제 남은 시간을 한 번만 읽음
+  const statusRef = useRef<HTMLParagraphElement>(null);
+  const announcedBoundaryRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    const boundary =
+      seconds <= 0 ? null : seconds <= 5 ? 5 : seconds <= 10 ? 10 : null;
+    if (boundary === null || boundary === announcedBoundaryRef.current) return;
+
+    announcedBoundaryRef.current = boundary;
+    if (statusRef.current) {
+      statusRef.current.textContent = `${seconds}초 뒤 반론 작성 페이지로 넘어갑니다.`;
+    }
+  }, [seconds]);
 
   return (
-    <section className="flex min-h-0 flex-1 flex-col overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+    <section className="flex min-h-0 flex-1 flex-col overflow-x-hidden overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       <div className="shrink-0 pt-2.5 pb-10">
         <div className="flex flex-col items-center gap-1 px-6 py-2.5 text-center">
           <h1 className="text-headline-sb5 text-white">
@@ -47,23 +62,38 @@ const RevealPhase = ({
         </div>
       </div>
 
-      <div className="flex shrink-0 flex-col gap-2">
-        <StanceBubble
-          isMine
-          name={mine.name}
-          stance={mine.stance}
-          content={getArgumentText(mine.content)}
-          quoted={false}
-          clamped
-        />
-        <p className="text-center text-body-r2 text-neutral-008">VS</p>
-        <StanceBubble
-          isMine={false}
-          name={opponent.name}
-          stance={opponent.stance}
-          content={getArgumentText(opponent.content)}
-          quoted={false}
-        />
+      {/* 두 주장이 도착하면 매칭 완료 때처럼 양옆에서 날아와 부딪힘 */}
+      <div aria-hidden={!isArrived} className="flex shrink-0 flex-col gap-2">
+        <div
+          className={`${motionClassName} ${isArrived ? "translate-x-0" : "translate-x-[462.5px]"}`}
+        >
+          <StanceBubble
+            isMine
+            name={mine.name}
+            stance={mine.stance}
+            content={getArgumentText(mine.content)}
+            quoted={false}
+            clamped
+          />
+        </div>
+        <p
+          className={`text-center text-body-r2 text-neutral-008 transition-opacity duration-150 motion-reduce:transition-none ${
+            isArrived ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          VS
+        </p>
+        <div
+          className={`${motionClassName} ${isArrived ? "translate-x-0" : "-translate-x-[462.5px]"}`}
+        >
+          <StanceBubble
+            isMine={false}
+            name={opponent.name}
+            stance={opponent.stance}
+            content={getArgumentText(opponent.content)}
+            quoted={false}
+          />
+        </div>
       </div>
 
       {/* 화면에는 매초 줄어드는 숫자, 스크린 리더에는 10초 · 5초 남았을 때만 알림 */}
@@ -74,11 +104,8 @@ const RevealPhase = ({
         <span className="text-main">{seconds}</span>초 뒤 반론 작성 페이지로
         넘어갑니다.
       </p>
-      <p role="status" className="sr-only">
-        {announcedSeconds
-          ? `${announcedSeconds}초 뒤 반론 작성 페이지로 넘어갑니다.`
-          : ""}
-      </p>
+      {/* 내용은 위 effect 가 경계를 지날 때만 채움 */}
+      <p ref={statusRef} role="status" className="sr-only" />
     </section>
   );
 };

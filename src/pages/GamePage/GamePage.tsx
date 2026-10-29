@@ -150,7 +150,10 @@ const GamePage = () => {
           disconnectToastTimeoutRef.current = setTimeout(() => {
             disconnectToastTimeoutRef.current = undefined;
             isOpponentAwayNoticedRef.current = true;
-            showToast("상대의 연결이 끊겼어요. 잠시 기다려 주세요.");
+            // 다른 안내(제출 오류 등)가 떠 있으면 끝난 뒤에 띄움
+            showToast("상대의 연결이 끊겼어요. 잠시 기다려 주세요.", {
+              queue: true,
+            });
           }, DISCONNECT_NOTICE_DELAY_MS);
           break;
         case "OPPONENT_RECONNECTED":

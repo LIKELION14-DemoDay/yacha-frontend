@@ -242,9 +242,13 @@ const ArgumentPhase = ({
           <div className="flex flex-col gap-1 px-6.5 py-3">
             <p className="text-subhead-m7 text-neutral-008">상대 입장</p>
             {/* 긴 주장은 이 칸 안에서 스크롤 (얇은 스크롤 막대) */}
-            <p className="h-25 overflow-y-auto py-1 pr-5 text-body-r4 wrap-break-word whitespace-pre-wrap text-neutral-006 [scrollbar-color:var(--color-neutral-003)_var(--color-neutral-008)] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-[11px] [&::-webkit-scrollbar-thumb]:bg-neutral-003 [&::-webkit-scrollbar-track]:rounded-[10px] [&::-webkit-scrollbar-track]:bg-neutral-008">
+            <p
+              aria-live="polite"
+              className="h-25 overflow-y-auto py-1 pr-5 text-body-r4 wrap-break-word whitespace-pre-wrap text-neutral-006 [scrollbar-color:var(--color-neutral-003)_var(--color-neutral-008)] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-[11px] [&::-webkit-scrollbar-thumb]:bg-neutral-003 [&::-webkit-scrollbar-track]:rounded-[10px] [&::-webkit-scrollbar-track]:bg-neutral-008"
+            >
+              {/* 아직 안 왔으면 비워 두고, 도착하면 바로 채움 */}
               {opponentArgument === null
-                ? "상대 주장을 불러오는 중이에요"
+                ? ""
                 : opponentArgument.trim() || "상대가 작성한 주장이 없어요"}
             </p>
           </div>

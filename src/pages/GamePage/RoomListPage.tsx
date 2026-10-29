@@ -17,7 +17,7 @@ import ConfirmModal from "../../components/ConfirmModal";
 import RoomCard from "../../components/RoomCard";
 import Toast from "../../components/Toast";
 import TopBar from "../../components/TopBar";
-import { TOAST_DURATION_MS, useToast } from "../../hooks/useToast";
+import { useToast } from "../../hooks/useToast";
 import type { SessionProposal, WaitingRoom } from "../../types/session";
 import type { TopicCategory } from "../../types/topic";
 import { getApiErrorCode } from "../../utils/apiError";
@@ -73,14 +73,11 @@ const RoomListContent = ({ category }: { category: TopicCategory }) => {
   // 매칭 대기에서 끝나고 돌아오면 넘겨받은 안내를 한 번 띄움 (뒤로 와도 다시 안 뜨게 지움)
   const location = useLocation();
   const returnedToast = (location.state as { toast?: string } | null)?.toast;
-  // 넘겨받은 안내를 띄운 시각 (목록 오류 안내가 이 안내를 바로 덮지 않게)
-  const returnedToastShownAtRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (!returnedToast) return;
 
     showToast(returnedToast);
-    returnedToastShownAtRef.current = Date.now();
     navigate(`${location.pathname}${location.search}`, {
       replace: true,
       state: null,
@@ -93,7 +90,6 @@ const RoomListContent = ({ category }: { category: TopicCategory }) => {
   // 첫 페이지 (나가면 늦게 온 응답은 무시)
   useEffect(() => {
     let ignore = false;
-    let errorTimeoutId: ReturnType<typeof setTimeout> | undefined;
 
     getWaitingRooms(category)
       .then(({ rooms: firstRooms, hasNext }) => {
@@ -104,21 +100,12 @@ const RoomListContent = ({ category }: { category: TopicCategory }) => {
       .catch(() => {
         if (ignore) return;
         setRooms([]);
-
-        // 넘겨받은 안내가 떠 있으면 다 보여준 뒤에 이어서 띄움
-        const shownAt = returnedToastShownAtRef.current;
-        const waitMs =
-          shownAt === null
-            ? 0
-            : Math.max(0, TOAST_DURATION_MS - (Date.now() - shownAt));
-        errorTimeoutId = setTimeout(() => {
-          if (!ignore) showToast("방 목록을 불러오지 못했어요.");
-        }, waitMs);
+        // 다른 안내(매칭 종료 등)가 떠 있으면 다 보여준 뒤에 이어서 띄움
+        showToast("방 목록을 불러오지 못했어요.", { queue: true });
       });
 
     return () => {
       ignore = true;
-      clearTimeout(errorTimeoutId);
     };
   }, [category, showToast]);
 
