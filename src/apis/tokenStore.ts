@@ -4,13 +4,23 @@
  */
 
 let accessToken: string | null = null;
+const listeners = new Set<() => void>();
 
 export const getAccessToken = () => accessToken;
 
+export const subscribeAccessToken = (listener: () => void) => {
+  listeners.add(listener);
+  return () => {
+    listeners.delete(listener);
+  };
+};
+
 export const setAccessToken = (token: string) => {
   accessToken = token;
+  listeners.forEach((listener) => listener());
 };
 
 export const clearAccessToken = () => {
   accessToken = null;
+  listeners.forEach((listener) => listener());
 };

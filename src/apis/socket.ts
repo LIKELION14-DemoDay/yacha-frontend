@@ -4,7 +4,7 @@
  * 토큰은 연결할 때만 검사하므로, 연결 · 재연결 직전에 토큰을 새로 받아서 붙임
  */
 import { Client, type StompSubscription } from "@stomp/stompjs";
-import { refreshAccessToken } from "./client";
+import { API_BASE_URL, refreshAccessToken } from "./client";
 import { getAccessToken } from "./tokenStore";
 import type {
   MatchEvent,
@@ -13,7 +13,9 @@ import type {
 } from "../types/session";
 
 // http(s)://… → ws(s)://…/ws
-const SOCKET_URL = `${String(import.meta.env.VITE_API_BASE_URL).replace(/^http/, "ws")}/ws`;
+const socketUrl = new URL("/ws", API_BASE_URL || window.location.origin);
+socketUrl.protocol = socketUrl.protocol === "https:" ? "wss:" : "ws:";
+const SOCKET_URL = socketUrl.toString();
 
 // 상대 이탈 유예가 10초라서 그 안에 다시 붙도록 짧게 잡음
 const RECONNECT_DELAY_MS = 2000;

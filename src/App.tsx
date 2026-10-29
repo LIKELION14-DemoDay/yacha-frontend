@@ -1,4 +1,6 @@
-import { Routes, Route } from "react-router-dom";
+import { useSyncExternalStore } from "react";
+import { Routes, Route, Navigate, Outlet } from "react-router-dom";
+import { getAccessToken, subscribeAccessToken } from "./apis/tokenStore";
 import OnboardingPage from "./pages/OnboardingPage";
 import BalanceGamePage from "./pages/BalanceGamePage";
 import LoginPage from "./pages/LoginPage/LoginPage";
@@ -17,6 +19,11 @@ import RoomListPage from "./pages/GamePage/RoomListPage";
 import StanceSelectPage from "./pages/GamePage/StanceSelectPage";
 import WaitingPage from "./pages/GamePage/WaitingPage";
 
+function RequireAuth() {
+  const token = useSyncExternalStore(subscribeAccessToken, getAccessToken);
+  return token ? <Outlet /> : <Navigate to="/login" replace />;
+}
+
 function App() {
   return (
     <Routes>
@@ -28,15 +35,17 @@ function App() {
       <Route path="/complete" element={<CompleteSignInPage />} />
       <Route path="/oauth/kakao" element={<KakaoCallbackPage />} />
       <Route path="/oauth/google" element={<GoogleCallbackPage />} />
-      <Route path="/home" element={<HomePage />} />
-      <Route path="/oneminute" element={<OneminutePage />} />
-      <Route path="/mypage" element={<MyPage />} />
-      <Route path="/my/setting" element={<MySettingPage />} />
-      <Route path="/game/rooms" element={<RoomListPage />} />
-      <Route path="/game/select" element={<StanceSelectPage />} />
-      <Route path="/game/waiting/:sessionId" element={<WaitingPage />} />
-      <Route path="/game/:sessionId" element={<GamePage />} />
-      <Route path="/game/:sessionId/result" element={<ResultPage />} />{" "}
+      <Route element={<RequireAuth />}>
+        <Route path="/home" element={<HomePage />} />
+        <Route path="/oneminute" element={<OneminutePage />} />
+        <Route path="/mypage" element={<MyPage />} />
+        <Route path="/my/setting" element={<MySettingPage />} />
+        <Route path="/game/rooms" element={<RoomListPage />} />
+        <Route path="/game/select" element={<StanceSelectPage />} />
+        <Route path="/game/waiting/:sessionId" element={<WaitingPage />} />
+        <Route path="/game/:sessionId" element={<GamePage />} />
+        <Route path="/game/:sessionId/result" element={<ResultPage />} />
+      </Route>
     </Routes>
   );
 }
