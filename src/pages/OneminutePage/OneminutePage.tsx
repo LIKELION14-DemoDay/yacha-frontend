@@ -1,11 +1,14 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
-import { getPastPhilosophy, getThisWeekPhilosophy } from "../apis/philosophy";
-import angleLeft from "../assets/angle-left.svg";
-import OneminuteCard from "../components/OneminuteCard";
-import StatusBar from "../components/StatusBar";
-import type { PhilosophyArticle } from "../types/philosophy";
+import {
+  getPastPhilosophy,
+  getThisWeekPhilosophy,
+} from "../../apis/philosophy";
+import angleLeft from "../../assets/angle-left.svg";
+import OneminuteCard from "../../components/OneminuteCard";
+import StatusBar from "../../components/StatusBar";
+import type { PhilosophyArticle } from "../../types/philosophy";
 
 const periods = [
   { id: "current", label: "금주의 1분 철학" },
@@ -16,19 +19,22 @@ type Period = (typeof periods)[number]["id"];
 
 function OneMinutePage() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [request, setRequest] = useState<{
     period: Period;
     page: number;
     attempt: number;
-  }>({ period: "current", page: 0, attempt: 0 });
+  }>({
+    period: searchParams.get("period") === "previous" ? "previous" : "current",
+    page: 0,
+    attempt: 0,
+  });
   const [articles, setArticles] = useState<PhilosophyArticle[]>([]);
   const [hasNext, setHasNext] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<unknown>(null);
   const isRequestPending = useRef(true);
   const listRef = useRef<HTMLElement>(null);
   const selectedPeriod = request.period;
-  const selectedLabel = periods.find(({ id }) => id === selectedPeriod)!.label;
 
   useEffect(() => {
     const controller = new AbortController();
@@ -63,7 +69,6 @@ function OneMinutePage() {
       } finally {
         if (!controller.signal.aborted) {
           isRequestPending.current = false;
-          setIsLoading(false);
         }
       }
     };
@@ -78,9 +83,11 @@ function OneMinutePage() {
     setArticles([]);
     setHasNext(false);
     isRequestPending.current = true;
-    setIsLoading(true);
     setError(null);
     setRequest({ period, page: 0, attempt: 0 });
+    setSearchParams(period === "previous" ? { period: "previous" } : {}, {
+      replace: true,
+    });
     listRef.current?.scrollTo({ top: 0 });
   };
 
@@ -90,7 +97,6 @@ function OneMinutePage() {
     }
 
     isRequestPending.current = true;
-    setIsLoading(true);
     setError(null);
     setRequest((current) => ({
       ...current,
@@ -117,7 +123,6 @@ function OneMinutePage() {
         <button
           type="button"
           onClick={() => navigate("/home")}
-          aria-label="홈으로 돌아가기"
           className="flex h-8 w-6 shrink-0 cursor-pointer items-center justify-center"
         >
           <img src={angleLeft} alt="" className="size-6" />
@@ -126,21 +131,16 @@ function OneMinutePage() {
 
       <div className="flex shrink-0 flex-col items-start gap-1 px-6 pb-5">
         <h1 className="text-subhead-m2">1분 철학</h1>
-        <p className="text-subhead-r8 text-neutral-005">
+        <p className="text-subhead-r8 text-neutral-007">
           하루 1분, 가볍게 철학을 만나보세요.
         </p>
       </div>
 
-      <nav
-        aria-label="콘텐츠 기간 선택"
-        className="flex shrink-0 px-6 pt-2 pb-5"
-      >
+      <nav className="flex shrink-0 px-6 pt-2 pb-5">
         {periods.map(({ id, label }) => (
           <button
             key={id}
             type="button"
-            aria-pressed={selectedPeriod === id}
-            aria-controls="oneminute-content-list"
             onClick={() => handlePeriodChange(id)}
             className={`flex min-w-0 flex-1 cursor-pointer items-center justify-center pb-3 ${
               selectedPeriod === id
@@ -155,9 +155,6 @@ function OneMinutePage() {
 
       <section
         ref={listRef}
-        id="oneminute-content-list"
-        aria-label={`${selectedLabel} 목록`}
-        aria-busy={isLoading}
         onScroll={handleListScroll}
         tabIndex={0}
         className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-6 scrollbar-none focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-main [&::-webkit-scrollbar]:hidden"
@@ -172,7 +169,7 @@ function OneMinutePage() {
       </section>
 
       {/* 추후 광고를 삽입할 독립 영역입니다. */}
-      <aside aria-label="광고 영역" className="h-17.5 shrink-0 bg-green" />
+      <aside className="h-17.5 shrink-0 bg-green" />
     </main>
   );
 }

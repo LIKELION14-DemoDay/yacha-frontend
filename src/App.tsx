@@ -10,7 +10,8 @@ import CompleteSignInPage from "./pages/LoginPage/CompleteSigninPage";
 import KakaoCallbackPage from "./pages/LoginPage/KakaoCallbackPage";
 import GoogleCallbackPage from "./pages/LoginPage/GoogleCallbackPage";
 import HomePage from "./pages/HomePage";
-import OneminutePage from "./pages/OneminutePage";
+import OneminutePage from "./pages/OneminutePage/OneminutePage";
+import OneminuteDetailPage from "./pages/OneminutePage/OneminuteDetailPage";
 import MyPage from "./pages/MyPage/MyPage";
 import MySettingPage from "./pages/MyPage/MySettingPage";
 import GamePage from "./pages/GamePage/GamePage";
@@ -38,6 +39,7 @@ function App() {
       <Route element={<RequireAuth />}>
         <Route path="/home" element={<HomePage />} />
         <Route path="/oneminute" element={<OneminutePage />} />
+        <Route path="/oneminute/:id" element={<OneminuteDetailPage />} />
         <Route path="/mypage" element={<MyPage />} />
         <Route path="/my/setting" element={<MySettingPage />} />
         <Route path="/game/rooms" element={<RoomListPage />} />
