@@ -101,6 +101,7 @@ function ProfileSettings({
         <InputContainer
           label="닉네임"
           name="nickname"
+          placeholder="닉네임을 입력해주세요."
           autoComplete="nickname"
           value={nickname}
           readOnly={isSaving || profile.isGuest}
@@ -168,7 +169,8 @@ function MySettingPage() {
   const { profile } = useUserProfile();
   const initialSetup =
     state?.initialSetup === true &&
-    !profile?.isGuest && profile?.provider !== "LOCAL";
+    !profile?.isGuest &&
+    profile?.provider !== "LOCAL";
 
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-100.5 flex-col bg-secondary text-white">
