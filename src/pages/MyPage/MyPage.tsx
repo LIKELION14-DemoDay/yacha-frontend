@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { logout } from "../../apis/auth";
 import angleLeft from "../../assets/angle-left.svg";
 import balanceScale from "../../assets/balance-scale-solid.svg";
 import linkIcon from "../../assets/link-solid.svg";
@@ -68,6 +69,27 @@ function MyPage() {
   const [copyStatus, setCopyStatus] = useState<"idle" | "success" | "error">(
     "idle",
   );
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [logoutError, setLogoutError] = useState("");
+  const isLogoutPending = useRef(false);
+
+  const handleLogout = async () => {
+    if (isLogoutPending.current) return;
+
+    isLogoutPending.current = true;
+    setIsLoggingOut(true);
+    setLogoutError("");
+
+    try {
+      await logout();
+      navigate("/login", { replace: true });
+    } catch {
+      setLogoutError("로그아웃하지 못했습니다. 잠시 후 다시 시도해주세요.");
+    } finally {
+      isLogoutPending.current = false;
+      setIsLoggingOut(false);
+    }
+  };
 
   const handleCopyLink = async () => {
     try {
@@ -96,11 +118,20 @@ function MyPage() {
         <h1 className="text-subhead-m5">My</h1>
         <button
           type="button"
-          className="ml-auto cursor-pointer text-body-r6 text-neutral-005"
+          onClick={handleLogout}
+          disabled={isLoggingOut}
+          aria-busy={isLoggingOut}
+          className="ml-auto cursor-pointer text-body-r6 text-neutral-005 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          로그아웃
+          {isLoggingOut ? "로그아웃 중..." : "로그아웃"}
         </button>
       </header>
+
+      {logoutError && (
+        <p role="alert" className="px-6 py-2 text-caption-r1 text-main">
+          {logoutError}
+        </p>
+      )}
 
       <ProfileHero />
 

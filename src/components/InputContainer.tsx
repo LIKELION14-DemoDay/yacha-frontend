@@ -43,7 +43,7 @@ const stateClassNames: Record<
     icon: "text-neutral-006",
   },
   selected: {
-    field: "border-neutral-004",
+    field: "border-neutral-004 bg-neutral-009",
     input: "text-neutral-002 placeholder:text-neutral-002",
     icon: "text-neutral-004",
   },
@@ -149,7 +149,7 @@ const InputContainer = forwardRef<HTMLInputElement, InputContainerProps>(
 
     return (
       <div
-        className={`flex w-full max-w-[402px] flex-col items-start gap-2 px-6 ${containerClassName}`}
+        className={`flex w-full max-w-100.5 flex-col items-start gap-2 px-6 ${containerClassName}`}
         data-state={currentState}
       >
         <div className="flex items-center gap-2">

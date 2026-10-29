@@ -14,7 +14,20 @@ export type ApiResponse<T> = {
   traceId: string;
 };
 
-// 로그인 · 토큰 재발급 응답의 data
+export type LoginRequest = {
+  email: string;
+  password: string;
+};
+
+export type SignUpRequest = LoginRequest & {
+  nickname: string;
+};
+
+export type EmailAvailabilityResponse = {
+  available: boolean;
+};
+
+// 로그인 · 회원가입 · 토큰 재발급 응답의 data
 export type TokenResponse = {
   accessToken: string;
   userId: number;
