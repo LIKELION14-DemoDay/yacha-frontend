@@ -149,7 +149,12 @@ function LoginPage() {
 
       <section className="flex min-h-30 shrink-0 flex-col">
         <div className="flex items-center justify-center gap-10 py-2.5 text-body-r6 text-neutral-007">
-          <button type="button" className="cursor-pointer">
+          <button
+            type="button"
+            disabled={isBusy}
+            onClick={() => navigate("/resetpw")}
+            className="cursor-pointer disabled:cursor-not-allowed"
+          >
             비밀번호 찾기
           </button>
           <span aria-hidden="true">|</span>

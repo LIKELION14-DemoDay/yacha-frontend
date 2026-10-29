@@ -3,6 +3,7 @@ import OnboardingPage from "./pages/OnboardingPage";
 import BalanceGamePage from "./pages/BalanceGamePage";
 import LoginPage from "./pages/LoginPage/LoginPage";
 import SignInPage from "./pages/LoginPage/SignInPage";
+import ResetPwPage from "./pages/LoginPage/ResetPwPage";
 import CompleteSignInPage from "./pages/LoginPage/CompleteSigninPage";
 import KakaoCallbackPage from "./pages/LoginPage/KakaoCallbackPage";
 import GoogleCallbackPage from "./pages/LoginPage/GoogleCallbackPage";
@@ -23,6 +24,7 @@ function App() {
       <Route path="/balance" element={<BalanceGamePage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signin" element={<SignInPage />} />
+      <Route path="/resetpw" element={<ResetPwPage />} />
       <Route path="/complete" element={<CompleteSignInPage />} />
       <Route path="/oauth/kakao" element={<KakaoCallbackPage />} />
       <Route path="/oauth/google" element={<GoogleCallbackPage />} />
@@ -34,7 +36,8 @@ function App() {
       <Route path="/game/select" element={<StanceSelectPage />} />
       <Route path="/game/waiting/:sessionId" element={<WaitingPage />} />
       <Route path="/game/:sessionId" element={<GamePage />} />
-      <Route path="/game/:sessionId/result" element={<ResultPage />} />    </Routes>
+      <Route path="/game/:sessionId/result" element={<ResultPage />} />{" "}
+    </Routes>
   );
 }
 
