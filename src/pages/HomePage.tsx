@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import ethicsIcon from "../assets/balance-scale-solid.svg";
@@ -12,7 +12,13 @@ import trueIcon from "../assets/home/temporary-true-home.svg";
 import homeImage from "../assets/home-image1.png";
 import homeLogo from "../assets/home-logo.svg";
 import StatusBar from "../components/StatusBar";
+import ConfirmModal from "../components/ConfirmModal";
+import Toast from "../components/Toast";
+import { skipBalanceGame } from "../apis/balanceGame";
+import { useUserProfile } from "../hooks/useUserProfile";
+import { useToast } from "../hooks/useToast";
 import { useResumeSession } from "../hooks/useResumeSession";
+import { getApiErrorMessage } from "../utils/apiError";
 import type { TopicCategory } from "../types/topic";
 import { CATEGORIES, CATEGORY_LABEL } from "../utils/category";
 
@@ -94,6 +100,23 @@ function HomePage() {
   // 참여 중인 게임이 있으면 그 화면으로 바로 이동
   useResumeSession();
   const philosophySliderRef = useRef<HTMLDivElement>(null);
+  const { profile } = useUserProfile();
+  const [balancePromptDismissed, setBalancePromptDismissed] = useState(false);
+  const skipPendingRef = useRef(false);
+  const { toastMessage, showToast } = useToast();
+
+  const handleSkipBalance = async () => {
+    if (skipPendingRef.current) return;
+    skipPendingRef.current = true;
+    try {
+      await skipBalanceGame(true);
+      setBalancePromptDismissed(true);
+    } catch (error: unknown) {
+      showToast(getApiErrorMessage(error));
+    } finally {
+      skipPendingRef.current = false;
+    }
+  };
 
   useEffect(() => {
     const slider = philosophySliderRef.current;
@@ -192,6 +215,19 @@ function HomePage() {
       </section>
 
       <aside aria-label="광고 영역" className="min-h-20.75 flex-1 bg-green" />
+      <ConfirmModal
+        open={profile?.balanceGameRequired === true && !balancePromptDismissed}
+        title="밸런스 게임을 시작할까요?"
+        description="밸런스 게임으로 내 철학 유형을 알아보세요."
+        cancelLabel="건너뛰기"
+        confirmLabel="시작하기"
+        onCancel={handleSkipBalance}
+        onConfirm={() => {
+          if (!skipPendingRef.current) navigate("/balance");
+        }}
+        onDismiss={() => setBalancePromptDismissed(true)}
+      />
+      <Toast message={toastMessage} />
     </main>
   );
 }

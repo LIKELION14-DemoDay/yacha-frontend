@@ -11,6 +11,7 @@ import LongButton from "../../components/Button";
 import StatusBar from "../../components/StatusBar";
 import { useUserProfile } from "../../hooks/useUserProfile";
 import type { UserProfile } from "../../types/user";
+import { isPhilosopherType } from "../../types/balanceGame";
 import { getApiErrorMessage } from "../../utils/apiError";
 
 function ProfileHero() {
@@ -90,7 +91,11 @@ function MyPage() {
 
   const handleCopyLink = async () => {
     try {
-      const shareUrl = new URL("/balance", window.location.origin).href;
+      const type = profile?.philosopher?.type;
+      const shareUrl = new URL(
+        isPhilosopherType(type) ? `/balance/result/${type}` : "/balance",
+        window.location.origin,
+      ).href;
       await navigator.clipboard.writeText(shareUrl);
       setCopyStatus("success");
     } catch {
