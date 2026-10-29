@@ -15,3 +15,8 @@ export type UserProfile = {
   } | null;
   balanceGameRequired: boolean;
 };
+
+export type ChangePasswordRequest = {
+  currentPassword: string;
+  newPassword: string;
+};
