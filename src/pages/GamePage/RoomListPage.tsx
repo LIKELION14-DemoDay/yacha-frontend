@@ -153,26 +153,34 @@ const RoomListContent = ({ category }: { category: TopicCategory }) => {
     return () => observer.disconnect();
   }, [loadMore, nextPage]);
 
-  // "랜덤 주제로 시작하기": 대기 방을 하나씩 제안, 없으면 새 주제로 입장 선택 화면
-  const requestProposal = async () => {
+  // 제안할 방이 있으면 모달, 없으면 새 주제로 입장 선택 화면
+  const showProposal = (nextProposal: SessionProposal) => {
+    if (nextProposal.result === "NEW_TOPIC") {
+      navigate(`/game/select?category=${category}`, {
+        state: { topic: nextProposal.topic },
+      });
+      return;
+    }
+    setProposal(nextProposal);
+  };
+
+  // 제안 요청 · 거절을 같은 흐름으로 처리 (늦게 온 응답은 무시)
+  const runProposal = async (fetchProposal: () => Promise<SessionProposal>) => {
     setIsProposing(true);
     try {
-      const nextProposal = await getProposal(category);
+      const nextProposal = await fetchProposal();
       if (!isActiveRef.current) return;
 
-      if (nextProposal.result === "NEW_TOPIC") {
-        navigate(`/game/select?category=${category}`, {
-          state: { topic: nextProposal.topic },
-        });
-        return;
-      }
-      setProposal(nextProposal);
+      showProposal(nextProposal);
     } catch {
       showToast("방을 찾지 못했어요.");
     } finally {
       setIsProposing(false);
     }
   };
+
+  // "랜덤 주제로 시작하기": 대기 방을 하나씩 제안
+  const requestProposal = () => runProposal(() => getProposal(category));
 
   // 성공하면 토론방으로, 실패하면 false
   const joinRoom = async (sessionId: number) => {
@@ -221,19 +229,14 @@ const RoomListContent = ({ category }: { category: TopicCategory }) => {
     }
   };
 
-  // 제안 거절 후 다음 방 제안
-  const declineProposal = async () => {
+  // 제안 거절 → 응답으로 온 다음 방 제안
+  const declineProposal = () => {
     if (!proposal?.sessionId) return;
 
     const { sessionId } = proposal;
     setProposal(null);
 
-    try {
-      await rejectProposal(sessionId);
-    } catch {
-      // 거절 기록이 안 남아도 다음 제안은 받을 수 있음
-    }
-    void requestProposal();
+    void runProposal(() => rejectProposal(sessionId));
   };
 
   const isBusy = isJoining || isProposing;

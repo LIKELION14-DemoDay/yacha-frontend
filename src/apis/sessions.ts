@@ -80,9 +80,13 @@ export const leaveSession = async (sessionId: number) => {
   return response.data.data;
 };
 
-// 자동 제안 거절
+// 자동 제안 거절 → 다음 제안을 돌려줌 (다시 /proposal 을 부르면 처음부터라 같은 방이 또 옴)
 export const rejectProposal = async (sessionId: number) => {
-  await api.post(`${SESSIONS_URL}/${sessionId}/reject`);
+  const response = await api.post<ApiResponse<SessionProposal>>(
+    `${SESSIONS_URL}/${sessionId}/reject`,
+  );
+
+  return response.data.data;
 };
 
 /* ---------- 조회 ---------- */
