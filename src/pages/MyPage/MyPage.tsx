@@ -9,14 +9,9 @@ import logoLeft from "../../assets/logo-left.svg";
 import logoRight from "../../assets/logo-right.svg";
 import LongButton from "../../components/Button";
 import StatusBar from "../../components/StatusBar";
-
-// 프로필 API 연동 전 시안에 맞춘 예시 데이터입니다.
-const profile = {
-  nickname: "치이카와",
-  philosophyType: "아리스토텔레스",
-  wins: 10,
-  losses: 10,
-};
+import { useUserProfile } from "../../hooks/useUserProfile";
+import type { UserProfile } from "../../types/user";
+import { getApiErrorMessage } from "../../utils/apiError";
 
 function ProfileHero() {
   return (
@@ -39,7 +34,7 @@ function ProfileHero() {
   );
 }
 
-function BattleRecord() {
+function BattleRecord({ stats }: { stats: UserProfile["stats"] }) {
   return (
     <section className="flex shrink-0 flex-col gap-3 px-6">
       <div className="flex h-6 items-center gap-2">
@@ -51,8 +46,8 @@ function BattleRecord() {
 
       <dl className="flex justify-center gap-20">
         {[
-          { label: "승리", count: profile.wins },
-          { label: "패배", count: profile.losses },
+          { label: "승리", count: stats.wins },
+          { label: "패배", count: stats.losses },
         ].map(({ label, count }) => (
           <div key={label} className="flex flex-col items-center gap-1">
             <dt className="text-body-m3 text-neutral-006">{label}</dt>
@@ -66,6 +61,8 @@ function BattleRecord() {
 
 function MyPage() {
   const navigate = useNavigate();
+  const { profile } = useUserProfile();
+  const philosopherName = profile?.philosopher?.name;
   const [copyStatus, setCopyStatus] = useState<"idle" | "success" | "error">(
     "idle",
   );
@@ -83,8 +80,8 @@ function MyPage() {
     try {
       await logout();
       navigate("/login", { replace: true });
-    } catch {
-      setLogoutError("로그아웃하지 못했습니다. 잠시 후 다시 시도해주세요.");
+    } catch (error: unknown) {
+      setLogoutError(getApiErrorMessage(error));
     } finally {
       isLogoutPending.current = false;
       setIsLoggingOut(false);
@@ -120,91 +117,95 @@ function MyPage() {
           type="button"
           onClick={handleLogout}
           disabled={isLoggingOut}
-          aria-busy={isLoggingOut}
           className="ml-auto cursor-pointer text-body-r6 text-neutral-005 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {isLoggingOut ? "로그아웃 중..." : "로그아웃"}
+          로그아웃
         </button>
       </header>
 
       {logoutError && (
-        <p role="alert" className="px-6 py-2 text-caption-r1 text-main">
+        <p className="px-6 py-2 text-caption-r1 text-main">
           {logoutError}
         </p>
       )}
 
-      <ProfileHero />
+      {profile ? (
+        <>
+          <ProfileHero />
 
-      <section className="flex shrink-0 flex-col items-center gap-1 px-6 pt-4 pb-7">
-        <p className="text-subhead-r8 text-neutral-006">
-          {profile.philosophyType}형
-        </p>
-        <h2 className="text-subhead-m5">{profile.nickname}</h2>
-      </section>
+          <section className="flex shrink-0 flex-col items-center gap-1 px-6 pt-4 pb-7">
+            <p className="text-subhead-r8 text-neutral-006">
+              {philosopherName}
+            </p>
+            <h2 className="text-subhead-m5">{profile.nickname}</h2>
+          </section>
 
-      <BattleRecord />
+          <BattleRecord stats={profile.stats} />
 
-      <div className="flex flex-1 flex-col gap-5 py-10">
-        <section className="flex flex-col">
-          <h2 className="px-6 py-1 text-body-m3 text-neutral-006">내 정보</h2>
-          <button
-            type="button"
-            onClick={() => navigate("/my/setting")}
-            className="cursor-pointer border-b border-neutral-009 px-6 py-4 text-left text-body-r2"
-          >
-            내 프로필 설정
-          </button>
-
-          <div className="flex flex-col gap-5 border-b border-neutral-009 px-6 py-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-body-r2">내 철학 유형</h3>
-              <p className="text-body-m3 text-neutral-006">
-                {profile.philosophyType}
-              </p>
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <LongButton
-                className="!bg-main !text-white hover:!bg-main-006"
-                onClick={() => navigate("/balance")}
+          <div className="flex flex-1 flex-col gap-5 py-10">
+            <section className="flex flex-col">
+              <h2 className="px-6 py-1 text-body-m3 text-neutral-006">
+                내 정보
+              </h2>
+              <button
+                type="button"
+                onClick={() => navigate("/my/setting")}
+                className="cursor-pointer border-b border-neutral-009 px-6 py-4 text-left text-body-r2"
               >
-                밸런스 게임 하러가기
-              </LongButton>
-              <div className="flex flex-wrap items-center justify-between">
-                <p className="text-subhead-r8 text-neutral-006">
-                  친구와 공유하고 유형을 비교해보세요.
-                </p>
-                <button
-                  type="button"
-                  onClick={handleCopyLink}
-                  className="flex shrink-0 cursor-pointer items-center gap-1 text-body-r6 text-main hover:text-main-004"
-                >
-                  {copyStatus === "success" ? "복사 완료" : "링크 복사"}
-                  <img src={linkIcon} alt="" className="size-5" />
-                </button>
-                {copyStatus === "error" && (
-                  <p className="w-full text-caption-r2 text-main">
-                    링크를 복사하지 못했습니다. 다시 시도해주세요.
-                  </p>
-                )}
-              </div>
-            </div>
-          </div>
-        </section>
+                내 프로필 설정
+              </button>
 
-        <section>
-          <h2 className="px-6 py-1 text-body-m3 text-neutral-006">
-            철학 저장고
-          </h2>
-          {/* 북마크 페이지가 준비되면 이동 경로를 연결합니다. */}
-          <button
-            type="button"
-            className="w-full cursor-pointer border-b border-neutral-009 px-6 py-4 text-left text-body-r2"
-          >
-            북마크
-          </button>
-        </section>
-      </div>
+              <div className="flex flex-col gap-5 border-b border-neutral-009 px-6 py-4">
+                <div className="flex flex-col items-start gap-1">
+                  <h3 className="text-body-r2">내 철학 유형</h3>
+                  <p className="text-subhead-r3 text-neutral-006">
+                    {philosopherName}
+                  </p>
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <LongButton
+                    className="!bg-main !text-white hover:!bg-main-006"
+                    onClick={() => navigate("/balance")}
+                  >
+                    밸런스 게임 하러가기
+                  </LongButton>
+                  <div className="flex flex-wrap items-center justify-between">
+                    <p className="text-subhead-r8 text-neutral-006">
+                      친구와 공유하고 유형을 비교해보세요.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={handleCopyLink}
+                      className="flex shrink-0 cursor-pointer items-center gap-1 text-body-r6 text-main hover:text-main-004"
+                    >
+                      {copyStatus === "success" ? "복사 완료" : "링크 복사"}
+                      <img src={linkIcon} alt="" className="size-5" />
+                    </button>
+                    {copyStatus === "error" && (
+                      <p className="w-full text-caption-r2 text-main">
+                        링크를 복사하지 못했습니다. 다시 시도해주세요.
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section>
+              {/* 북마크 페이지가 준비되면 이동 경로를 연결합니다. */}
+              <button
+                type="button"
+                className="w-full cursor-pointer border-b border-neutral-009 px-6 py-5 text-left text-body-r2"
+              >
+                북마크
+              </button>
+            </section>
+          </div>
+        </>
+      ) : (
+        <div className="flex-1" />
+      )}
 
       {/* 추후 Google 광고를 삽입할 독립 영역입니다. */}
       <aside className="h-17.5 shrink-0 bg-green" />

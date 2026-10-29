@@ -1,13 +1,17 @@
 /**
  * 구글 로그인 완료 후 Redirect되는 OAuth 콜백 페이지
- * URL에서 구글 인가 코드(code)와 state를 추출하고,
- * state 검증 후 인가 코드를 백엔드로 전달하여 로그인 처리를 완료
+ * SDK의 ID 토큰으로 로그인하고, 기존 인가 코드 콜백도 처리합니다.
  */
 
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { googleLogin } from "../../apis/auth";
-import { getGoogleRedirectUri, validateGoogleState } from "../../utils/google";
+import { googleLogin, socialLogin } from "../../apis/auth";
+import {
+  consumeGoogleCredential,
+  getGoogleRedirectUri,
+  validateGoogleState,
+} from "../../utils/google";
+import { getApiErrorMessage } from "../../utils/apiError";
 
 function GoogleCallbackPage() {
   const navigate = useNavigate();
@@ -20,49 +24,43 @@ function GoogleCallbackPage() {
     isProcessed.current = true;
 
     const handleGoogleCallback = async () => {
-      const params = new URLSearchParams(window.location.search);
-
-      const code = params.get("code");
-      const state = params.get("state");
-      const error = params.get("error");
-
-      if (error) {
-        console.error("구글 로그인 취소 또는 실패:", error);
-        navigate("/login");
-        return;
-      }
-
-      if (!code) {
-        console.error("구글 인가 코드가 없습니다.");
-        navigate("/login");
-        return;
-      }
-
-      if (!validateGoogleState(state)) {
-        console.error("구글 OAuth state 검증에 실패했습니다.");
-        navigate("/login");
-        return;
-      }
-
       try {
-        const redirectUri = getGoogleRedirectUri();
+        const idToken = consumeGoogleCredential();
+        let response;
 
-        const response = await googleLogin(code, redirectUri);
+        if (idToken) {
+          response = await socialLogin({ provider: "GOOGLE", idToken });
+        } else {
+          // 이미 진행 중인 기존 인가 코드 로그인도 같은 콜백에서 처리합니다.
+          const params = new URLSearchParams(window.location.search);
+          const code = params.get("code");
+          if (
+            params.get("error") ||
+            !code ||
+            !validateGoogleState(params.get("state"))
+          ) {
+            navigate("/login", { replace: true });
+            return;
+          }
+          response = await googleLogin(code, getGoogleRedirectUri());
+        }
 
-        console.log("구글 로그인 성공:", response);
-
-        navigate("/");
-      } catch (error) {
-        console.error("구글 로그인 API 요청 실패:", error);
-
-        navigate("/login");
+        navigate(response.data.isNewUser ? "/my/setting" : "/home", {
+          replace: true,
+          state: response.data.isNewUser ? { initialSetup: true } : undefined,
+        });
+      } catch (error: unknown) {
+        navigate("/login", {
+          replace: true,
+          state: { socialError: getApiErrorMessage(error) },
+        });
       }
     };
 
     handleGoogleCallback();
   }, [navigate]);
 
-  return <div>구글 로그인 처리 중...</div>;
+  return null;
 }
 
 export default GoogleCallbackPage;

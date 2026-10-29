@@ -30,6 +30,8 @@ export const startKakaoLogin = () => {
     client_id: KAKAO_REST_API_KEY,
     redirect_uri: redirectUri,
     response_type: "code",
+    // 백엔드에서 인가 코드를 ID 토큰으로 교환하는 로그인 흐름에 사용합니다.
+    scope: "openid",
     state,
   });
 
