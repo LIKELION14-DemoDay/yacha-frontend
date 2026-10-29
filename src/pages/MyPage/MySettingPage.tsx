@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useRef, useState, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { clearAccessToken } from "../../apis/tokenStore";
 import { changeMyPassword, updateMyNickname } from "../../apis/users";
@@ -12,7 +12,13 @@ import { useUserProfile } from "../../hooks/useUserProfile";
 import type { UserProfile } from "../../types/user";
 import { getApiErrorCode, getApiErrorMessage } from "../../utils/apiError";
 
-function ProfileSettings({ profile }: { profile: UserProfile }) {
+function ProfileSettings({
+  profile,
+  initialSetup,
+}: {
+  profile: UserProfile;
+  initialSetup: boolean;
+}) {
   const navigate = useNavigate();
   const [nickname, setNickname] = useState(profile.nickname);
   const [savedNickname, setSavedNickname] = useState(profile.nickname);
@@ -23,7 +29,7 @@ function ProfileSettings({ profile }: { profile: UserProfile }) {
   const isRequestPending = useRef(false);
   const philosopherName = profile.philosopher?.name;
   const canChangePassword = !profile.isGuest && profile.provider === "LOCAL";
-  const hasNicknameChange = nickname.trim() !== savedNickname;
+  const hasNicknameChange = initialSetup || nickname.trim() !== savedNickname;
   const hasPasswordChange =
     canChangePassword && Boolean(currentPassword || newPassword);
   const canSave =
@@ -55,7 +61,7 @@ function ProfileSettings({ profile }: { profile: UserProfile }) {
         setCurrentPassword("");
         setNewPassword("");
       }
-      navigate("/mypage");
+      navigate(initialSetup ? "/home" : "/mypage", { replace: initialSetup });
     } catch (error: unknown) {
       const code = getApiErrorCode(error);
       if (
@@ -158,7 +164,11 @@ function ProfileSettings({ profile }: { profile: UserProfile }) {
 
 function MySettingPage() {
   const navigate = useNavigate();
+  const { state } = useLocation();
   const { profile } = useUserProfile();
+  const initialSetup =
+    state?.initialSetup === true &&
+    !profile?.isGuest && profile?.provider !== "LOCAL";
 
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-100.5 flex-col bg-secondary text-white">
@@ -176,7 +186,13 @@ function MySettingPage() {
         <h1 className="text-subhead-m5">내 프로필 설정</h1>
       </header>
 
-      {profile && <ProfileSettings key={profile.userId} profile={profile} />}
+      {profile && (
+        <ProfileSettings
+          key={profile.userId}
+          profile={profile}
+          initialSetup={initialSetup}
+        />
+      )}
     </main>
   );
 }

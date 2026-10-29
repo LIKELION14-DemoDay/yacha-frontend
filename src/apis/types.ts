@@ -19,6 +19,11 @@ export type LoginRequest = {
   password: string;
 };
 
+export type SocialLoginRequest = {
+  provider: "KAKAO" | "GOOGLE";
+  idToken: string;
+};
+
 export type SignUpRequest = LoginRequest & {
   nickname: string;
 };

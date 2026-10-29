@@ -13,6 +13,7 @@ import type {
   PasswordResetVerificationRequest,
   PasswordResetVerificationResponse,
   SignUpRequest,
+  SocialLoginRequest,
   TokenResponse,
 } from "./types";
 
@@ -124,6 +125,28 @@ export const createGuest = async () => {
   return response.data;
 };
 
+const saveSocialLogin = (response: ApiResponse<TokenResponse>) => {
+  if (!response?.success) {
+    throw new ApiResponseError(response?.error);
+  }
+  const token = response.data?.accessToken;
+  if (typeof token !== "string" || token.trim().length === 0) {
+    throw new Error("소셜 로그인 응답에 유효한 액세스 토큰이 없습니다.");
+  }
+
+  setAccessToken(token);
+  return response;
+};
+
+export const socialLogin = async (credentials: SocialLoginRequest) => {
+  const response = await api.post<ApiResponse<TokenResponse>>(
+    "/api/v1/auth/social",
+    credentials,
+  );
+
+  return saveSocialLogin(response.data);
+};
+
 export const kakaoLogin = async (code: string, redirectUri: string) => {
   const response = await api.post<ApiResponse<TokenResponse>>(
     "/api/v1/auth/social/kakao",
@@ -133,9 +156,7 @@ export const kakaoLogin = async (code: string, redirectUri: string) => {
     },
   );
 
-  setAccessToken(response.data.data.accessToken);
-
-  return response.data;
+  return saveSocialLogin(response.data);
 };
 
 export const googleLogin = async (code: string, redirectUri: string) => {
@@ -147,9 +168,7 @@ export const googleLogin = async (code: string, redirectUri: string) => {
     },
   );
 
-  setAccessToken(response.data.data.accessToken);
-
-  return response.data;
+  return saveSocialLogin(response.data);
 };
 
 // 앱 시작 시 리프레시 쿠키로 액세스 토큰을 다시 받아 로그인 상태를 복구
