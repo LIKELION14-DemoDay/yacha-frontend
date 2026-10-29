@@ -36,7 +36,8 @@ function ArticleDetail({ articleId }: { articleId: number }) {
   const location = useLocation();
   const from = (location.state as { from?: unknown } | null)?.from;
   const returnTo =
-    typeof from === "string" && /^\/oneminute(?:\?|$)/.test(from)
+    typeof from === "string" &&
+    /^(?:\/oneminute|\/my\/bookmarks)(?:\?|$)/.test(from)
       ? from
       : "/oneminute";
   const [article, setArticle] = useState<PhilosophyArticleDetail | null>(null);

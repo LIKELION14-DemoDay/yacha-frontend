@@ -25,6 +25,11 @@ export type PastPhilosophyResponse = {
   hasNext: boolean;
 };
 
+export type PhilosophyBookmarksResponse = {
+  articles: PhilosophyArticle[];
+  hasNext: boolean;
+};
+
 export type PhilosophyArticleDetail = Omit<PhilosophyArticle, "philosophers"> & {
   philosophers: {
     type: string | null;

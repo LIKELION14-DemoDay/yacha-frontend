@@ -3,6 +3,7 @@ import type {
   PhilosophyArticleDetail,
   PhilosophyArticleDetailResponse,
   PhilosophyBookmarkResponse,
+  PhilosophyBookmarksResponse,
   PhilosophyMemoResponse,
   ThisWeekPhilosophyResponse,
 } from "../types/philosophy";
@@ -60,6 +61,14 @@ export const getPastPhilosophy = async (page = 0, signal?: AbortSignal) => {
   }
 
   return response.data;
+};
+
+export const getPhilosophyBookmarks = async (page = 0, signal?: AbortSignal) => {
+  const response = await api.get<ApiResponse<PhilosophyBookmarksResponse>>(
+    "/api/v1/philosophy/bookmarks",
+    { params: { page }, signal },
+  );
+  return readPhilosophyResponse(response.data);
 };
 
 export const getPhilosophyArticle = async (

@@ -13,6 +13,7 @@ import HomePage from "./pages/HomePage";
 import OneminutePage from "./pages/OneminutePage/OneminutePage";
 import OneminuteDetailPage from "./pages/OneminutePage/OneminuteDetailPage";
 import MyPage from "./pages/MyPage/MyPage";
+import MyBookmarkPage from "./pages/MyPage/MyBookmarkPage";
 import MySettingPage from "./pages/MyPage/MySettingPage";
 import GamePage from "./pages/GamePage/GamePage";
 import ResultPage from "./pages/GamePage/ResultPage";
@@ -41,6 +42,7 @@ function App() {
         <Route path="/oneminute" element={<OneminutePage />} />
         <Route path="/oneminute/:id" element={<OneminuteDetailPage />} />
         <Route path="/mypage" element={<MyPage />} />
+        <Route path="/my/bookmarks" element={<MyBookmarkPage />} />
         <Route path="/my/setting" element={<MySettingPage />} />
         <Route path="/game/rooms" element={<RoomListPage />} />
         <Route path="/game/select" element={<StanceSelectPage />} />
