@@ -97,6 +97,7 @@ api.interceptors.response.use(undefined, async (error: unknown) => {
 
   if (
     error.response?.status !== 401 ||
+    originalRequest.signal?.aborted ||
     originalRequest._retry ||
     isNoRefreshPath
   ) {
