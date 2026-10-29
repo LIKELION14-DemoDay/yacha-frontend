@@ -1,16 +1,36 @@
+import { useRef, useState, useSyncExternalStore } from "react";
 import { useNavigate } from "react-router-dom";
 
-import balanceFirst from "../assets/balance-first.svg";
-import brandLogo from "../assets/brand-logo.svg";
-import LongButton from "../components/Button";
-import StatusBar from "../components/StatusBar";
+import { skipBalanceGame } from "../../apis/balanceGame";
+import { getAccessToken, subscribeAccessToken } from "../../apis/tokenStore";
+import balanceFirst from "../../assets/balance-first.svg";
+import brandLogo from "../../assets/brand-logo.svg";
+import LongButton from "../../components/Button";
+import StatusBar from "../../components/StatusBar";
+import Toast from "../../components/Toast";
+import { useToast } from "../../hooks/useToast";
+import { getApiErrorMessage } from "../../utils/apiError";
 
 function BalanceGamePage() {
   const navigate = useNavigate();
+  const token = useSyncExternalStore(subscribeAccessToken, getAccessToken);
+  const [isSkipping, setIsSkipping] = useState(false);
+  const skipPendingRef = useRef(false);
+  const { toastMessage, showToast } = useToast();
 
-  const handleConfirm = () => {
-    // TODO: 밸런스 게임 진행 페이지가 준비되면 아래 주석을 해제해 이동합니다.
-    // navigate("/balance/game");
+  const handleSkip = async () => {
+    if (skipPendingRef.current) return;
+    skipPendingRef.current = true;
+    setIsSkipping(true);
+    try {
+      await skipBalanceGame(Boolean(token));
+      navigate(token ? "/mypage" : "/login", { replace: true });
+    } catch (error: unknown) {
+      showToast(getApiErrorMessage(error));
+    } finally {
+      skipPendingRef.current = false;
+      setIsSkipping(false);
+    }
   };
 
   return (
@@ -44,17 +64,20 @@ function BalanceGamePage() {
       <section className="flex shrink-0 flex-col gap-3 px-6 pt-2.5 pb-17.5">
         <LongButton
           className="!bg-main !text-white hover:!bg-main-006"
-          onClick={handleConfirm}
+          onClick={() => navigate("/balance/game")}
+          disabled={isSkipping}
         >
           확인
         </LongButton>
         <LongButton
           className="!bg-neutral-008 !text-white hover:!bg-neutral-007"
-          onClick={() => navigate("/login")}
+          onClick={handleSkip}
+          disabled={isSkipping}
         >
-          건너뛰기
+          {isSkipping ? "처리 중..." : "건너뛰기"}
         </LongButton>
       </section>
+      <Toast message={toastMessage} />
     </main>
   );
 }
