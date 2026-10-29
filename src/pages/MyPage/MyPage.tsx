@@ -193,9 +193,9 @@ function MyPage() {
             </section>
 
             <section>
-              {/* 북마크 페이지가 준비되면 이동 경로를 연결합니다. */}
               <button
                 type="button"
+                onClick={() => navigate("/my/bookmarks")}
                 className="w-full cursor-pointer border-b border-neutral-009 px-6 py-5 text-left text-body-r2"
               >
                 북마크

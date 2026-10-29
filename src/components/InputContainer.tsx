@@ -79,6 +79,7 @@ const InputContainer = forwardRef<HTMLInputElement, InputContainerProps>(
       id,
       type = "text",
       value,
+      placeholder,
       disabled = false,
       onBlur,
       onChange,
@@ -173,6 +174,7 @@ const InputContainer = forwardRef<HTMLInputElement, InputContainerProps>(
             id={inputId}
             type={inputType}
             value={value}
+            placeholder={hasValue || isFocused ? undefined : placeholder}
             disabled={disabled}
             aria-describedby={describedBy || undefined}
             aria-invalid={currentState === "error" || undefined}

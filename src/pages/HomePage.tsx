@@ -1,10 +1,30 @@
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
+import ethicsIcon from "../assets/balance-scale-solid.svg";
+import humanIcon from "../assets/home/temporary-human-home.svg";
+import lifeIcon from "../assets/home/temporary-life-home.svg";
+import moneyIcon from "../assets/home/temporary-money-home.svg";
+import relationIcon from "../assets/home/temporary-relation-home.svg";
+import socialIcon from "../assets/home/temporary-social-home.svg";
+import techIcon from "../assets/home/temporary-tech-home.svg";
+import trueIcon from "../assets/home/temporary-true-home.svg";
 import homeImage from "../assets/home-image1.png";
 import homeLogo from "../assets/home-logo.svg";
 import StatusBar from "../components/StatusBar";
+import type { TopicCategory } from "../types/topic";
 import { CATEGORIES, CATEGORY_LABEL } from "../utils/category";
+
+const CATEGORY_ICONS: Record<TopicCategory, string> = {
+  HUMAN: humanIcon,
+  RELATIONSHIP: relationIcon,
+  ETHICS: ethicsIcon,
+  SOCIETY: socialIcon,
+  LIFE_AND_DEATH: lifeIcon,
+  TECH_AND_FUTURE: techIcon,
+  MONEY_AND_SUCCESS: moneyIcon,
+  TRUTH_AND_BELIEF: trueIcon,
+};
 
 const philosophyCards = [
   {
@@ -24,7 +44,15 @@ const philosophyCards = [
   },
 ] as const;
 
-function TopicCard({ topic, onClick }: { topic: string; onClick: () => void }) {
+function TopicCard({
+  topic,
+  icon,
+  onClick,
+}: {
+  topic: string;
+  icon: string;
+  onClick: () => void;
+}) {
   return (
     <button
       type="button"
@@ -32,9 +60,10 @@ function TopicCard({ topic, onClick }: { topic: string; onClick: () => void }) {
       className="group flex min-w-0 cursor-pointer flex-col items-center gap-1 text-body-r6 text-white"
       aria-label={`${topic} 주제 선택`}
     >
-      <span
-        aria-hidden="true"
-        className="aspect-square w-full bg-white transition-colors group-hover:bg-neutral-003 group-focus-visible:bg-neutral-003"
+      <img
+        src={icon}
+        alt=""
+        className="aspect-square w-full object-contain"
       />
       <span className="w-full truncate text-center">{topic}</span>
     </button>
@@ -120,6 +149,7 @@ function HomePage() {
             <TopicCard
               key={category}
               topic={CATEGORY_LABEL[category]}
+              icon={CATEGORY_ICONS[category]}
               onClick={() => navigate(`/game/rooms?category=${category}`)}
             />
           ))}

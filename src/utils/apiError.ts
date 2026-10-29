@@ -7,13 +7,15 @@ import type { ApiError, ApiResponse } from "../apis/types";
 
 const DEFAULT_ERROR_MESSAGE = "요청을 처리하지 못했습니다. 다시 시도해주세요.";
 
-// HTTP 200으로 전달된 실패 응답도 서버의 오류 코드와 메시지를 유지합니다.
+// HTTP 200으로 전달된 실패 응답도 서버의 오류 정보와 추적 ID를 유지합니다.
 export class ApiResponseError extends Error {
   readonly code?: string;
+  readonly traceId?: string;
 
-  constructor(error?: ApiError | null) {
+  constructor(error?: ApiError | null, traceId?: string) {
     super(error?.message?.trim() || DEFAULT_ERROR_MESSAGE);
     this.code = error?.code;
+    this.traceId = traceId;
   }
 }
 
@@ -22,6 +24,13 @@ export const getApiErrorCode = (error: unknown) =>
     ? error.response?.data?.error?.code
     : error instanceof ApiResponseError
       ? error.code
+      : undefined;
+
+export const getApiErrorTraceId = (error: unknown) =>
+  axios.isAxiosError<ApiResponse<unknown>>(error)
+    ? error.response?.data?.traceId
+    : error instanceof ApiResponseError
+      ? error.traceId
       : undefined;
 
 export const getApiErrorMessage = (error: unknown) => {

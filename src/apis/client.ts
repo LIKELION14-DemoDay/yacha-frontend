@@ -12,7 +12,10 @@ import {
 } from "./tokenStore";
 import type { ApiResponse, TokenResponse } from "./types";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+// 로컬에서는 Vite 프록시를 거쳐 HttpOnly 쿠키를 같은 사이트에서 주고받습니다.
+export const API_BASE_URL = import.meta.env.DEV
+  ? ""
+  : import.meta.env.VITE_API_BASE_URL;
 export const REFRESH_TOKEN_PATH = "/api/v1/auth/token/refresh";
 
 const api = axios.create({
