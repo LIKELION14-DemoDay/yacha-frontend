@@ -3,7 +3,7 @@
  * 매칭 완료부터 채팅까지 한 페이지 안에서 구간(phase)에 따라 화면만 바꿈
  * (페이지를 나누면 바뀔 때마다 실시간 연결이 끊겼다 다시 붙음)
  */
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { leaveSession } from "../../apis/sessions";
@@ -28,6 +28,7 @@ import type {
   Stance,
 } from "../../types/session";
 import { getChatErrorMessage } from "../../utils/chatError";
+import { STANCE_LABEL } from "../../utils/stance";
 import ArgumentPhase from "./ArgumentPhase";
 import ChatPhase from "./ChatPhase";
 import MatchedIntro from "./MatchedIntro";
@@ -44,6 +45,9 @@ const PHASE_SECONDS: Record<SessionPhase, number> = {
 
 // 채팅 구간 마지막 30초는 최종발언
 const FINAL_NOTICE_SECONDS = 30;
+
+// 상대 끊김 안내를 미루는 시간 (입장 직후 끊김 → 다시 연결이 바로 오는 경우를 거름)
+const DISCONNECT_NOTICE_DELAY_MS = 2000;
 
 // 주장 작성 구간 처음 몇 초는 매칭 완료 화면
 const MATCHED_INTRO_SECONDS = 3;
@@ -74,6 +78,13 @@ const GamePage = () => {
   );
   const [isLeaveModalOpen, setIsLeaveModalOpen] = useState(false);
   const { toastMessage, showToast } = useToast();
+  // 상대 끊김 안내는 잠깐 미뤘다가 띄움 (그사이 다시 연결되면 취소)
+  const disconnectToastTimeoutRef =
+    useRef<ReturnType<typeof setTimeout>>(undefined);
+  // 끊김 안내를 실제로 띄웠을 때만 다시 연결 안내를 띄움
+  const isOpponentAwayNoticedRef = useRef(false);
+
+  useEffect(() => () => clearTimeout(disconnectToastTimeoutRef.current), []);
 
   // 판정이 시작되거나 게임이 끝나면 결과 페이지로 (뒤로 와도 토론방으로 안 돌아오게)
   const goToResult = useCallback(() => {
@@ -133,11 +144,22 @@ const GamePage = () => {
             current ? { ...current, endsAt: event.endsAt } : current,
           );
           break;
+        // 입장 직후처럼 끊김 바로 뒤에 다시 연결되면 두 안내 모두 띄우지 않음
         case "OPPONENT_DISCONNECTED":
-          showToast("상대의 연결이 끊겼어요. 잠시 기다려 주세요.");
+          clearTimeout(disconnectToastTimeoutRef.current);
+          disconnectToastTimeoutRef.current = setTimeout(() => {
+            disconnectToastTimeoutRef.current = undefined;
+            isOpponentAwayNoticedRef.current = true;
+            showToast("상대의 연결이 끊겼어요. 잠시 기다려 주세요.");
+          }, DISCONNECT_NOTICE_DELAY_MS);
           break;
         case "OPPONENT_RECONNECTED":
-          showToast("상대가 다시 연결됐어요.");
+          clearTimeout(disconnectToastTimeoutRef.current);
+          disconnectToastTimeoutRef.current = undefined;
+          if (isOpponentAwayNoticedRef.current) {
+            isOpponentAwayNoticedRef.current = false;
+            showToast("상대가 다시 연결됐어요.");
+          }
           break;
         // 상대가 나가 몰수승 · 봇 오류로 무효 등 판정 없이 끝난 경우도 결과 페이지에서 안내
         case "SESSION_FINISHED":
@@ -300,10 +322,12 @@ const GamePage = () => {
               ? "반론을 작성해주세요."
               : "근거를 작성해주세요."
           }
-          stanceText={getStanceText(me.stance)}
+          topicStatement={gameState.topic.statement}
+          stanceLabel={STANCE_LABEL[me.stance]}
+          // 반론 때만 상대 주장을 넘김 (아직 안 왔으면 null 로 불러오는 중 표시)
           opponentArgument={
             phase === "REBUTTAL"
-              ? (getArgument(opponent?.participantId) ?? "")
+              ? getArgument(opponent?.participantId)
               : undefined
           }
           remainingSeconds={remainingSeconds}

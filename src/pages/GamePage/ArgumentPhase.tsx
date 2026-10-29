@@ -44,10 +44,11 @@ interface ArgumentPhaseProps {
   sessionId: number;
   phase: "PREP" | "REBUTTAL";
   title: string;
-  // 내 입장 문장 (주제의 agreeText / disagreeText)
-  stanceText: string;
-  // 반론 작성 때 위에 보여 줄 상대 주장 (있으면 내 입장 대신 표시)
-  opponentArgument?: string;
+  // 주장 작성 위쪽에 보일 주제 문장과 내 입장 (예: 찬성)
+  topicStatement: string;
+  stanceLabel: string;
+  // 반론 작성 때 위에 보여 줄 상대 주장 (있으면 내 입장 대신 표시, null 이면 아직 불러오는 중)
+  opponentArgument?: string | null;
   remainingSeconds: number;
   // 힌트 보기 버튼 (주장 작성에서만)
   canUseHints?: boolean;
@@ -58,7 +59,8 @@ const ArgumentPhase = ({
   sessionId,
   phase,
   title,
-  stanceText,
+  topicStatement,
+  stanceLabel,
   opponentArgument,
   remainingSeconds,
   canUseHints = false,
@@ -226,11 +228,13 @@ const ArgumentPhase = ({
     <>
       {opponentArgument === undefined ? (
         <section className="shrink-0 py-2.5">
-          <h1 className="px-6 py-2.5 text-headline-sb5 text-white">{title}</h1>
           <div className="flex flex-col px-6 py-1">
-            <p className="text-body-m3 text-neutral-007">내 입장</p>
-            <p className="text-body-m1 break-keep text-main">“{stanceText}”</p>
+            <p className="text-body-r4 wrap-break-word text-neutral-007">
+              “{topicStatement}”
+            </p>
+            <p className="text-body-m1 text-main">{stanceLabel} 입장</p>
           </div>
+          <h1 className="px-6 py-2.5 text-headline-sb5 text-white">{title}</h1>
         </section>
       ) : (
         <section className="shrink-0">
@@ -239,7 +243,9 @@ const ArgumentPhase = ({
             <p className="text-subhead-m7 text-neutral-008">상대 입장</p>
             {/* 긴 주장은 이 칸 안에서 스크롤 (얇은 스크롤 막대) */}
             <p className="h-25 overflow-y-auto py-1 pr-5 text-body-r4 wrap-break-word whitespace-pre-wrap text-neutral-006 [scrollbar-color:var(--color-neutral-003)_var(--color-neutral-008)] [scrollbar-width:thin] [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-[11px] [&::-webkit-scrollbar-thumb]:bg-neutral-003 [&::-webkit-scrollbar-track]:rounded-[10px] [&::-webkit-scrollbar-track]:bg-neutral-008">
-              {opponentArgument.trim() || "상대가 작성한 주장이 없어요"}
+              {opponentArgument === null
+                ? "상대 주장을 불러오는 중이에요"
+                : opponentArgument.trim() || "상대가 작성한 주장이 없어요"}
             </p>
           </div>
         </section>

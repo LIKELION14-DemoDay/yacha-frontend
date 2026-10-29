@@ -45,6 +45,7 @@ const ChatPhase = ({
         messages={messages}
         myParticipantId={myParticipantId}
         getSender={getSender}
+        paddedTop={isFinalNotice}
       />
 
       <div className="shrink-0 px-2.25 py-2.5">

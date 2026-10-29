@@ -53,11 +53,19 @@ const StanceBubble = ({
           isMine ? "bg-main" : "bg-neutral-008"
         }`}
       >
-        <p className={`flex items-center gap-2 text-subhead-m7 ${textColor}`}>
+        <div className="flex items-center gap-2">
           <ProfilePlaceholder />
-          <span className="truncate">{name}</span>
-          <span className="shrink-0">({STANCE_LABEL[stance]})</span>
-        </p>
+          <p className="flex min-w-0 items-center gap-1 whitespace-nowrap">
+            <span className={`truncate text-subhead-m7 ${textColor}`}>
+              {name}
+            </span>
+            <span
+              className={`shrink-0 text-subhead-r8 ${isMine ? "text-white opacity-70" : "text-neutral-006"}`}
+            >
+              ({STANCE_LABEL[stance]})
+            </span>
+          </p>
+        </div>
 
         {/* 줄일 때는 본문 칸 최대 86px 안에 4줄 (넘쳐서 줄였을 때만 칸을 86px 로 채움) */}
         <div
