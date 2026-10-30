@@ -18,19 +18,33 @@ function PhilosopherImage({
   size = "lg",
 }: PhilosopherImageProps) {
   const [failedUrl, setFailedUrl] = useState<string | null>(null);
+  const [paddedUrl, setPaddedUrl] = useState<string | null>(null);
 
   return (
     <span
       role="img"
       aria-label={alt}
-      className={`flex shrink-0 items-center justify-center overflow-hidden ${SIZE_CLASS_NAMES[size]}`}
+      className={`relative flex shrink-0 items-center justify-center overflow-hidden ${SIZE_CLASS_NAMES[size]}`}
     >
       {imageUrl && failedUrl !== imageUrl ? (
         <img
           key={imageUrl}
           src={imageUrl}
           alt=""
-          className="size-full rounded-[inherit] object-contain"
+          className={
+            paddedUrl === imageUrl
+              ? "absolute top-0 left-[-14.285714%] h-[128.571429%] w-[128.571429%] max-w-none"
+              : "size-full rounded-[inherit] object-contain"
+          }
+          onLoad={({ currentTarget }) => {
+            const isPaddedPortrait =
+              /\/api\/v1\/philosopher-images\/[^/?#]+\.svg(?:[?#]|$)/.test(
+                imageUrl,
+              ) &&
+              currentTarget.naturalWidth === 36 &&
+              currentTarget.naturalHeight === 36;
+            setPaddedUrl(isPaddedPortrait ? imageUrl : null);
+          }}
           onError={() => setFailedUrl(imageUrl)}
         />
       ) : (
