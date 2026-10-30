@@ -103,13 +103,13 @@ function TopicCard({
   );
 }
 
-function PhilosophyCard({
+const PhilosophyCard = ({
   card,
   onClick,
 }: {
   card: PhilosophyCardItem;
   onClick: () => void;
-}) {
+}) => {
   return (
     <button
       type="button"
@@ -144,7 +144,7 @@ function PhilosophyCard({
       </div>
     </button>
   );
-}
+};
 
 function HomePage() {
   const navigate = useNavigate();

@@ -99,7 +99,8 @@ function OnboardingPage() {
 
   return (
     // 가운데 그림이 남는 높이에 맞춰 줄어들어, 작은 화면에서도 버튼까지 한 화면에 (cqh = 화면 높이의 1%)
-    <main className="mx-auto flex h-full w-full max-w-100.5 flex-col overflow-hidden bg-secondary [container-type:size]">
+    // 그래도 모자란 아주 짧은 화면에서는 스크롤
+    <main className="mx-auto flex h-full w-full max-w-100.5 flex-col overflow-y-auto bg-secondary [container-type:size] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       <section className="flex shrink-0 flex-col gap-6">
         <div className="flex flex-col items-start self-stretch px-6 py-4">
           <img src={brandLogo} alt="야차철학" />
@@ -119,7 +120,7 @@ function OnboardingPage() {
         </div>
       </section>
 
-      <section className="flex min-h-0 flex-1 items-center justify-center py-[6cqh]">
+      <section className="flex min-h-24 flex-1 items-center justify-center py-[6cqh]">
         <img
           src={slide.image}
           alt={slide.imageAlt}
