@@ -6,7 +6,6 @@ import { getAccessToken, subscribeAccessToken } from "../../apis/tokenStore";
 import balanceFirst from "../../assets/balance-first.svg";
 import brandLogo from "../../assets/brand-logo.svg";
 import LongButton from "../../components/Button";
-import StatusBar from "../../components/StatusBar";
 import Toast from "../../components/Toast";
 import { useToast } from "../../hooks/useToast";
 import { getApiErrorMessage } from "../../utils/apiError";
@@ -34,10 +33,8 @@ function BalanceGamePage() {
   };
 
   return (
-    <main className="mx-auto flex h-dvh min-h-166.75 w-full max-w-100.5 flex-col justify-between overflow-hidden bg-secondary">
-      <section className="flex h-152.75 shrink-0 flex-col">
-        <StatusBar />
-
+    <main className="mx-auto flex h-full w-full max-w-100.5 flex-col justify-between overflow-hidden bg-secondary">
+      <section className="flex min-h-0 flex-1 flex-col">
         <div className="flex min-h-0 flex-1 flex-col">
           <div className="flex min-h-0 flex-1 items-end justify-center pb-3">
             <img

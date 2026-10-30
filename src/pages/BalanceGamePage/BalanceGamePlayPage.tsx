@@ -10,7 +10,6 @@ import { getAccessToken, subscribeAccessToken } from "../../apis/tokenStore";
 import LongButton from "../../components/Button";
 import ChoiceOptions from "../../components/ChoiceOptions";
 import ConfirmModal from "../../components/ConfirmModal";
-import StatusBar from "../../components/StatusBar";
 import Toast from "../../components/Toast";
 import TopBar from "../../components/TopBar";
 import { useToast } from "../../hooks/useToast";
@@ -99,10 +98,7 @@ function BalanceGamePlayPage() {
   };
 
   return (
-    <main className="mx-auto flex h-dvh w-full max-w-100.5 flex-col overflow-hidden bg-secondary text-white">
-      <div className="shrink-0">
-        <StatusBar />
-      </div>
+    <main className="mx-auto flex h-full w-full max-w-100.5 flex-col overflow-hidden bg-secondary text-white [container-type:size]">
       <TopBar
         action={
           <div className="relative flex w-full items-center justify-center">
@@ -124,7 +120,7 @@ function BalanceGamePlayPage() {
         className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         inert={quitOpen || isPending}
       >
-        <div className="shrink-0 px-6 pt-5 pb-10">
+        <div className="shrink-0 px-6 pt-5 pb-[4.9cqh]">
           <div className="h-1.25 w-full bg-neutral-008">
             <div
               className="h-full bg-main transition-[width] duration-300 motion-reduce:transition-none"
@@ -153,7 +149,7 @@ function BalanceGamePlayPage() {
                 <p className="text-body-r2 text-neutral-006">당신의 선택은?</p>
               </div>
             </section>
-            <section className="flex flex-1 items-center px-6 py-10">
+            <section className="flex flex-1 items-center px-6 py-4">
               <ChoiceOptions
                 options={[question.optionA, question.optionB]}
                 selectedIndex={selectedIndex}
@@ -181,7 +177,7 @@ function BalanceGamePlayPage() {
         )}
       </div>
 
-      <div className="shrink-0 px-6 pt-2.5 pb-12.5" inert={quitOpen}>
+      <div className="shrink-0 px-6 pt-2.5 pb-[6.1cqh]" inert={quitOpen}>
         <LongButton
           disabled={!canConfirm}
           onClick={handleConfirm}

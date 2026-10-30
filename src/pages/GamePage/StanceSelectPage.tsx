@@ -104,18 +104,21 @@ const StanceSelectPage = () => {
     !isChangingTopic;
 
   return (
-    <main className="mx-auto flex h-dvh w-full max-w-100.5 flex-col bg-secondary">
+    // 세로 여백은 피그마 간격 비율대로 늘고 줄어듦 (cqh = 화면 높이의 1%)
+    <main className="mx-auto flex h-full w-full max-w-100.5 flex-col bg-secondary [container-type:size]">
       <TopBar title="랜덤 주제로 야차 뜨기" onBack={() => navigate(-1)} />
 
       {/* 주제가 길어 화면이 모자라면 겹치지 않고 스크롤 */}
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        <section className="shrink-0 px-6 pt-20">
+        <div aria-hidden="true" className="min-h-4 flex-80" />
+        <section className="shrink-0 px-6">
           <ChoiceQuestion
             question={topic?.statement ?? "주제를 불러오는 중이에요"}
           />
         </section>
 
-        <section className="flex flex-1 items-center px-6 pt-8 pb-15">
+        <div aria-hidden="true" className="min-h-4 flex-32" />
+        <section className="flex shrink-0 items-center px-6">
           <ChoiceOptions
             options={[
               topic?.agreeText ?? "예",
@@ -126,6 +129,7 @@ const StanceSelectPage = () => {
             label="입장 선택"
           />
         </section>
+        <div aria-hidden="true" className="min-h-4 flex-60" />
       </div>
 
       <button
@@ -137,7 +141,7 @@ const StanceSelectPage = () => {
         주제 바꾸기
       </button>
 
-      <div className="shrink-0 px-6 pt-2.5 pb-12.5">
+      <div className="shrink-0 px-6 pt-2.5 pb-[6.1cqh]">
         <LongButton
           disabled={!canConfirm}
           onClick={handleConfirm}

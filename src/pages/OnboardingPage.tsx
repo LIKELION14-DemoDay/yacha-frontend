@@ -5,7 +5,6 @@ import brandLogo from "../assets/brand-logo.svg";
 import onboardingImage from "../assets/onboarding.png";
 import onboardingSecondImage from "../assets/onboarding2.png";
 import LongButton from "../components/Button";
-import StatusBar from "../components/StatusBar";
 
 const OnboardingIntro = lazy(() => import("../components/OnboardingIntro"));
 
@@ -90,8 +89,7 @@ function OnboardingPage() {
 
   if (showIntro) {
     return (
-      <main className="relative mx-auto flex h-dvh min-h-166.75 w-full max-w-100.5 flex-col overflow-hidden bg-secondary">
-        <StatusBar />
+      <main className="relative mx-auto flex h-full w-full max-w-100.5 flex-col overflow-hidden bg-secondary">
         <Suspense fallback={null}>
           <OnboardingIntro onComplete={finishIntro} />
         </Suspense>
@@ -100,9 +98,8 @@ function OnboardingPage() {
   }
 
   return (
-    <main className="mx-auto flex min-h-dvh w-full max-w-100.5 flex-col bg-secondary">
-      <StatusBar />
-
+    // 가운데 그림이 남는 높이에 맞춰 줄어들어, 작은 화면에서도 버튼까지 한 화면에 (cqh = 화면 높이의 1%)
+    <main className="mx-auto flex h-full w-full max-w-100.5 flex-col overflow-hidden bg-secondary [container-type:size]">
       <section className="flex shrink-0 flex-col gap-6">
         <div className="flex flex-col items-start self-stretch px-6 py-4">
           <img src={brandLogo} alt="야차철학" />
@@ -122,11 +119,11 @@ function OnboardingPage() {
         </div>
       </section>
 
-      <section className="my-auto shrink-0 py-12.25">
+      <section className="flex min-h-0 flex-1 items-center justify-center py-[6cqh]">
         <img
           src={slide.image}
           alt={slide.imageAlt}
-          className="block aspect-[402/256.416] w-full object-contain"
+          className="block aspect-[402/256.416] max-h-full w-full object-contain"
         />
       </section>
       <section className="flex shrink-0 flex-col gap-5">
@@ -150,7 +147,7 @@ function OnboardingPage() {
           })}
         </div>
 
-        <div className="px-6 pt-2.5 pb-20.25">
+        <div className="px-6 pt-2.5 pb-[9.9cqh]">
           <LongButton
             className="!bg-main !text-white hover:!bg-main-006"
             onClick={handleNext}

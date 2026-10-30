@@ -9,7 +9,6 @@ import logoLeft from "../../assets/logo-left.svg";
 import logoRight from "../../assets/logo-right.svg";
 import LongButton from "../../components/Button";
 import PhilosopherImage from "../../components/PhilosopherImage";
-import StatusBar from "../../components/StatusBar";
 import { useUserProfile } from "../../hooks/useUserProfile";
 import type { UserProfile } from "../../types/user";
 import { isPhilosopherType } from "../../types/balanceGame";
@@ -17,7 +16,7 @@ import { getApiErrorMessage } from "../../utils/apiError";
 
 function ProfileHero({ imageUrl }: { imageUrl?: string }) {
   return (
-    <section className="relative h-24.5 shrink-0">
+    <section className="relative h-[12cqh] min-h-20 shrink-0">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_55%_45%_at_50%_110%,#4d4747_0%,transparent_100%)]" />
       <img
         src={logoRight}
@@ -105,11 +104,8 @@ function MyPage() {
   };
 
   return (
-    <main className="mx-auto flex min-h-dvh w-full max-w-100.5 flex-col overflow-hidden bg-secondary text-white">
-      <div className="shrink-0">
-        <StatusBar />
-      </div>
-
+    // 높이는 화면(앱 틀) 비율로 나눔 (cqh = 화면 높이의 1%), 아주 작은 화면에서는 아래 메뉴만 스크롤
+    <main className="mx-auto flex h-full w-full max-w-100.5 flex-col overflow-hidden bg-secondary text-white [container-type:size]">
       <header className="flex h-12 shrink-0 items-center gap-2.5 px-6 py-2">
         <button
           type="button"
@@ -139,7 +135,7 @@ function MyPage() {
         <>
           <ProfileHero imageUrl={profile.philosopher?.imageUrl} />
 
-          <section className="flex shrink-0 flex-col items-center gap-1 px-6 pt-4 pb-7">
+          <section className="flex shrink-0 flex-col items-center gap-1 px-6 pt-[2cqh] pb-[2cqh]">
             <p className="text-subhead-r8 text-neutral-006">
               {philosopherName}
             </p>
@@ -148,7 +144,7 @@ function MyPage() {
 
           <BattleRecord stats={profile.stats} />
 
-          <div className="flex flex-1 flex-col gap-5 py-10">
+          <div className="flex min-h-0 flex-1 flex-col gap-[2cqh] overflow-y-auto py-[2.4cqh] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             <section className="flex flex-col">
               <h2 className="px-6 py-1 text-body-m3 text-neutral-006">
                 내 정보

@@ -10,7 +10,6 @@ import kakaoLogin from "../../assets/kakao_login.svg";
 import loginLogo from "../../assets/login-logo.svg?raw";
 import LongButton from "../../components/Button";
 import InputContainer from "../../components/InputContainer";
-import StatusBar from "../../components/StatusBar";
 import { startGoogleLogin } from "../../utils/google";
 import { startKakaoLogin } from "../../utils/kakao";
 
@@ -79,10 +78,10 @@ function LoginPage() {
   };
 
   return (
-    <main className="mx-auto flex h-dvh min-h-166.75 w-full max-w-100.5 flex-col overflow-y-auto bg-secondary">
-      <StatusBar />
-
-      <section className="flex shrink-0 flex-col items-center pt-30 pb-10">
+    // 세로 여백은 피그마 간격(120 · 40 · 남는 86) 비율대로 늘고 줄어듦
+    <main className="mx-auto flex h-full w-full max-w-100.5 flex-col overflow-y-auto bg-secondary">
+      <div aria-hidden="true" className="min-h-6 flex-120" />
+      <section className="flex shrink-0 flex-col items-center">
         <span
           className="text-white"
           role="img"
@@ -90,6 +89,7 @@ function LoginPage() {
           dangerouslySetInnerHTML={{ __html: loginLogo }}
         />
       </section>
+      <div aria-hidden="true" className="min-h-4 flex-40" />
 
       <form
         onSubmit={handleSubmit}
@@ -221,6 +221,7 @@ function LoginPage() {
           </button>
         </div>
       </section>
+      <div aria-hidden="true" className="flex-86" />
     </main>
   );
 }
