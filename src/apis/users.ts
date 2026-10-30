@@ -1,5 +1,6 @@
 import type { ChangePasswordRequest, UserProfile } from "../types/user";
 import { ApiResponseError } from "../utils/apiError";
+import { writeProfileCache } from "../utils/profileCache";
 import api from "./client";
 import { setAccessToken } from "./tokenStore";
 import type { ApiResponse, TokenResponse } from "./types";
@@ -31,6 +32,8 @@ export const updateMyNickname = async (nickname: string) => {
     throw new Error("변경된 사용자 정보가 없습니다.");
   }
 
+  // 바뀐 닉네임이 다른 화면에도 바로 보이게 저장해 둔 내 정보도 갱신
+  writeProfileCache(response.data.data);
   return response.data.data;
 };
 

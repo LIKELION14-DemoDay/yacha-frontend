@@ -6,17 +6,21 @@ import { clearAccessToken } from "../apis/tokenStore";
 import { getMyProfile } from "../apis/users";
 import type { UserProfile } from "../types/user";
 import { getApiErrorCode } from "../utils/apiError";
+import { readProfileCache, writeProfileCache } from "../utils/profileCache";
 
+// 기기에 저장해 둔 내 정보로 바로 그리고, 서버 정보는 뒤에서 새로 받아 바뀐 것만 반영
 export const useUserProfile = () => {
   const navigate = useNavigate();
-  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(readProfileCache);
 
   useEffect(() => {
     const controller = new AbortController();
 
     getMyProfile(controller.signal)
       .then((data) => {
-        if (!controller.signal.aborted) setProfile(data);
+        if (controller.signal.aborted) return;
+        setProfile(data);
+        writeProfileCache(data);
       })
       .catch((error: unknown) => {
         if (controller.signal.aborted) return;

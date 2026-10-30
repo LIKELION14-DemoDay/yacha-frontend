@@ -48,6 +48,26 @@ export default defineConfig(({ mode }) => {
         // 새 버전이 배포되면 안내 없이 바로 적용 (예전 버전이 남아 있지 않게)
         registerType: "autoUpdate",
 
+        workbox: {
+          runtimeCaching: [
+            {
+              // 철학자 사진은 한 번 받으면 기기에 두고 바로 보여 주고, 뒤에서 새로 받아 다음에 반영
+              // (유형이 바뀌면 사진 주소도 달라져 새 사진을 받음)
+              urlPattern: /\/api\/v1\/philosopher-images\//,
+              handler: "StaleWhileRevalidate",
+              options: {
+                cacheName: "philosopher-images",
+                expiration: {
+                  maxEntries: 20,
+                  maxAgeSeconds: 60 * 60 * 24 * 30,
+                },
+                // 다른 도메인(API 서버) 이미지라 응답 내용을 볼 수 없는 경우(0)도 저장
+                cacheableResponse: { statuses: [0, 200] },
+              },
+            },
+          ],
+        },
+
         // PWA 앱 정보 설정
         manifest: {
           name: "야차철학",
