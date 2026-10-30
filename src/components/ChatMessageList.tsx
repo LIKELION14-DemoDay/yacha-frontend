@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 
 import ChatMessageGroup from "./ChatMessageGroup";
 import type { SessionMessage, Stance } from "../types/session";
@@ -15,6 +15,8 @@ interface ChatMessageListProps {
   getSender: (participantId: number) => ChatSender;
   // 위쪽 10px 여백 (최종발언 안내 띠 아래), 자유 채팅은 구분선 바로 아래부터
   paddedTop?: boolean;
+  // 메시지 위에 함께 스크롤되는 내용 (예: 채팅 시작 때 공개된 양측 반론)
+  header?: ReactNode;
 }
 
 // 이 거리 안에서 보고 있으면 새 메시지가 올 때 맨 아래로 따라 내려감
@@ -44,6 +46,7 @@ const ChatMessageList = ({
   myParticipantId,
   getSender,
   paddedTop = false,
+  header,
 }: ChatMessageListProps) => {
   const listRef = useRef<HTMLDivElement>(null);
   const isNearBottomRef = useRef(true);
@@ -56,6 +59,19 @@ const ChatMessageList = ({
       list.scrollHeight - list.scrollTop - list.clientHeight <
       AUTO_SCROLL_THRESHOLD_PX;
   };
+
+  // 키보드가 올라오는 등으로 목록 높이가 바뀌어도 맨 아래를 보고 있었다면 맨 아래 유지
+  useEffect(() => {
+    const list = listRef.current;
+    if (!list) return;
+
+    const observer = new ResizeObserver(() => {
+      if (isNearBottomRef.current) list.scrollTop = list.scrollHeight;
+    });
+    observer.observe(list);
+
+    return () => observer.disconnect();
+  }, []);
 
   // 위쪽 지난 메시지를 보고 있을 때는 내 메시지가 아니면 스크롤을 건드리지 않음
   useEffect(() => {
@@ -75,8 +91,9 @@ const ChatMessageList = ({
       role="log"
       aria-label="채팅"
       aria-live="polite"
-      className={`flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto pb-2.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${paddedTop ? "pt-2.5" : ""}`}
+      className={`flex min-h-0 flex-1 flex-col gap-2 overflow-x-hidden overflow-y-auto pb-2.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${paddedTop ? "pt-2.5" : ""}`}
     >
+      {header}
       {groupMessages(messages).map((group) => {
         const sender = getSender(group.senderId);
 

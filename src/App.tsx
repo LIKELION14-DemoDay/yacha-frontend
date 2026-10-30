@@ -1,6 +1,7 @@
 import { useLayoutEffect, useSyncExternalStore } from "react";
 import { Routes, Route, Navigate, Outlet, useLocation } from "react-router-dom";
 import { getAccessToken, subscribeAccessToken } from "./apis/tokenStore";
+import { useKeyboardViewport } from "./hooks/useKeyboardViewport";
 import OnboardingPage from "./pages/OnboardingPage";
 import BalanceGamePage from "./pages/BalanceGamePage/BalanceGamePage";
 import BalanceGamePlayPage from "./pages/BalanceGamePage/BalanceGamePlayPage";
@@ -31,6 +32,8 @@ function RequireAuth() {
 
 function App() {
   const { pathname } = useLocation();
+  // 키보드가 올라오면 입력창만 키보드 위에 붙고 화면은 밀리지 않게
+  useKeyboardViewport();
 
   // 화면을 옮기면 앞 화면의 스크롤 위치가 남지 않게 맨 위로
   useLayoutEffect(() => {

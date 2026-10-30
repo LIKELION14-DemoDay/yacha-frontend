@@ -41,6 +41,8 @@ const ChatInput = ({
         disabled={disabled}
         placeholder={placeholder}
         aria-label="메시지 입력"
+        // 키보드의 엔터 키를 "보내기"로 표시
+        enterKeyHint="send"
         onChange={(event) => setContent(event.target.value)}
         className="min-w-0 flex-1 bg-transparent text-subhead-m7 text-neutral-002 caret-main outline-none placeholder:text-neutral-006 disabled:cursor-not-allowed"
       />
@@ -49,6 +51,8 @@ const ChatInput = ({
         type="submit"
         disabled={!canSend}
         aria-label="메시지 보내기"
+        // 눌러도 입력칸 포커스가 빠지지 않게 해 보낸 뒤에도 키보드가 내려가지 않음
+        onPointerDown={(event) => event.preventDefault()}
         className="flex size-10.25 shrink-0 cursor-pointer items-center justify-center rounded-[6px] bg-main disabled:cursor-not-allowed disabled:bg-neutral-007"
       >
         <img src={arrowUp} alt="" className="size-6" />

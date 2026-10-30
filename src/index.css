@@ -236,6 +236,22 @@
     padding-bottom: env(safe-area-inset-bottom);
   }
 
+  /* 화면 키보드가 올라오면 (useKeyboardViewport) 앱을 실제로 보이는 영역에 고정
+     위쪽은 제자리, 맨 아래(입력창)는 키보드 · 폼 이동 바 바로 위에 붙음 */
+  html[data-keyboard-open] #root {
+    position: fixed;
+    inset-inline: 0;
+    top: var(--viewport-top);
+    height: var(--viewport-height);
+    /* 홈 바는 키보드에 가려지므로 그만큼 띄우지 않음 */
+    padding-bottom: 0;
+  }
+
+  /* 입력창과 키보드 사이에 광고가 끼지 않게 키보드가 있는 동안 숨김 */
+  html[data-keyboard-open] aside.bg-green {
+    display: none;
+  }
+
   /* 브라우저 자동완성 시에도 어두운 배경과 입력 상태별 글자색을 유지 */
   input:-webkit-autofill {
     box-shadow: inset 0 0 0 1000px var(--color-secondary);
