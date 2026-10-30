@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 
 import { getPhilosophyBookmarks } from "../../apis/philosophy";
 import OneminuteCard from "../../components/OneminuteCard";
-import StatusBar from "../../components/StatusBar";
 import TopBar from "../../components/TopBar";
 import type { PhilosophyArticle } from "../../types/philosophy";
 
@@ -65,11 +64,7 @@ function MyBookmarkPage() {
   };
 
   return (
-    <main className="mx-auto flex h-dvh w-full max-w-100.5 flex-col overflow-hidden bg-secondary text-white">
-      <div className="shrink-0">
-        <StatusBar />
-      </div>
-
+    <main className="mx-auto flex h-full w-full max-w-100.5 flex-col overflow-hidden bg-secondary text-white">
       <TopBar title="북마크" onBack={() => navigate("/mypage")} />
 
       <section

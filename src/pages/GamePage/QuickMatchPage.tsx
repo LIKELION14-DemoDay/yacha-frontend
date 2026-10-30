@@ -140,7 +140,7 @@ const QuickMatchPage = () => {
   const canAct = Boolean(room) && !isBusy;
 
   return (
-    <main className="mx-auto flex h-dvh w-full max-w-100.5 flex-col bg-secondary">
+    <main className="mx-auto flex h-full w-full max-w-100.5 flex-col bg-secondary">
       <TopBar onBack={() => navigate(-1)} />
 
       <div className="flex min-h-0 flex-1 flex-col px-6">

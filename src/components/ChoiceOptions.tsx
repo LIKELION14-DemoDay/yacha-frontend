@@ -23,6 +23,7 @@ const ChoiceOptions = ({
     <div role="radiogroup" aria-label={label} className="flex w-full gap-4">
       {options.map((option, index) => {
         const isSelected = selectedIndex === index;
+        // 정사각형이 기본이고, 키가 작은 화면에서는 화면 높이 비율로 낮아짐 (페이지가 size 컨테이너)
         // 하나를 고르면 고른 쪽은 커지고 다른 쪽은 작아짐 (169px → 178px / 160px)
         const isOtherSelected = selectedIndex !== null && !isSelected;
 
@@ -33,7 +34,7 @@ const ChoiceOptions = ({
             role="radio"
             aria-checked={isSelected}
             onClick={() => onSelect(index)}
-            className={`flex aspect-square min-h-max min-w-0 flex-1 cursor-pointer flex-col items-center justify-center gap-4 overflow-hidden rounded-[20px] border px-2.5 py-5 transition ${
+            className={`flex aspect-square max-h-[21cqh] min-h-max min-w-0 flex-1 cursor-pointer flex-col items-center justify-center gap-4 overflow-hidden rounded-[20px] border px-2.5 py-5 transition ${
               isSelected
                 ? "z-10 scale-[1.053] border-white/50 bg-main shadow-[0_0_10.2px_0_var(--color-main)]"
                 : `border-transparent bg-neutral-009 ${isOtherSelected ? "scale-[0.947]" : ""}`

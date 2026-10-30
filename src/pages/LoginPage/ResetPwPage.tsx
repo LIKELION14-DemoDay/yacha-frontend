@@ -9,7 +9,6 @@ import {
 import loginLogo from "../../assets/login-logo.svg?raw";
 import LongButton from "../../components/Button";
 import InputContainer from "../../components/InputContainer";
-import StatusBar from "../../components/StatusBar";
 import Toast from "../../components/Toast";
 import TopBar from "../../components/TopBar";
 import { useToast } from "../../hooks/useToast";
@@ -153,8 +152,7 @@ function ResetPwPage() {
 
   if (step === "complete") {
     return (
-      <main className="mx-auto flex min-h-dvh w-full max-w-100.5 flex-col bg-secondary">
-        <StatusBar />
+      <main className="mx-auto flex min-h-full w-full max-w-100.5 flex-col bg-secondary">
         <div className="flex shrink-0 flex-col items-center pt-50 pb-10">
           <span
             className="text-main"
@@ -184,7 +182,7 @@ function ResetPwPage() {
   }
 
   return (
-    <main className="mx-auto flex h-dvh min-h-166.75 w-full max-w-100.5 flex-col bg-secondary">
+    <main className="mx-auto flex h-full w-full max-w-100.5 flex-col bg-secondary">
       <form
         noValidate
         onSubmit={handleSubmit}
@@ -193,7 +191,6 @@ function ResetPwPage() {
         className="flex min-h-0 flex-1 flex-col justify-between"
       >
         <div className="min-h-0 flex-1 overflow-y-auto">
-          <StatusBar />
           <TopBar title="비밀번호 찾기" onBack={() => navigate("/login")} />
           <div className="px-6 pt-8 pb-6" aria-live="polite">
             <h1 className="text-headline-sb5 text-white">

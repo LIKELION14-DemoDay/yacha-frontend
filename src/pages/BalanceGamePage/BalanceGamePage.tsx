@@ -6,7 +6,6 @@ import { getAccessToken, subscribeAccessToken } from "../../apis/tokenStore";
 import balanceFirst from "../../assets/balance-first.svg";
 import brandLogo from "../../assets/brand-logo.svg";
 import LongButton from "../../components/Button";
-import StatusBar from "../../components/StatusBar";
 import Toast from "../../components/Toast";
 import { useToast } from "../../hooks/useToast";
 import { getApiErrorMessage } from "../../utils/apiError";
@@ -34,12 +33,11 @@ function BalanceGamePage() {
   };
 
   return (
-    <main className="mx-auto flex h-dvh min-h-166.75 w-full max-w-100.5 flex-col justify-between overflow-hidden bg-secondary">
-      <section className="flex h-152.75 shrink-0 flex-col">
-        <StatusBar />
-
-        <div className="flex min-h-0 flex-1 flex-col">
-          <div className="flex min-h-0 flex-1 items-end justify-center pb-3">
+    // 화면이 아주 짧으면 줄어들지 않고 스크롤 (광고가 없는 화면)
+    <main className="mx-auto flex h-full w-full max-w-100.5 flex-col justify-between overflow-y-auto bg-secondary [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <section className="flex flex-1 flex-col">
+        <div className="flex flex-1 flex-col">
+          <div className="flex flex-1 items-end justify-center pb-3">
             <img
               src={balanceFirst}
               alt=""

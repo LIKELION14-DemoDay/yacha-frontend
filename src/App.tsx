@@ -1,5 +1,5 @@
-import { useSyncExternalStore } from "react";
-import { Routes, Route, Navigate, Outlet } from "react-router-dom";
+import { useLayoutEffect, useSyncExternalStore } from "react";
+import { Routes, Route, Navigate, Outlet, useLocation } from "react-router-dom";
 import { getAccessToken, subscribeAccessToken } from "./apis/tokenStore";
 import OnboardingPage from "./pages/OnboardingPage";
 import BalanceGamePage from "./pages/BalanceGamePage/BalanceGamePage";
@@ -30,6 +30,13 @@ function RequireAuth() {
 }
 
 function App() {
+  const { pathname } = useLocation();
+
+  // 화면을 옮기면 앞 화면의 스크롤 위치가 남지 않게 맨 위로
+  useLayoutEffect(() => {
+    document.getElementById("root")?.scrollTo(0, 0);
+  }, [pathname]);
+
   return (
     <Routes>
       <Route path="/" element={<OnboardingPage />} />

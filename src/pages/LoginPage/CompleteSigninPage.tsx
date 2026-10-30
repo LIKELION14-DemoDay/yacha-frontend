@@ -2,7 +2,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import loginLogo from "../../assets/login-logo.svg?raw";
 import LongButton from "../../components/Button";
-import StatusBar from "../../components/StatusBar";
 
 function CompleteSigninPage() {
   const navigate = useNavigate();
@@ -13,9 +12,7 @@ function CompleteSigninPage() {
       : "OOO";
 
   return (
-    <main className="mx-auto flex h-dvh min-h-166.75 w-full max-w-100.5 flex-col overflow-y-auto bg-secondary">
-      <StatusBar />
-
+    <main className="mx-auto flex h-full w-full max-w-100.5 flex-col overflow-y-auto bg-secondary">
       <div className="flex shrink-0 flex-col items-center pt-50 pb-10">
         <span
           className="text-main"

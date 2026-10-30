@@ -66,3 +66,6 @@ export type PhilosophyBookmarkResponse = {
 export type PhilosophyMemoResponse = {
   memo: string | null;
 };
+
+// 1분 철학은 회원 전용 (게스트가 열면 GUEST_NOT_ALLOWED)
+export const GUEST_ONLY_MESSAGE = "1분 철학은 회원만 볼 수 있어요.";

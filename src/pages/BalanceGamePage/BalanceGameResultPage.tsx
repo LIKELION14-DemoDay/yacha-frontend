@@ -6,7 +6,6 @@ import { getAccessToken, subscribeAccessToken } from "../../apis/tokenStore";
 import fireIcon from "../../assets/fire-alt-solid.svg";
 import linkIcon from "../../assets/link-solid.svg";
 import LongButton from "../../components/Button";
-import StatusBar from "../../components/StatusBar";
 import Toast from "../../components/Toast";
 import TopBar from "../../components/TopBar";
 import { useToast } from "../../hooks/useToast";
@@ -63,10 +62,7 @@ function PhilosopherResult({ type }: { type: string | undefined }) {
   const invalidType = !isPhilosopherType(type);
 
   return (
-    <main className="mx-auto flex h-dvh w-full max-w-100.5 flex-col overflow-hidden bg-secondary text-white">
-      <div className="shrink-0">
-        <StatusBar />
-      </div>
+    <main className="mx-auto flex h-full w-full max-w-100.5 flex-col overflow-hidden bg-secondary text-white">
       <TopBar
         action={
           <h1 className="w-full text-center text-subhead-m5 text-neutral-006">

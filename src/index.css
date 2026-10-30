@@ -200,8 +200,24 @@
 }
 
 @layer base {
+  /* 화면 밖(노치 · 홈 바 · 넓은 화면 양옆)도 앱 배경색, 당겨도 출렁이지 않게 */
+  html,
   body {
-    @apply bg-white font-sans text-text-1 antialiased;
+    @apply h-full overscroll-none bg-secondary;
+  }
+
+  body {
+    @apply font-sans text-text-1 antialiased;
+    /* 두 번 탭해서 확대 막기 */
+    touch-action: manipulation;
+  }
+
+  /* 앱 화면 틀: 기기 화면 높이에서 노치 · 홈 바 영역을 뺀 만큼만 씀
+     (페이지는 h-full 로 이 높이를 채우고, 길면 이 안에서만 스크롤) */
+  #root {
+    @apply h-dvh overflow-y-auto overscroll-none;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
   }
 
   /* 브라우저 자동완성 시에도 어두운 배경과 입력 상태별 글자색을 유지 */

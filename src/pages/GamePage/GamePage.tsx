@@ -276,7 +276,7 @@ const GamePage = () => {
 
   return (
     <main
-      className={`mx-auto flex h-dvh w-full max-w-100.5 flex-col ${
+      className={`mx-auto flex h-full w-full max-w-100.5 flex-col ${
         phase === "CHAT" ? "bg-neutral-009" : "bg-secondary"
       }`}
     >

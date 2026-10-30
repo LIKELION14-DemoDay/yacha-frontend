@@ -13,7 +13,6 @@ import {
 } from "../../apis/philosophy";
 import bookmarkIcon from "../../assets/bookmark.svg";
 import bookmarkSolidIcon from "../../assets/bookmark-solid.svg";
-import StatusBar from "../../components/StatusBar";
 import Toast from "../../components/Toast";
 import TopBar from "../../components/TopBar";
 import { usePhilosophyMemo } from "../../hooks/usePhilosophyMemo";
@@ -151,12 +150,8 @@ function ArticleDetail({ articleId }: { articleId: number }) {
   return (
     <main
       aria-busy={!article}
-      className="mx-auto flex h-dvh w-full max-w-100.5 flex-col overflow-hidden bg-secondary text-white"
+      className="mx-auto flex h-full w-full max-w-100.5 flex-col overflow-hidden bg-secondary text-white"
     >
-      <div className="shrink-0">
-        <StatusBar />
-      </div>
-
       <TopBar
         onBack={() => void handleBack()}
         backLabel="1분 철학 목록으로 돌아가기"
