@@ -104,7 +104,12 @@ const WaitingPage = () => {
     try {
       await switchToBot(sessionId);
       navigate(`/game/${sessionId}`);
-    } catch {
+    } catch (error) {
+      // 방을 만든 지 30초가 안 됐으면 방은 그대로 대기 중이라 이 화면에 남음
+      if (getApiErrorCode(error) === "BOT_NOT_AVAILABLE_YET") {
+        showToast("아직 AI와 대결할 수 없어요. 잠시 후 다시 시도해 주세요.");
+        return;
+      }
       leaveWithToast("AI봇이 호출되지 않아 게임이 종료되었습니다.");
     }
   };
