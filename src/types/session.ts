@@ -60,6 +60,8 @@ export type WaitingRoom = {
   host: {
     nickname: string;
     philosopherType: string | null;
+    // 철학자 유형 이미지 (유형이 없으면 기본 이미지)
+    imageUrl: string;
   };
   topic: {
     id: number;
@@ -74,18 +76,6 @@ export type WaitingRoomsResponse = {
   hasNext: boolean;
 };
 
-// GET /sessions/proposal ("랜덤 주제로 시작하기")
-// PROPOSAL: 대기 방 제안 → 승낙은 join, 거절은 reject
-// NEW_TOPIC: 한 바퀴 다 돌았거나 대기 방 없음 → 고른 카테고리의 새 주제로 주제 화면
-export type SessionProposal = {
-  result: "PROPOSAL" | "NEW_TOPIC";
-  // NEW_TOPIC 이면 null
-  sessionId: number | null;
-  topic: Topic;
-  // 들어가면 내가 맡게 되는 입장 (방장의 반대), NEW_TOPIC 이면 null
-  myStance: Stance | null;
-};
-
 export type SessionParticipant = {
   participantId: number;
   type: ParticipantType;
@@ -93,6 +83,10 @@ export type SessionParticipant = {
   stance: Stance;
   // 지금 작성 구간에서 제출했는지 (작성 구간이 아니면 null)
   submitted: boolean | null;
+  nickname: string;
+  philosopherType: string | null;
+  // 철학자 유형 말투로 쓴 입장 문장 (예: "만인의 투쟁이 시작되겠군")
+  stanceText: string;
 };
 
 // GET /sessions/{id}/state
@@ -148,6 +142,8 @@ export type ResultParticipant = {
   // 봇은 null
   nickname: string | null;
   philosopherType: string | null;
+  // 철학자 유형 이미지 (유형이 없으면 기본, 봇은 봇 이미지)
+  imageUrl: string;
   stance: Stance;
   isMe: boolean;
   // 게스트는 결과가 사라진 뒤 null
@@ -210,6 +206,7 @@ export type SessionErrorCode =
   | "CANNOT_JOIN_OWN_ROOM"
   | "NOT_ROOM_OWNER"
   | "NOT_PARTICIPANT"
+  | "BOT_NOT_AVAILABLE_YET"
   | "SESSION_NOT_FOUND"
   | "TOPIC_NOT_FOUND"
   | "SESSION_NOT_IN_PROGRESS"

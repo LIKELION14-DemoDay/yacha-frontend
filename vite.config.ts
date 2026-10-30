@@ -45,6 +45,7 @@ export default defineConfig(({ mode }) => {
       tailwindcss(),
 
       VitePWA({
+        // 새 버전이 배포되면 안내 없이 바로 적용 (예전 버전이 남아 있지 않게)
         registerType: "autoUpdate",
 
         // PWA 앱 정보 설정

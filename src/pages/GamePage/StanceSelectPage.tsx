@@ -3,7 +3,7 @@
  * 고른 카테고리의 랜덤 주제에 예(찬성) / 아니오(반대)를 고르고 방을 만듦
  */
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { createSession } from "../../apis/sessions";
 import { getRandomTopic } from "../../apis/topics";
@@ -26,11 +26,8 @@ const StanceSelectPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const category = toCategory(searchParams.get("category"));
-  // 방 찾기의 자동 제안(NEW_TOPIC)에서 넘어오면 받은 주제를 그대로 씀
-  const proposedTopic =
-    (useLocation().state as { topic?: Topic } | null)?.topic ?? null;
 
-  const [topic, setTopic] = useState<Topic | null>(proposedTopic);
+  const [topic, setTopic] = useState<Topic | null>(null);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isChangingTopic, setIsChangingTopic] = useState(false);
@@ -57,8 +54,6 @@ const StanceSelectPage = () => {
 
   // 첫 진입 때 주제 받아오기 (나가면 늦게 온 응답은 무시)
   useEffect(() => {
-    if (proposedTopic) return;
-
     let ignore = false;
 
     getRandomTopic(category)
@@ -72,7 +67,7 @@ const StanceSelectPage = () => {
     return () => {
       ignore = true;
     };
-  }, [category, proposedTopic, showToast]);
+  }, [category, showToast]);
 
   const handleConfirm = async () => {
     if (!topic || selectedIndex === null) return;

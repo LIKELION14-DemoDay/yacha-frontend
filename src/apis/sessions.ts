@@ -13,7 +13,6 @@ import type {
   SessionHints,
   SessionIdResponse,
   SessionMessage,
-  SessionProposal,
   SessionResult,
   SessionState,
   SubmittedMemo,
@@ -80,15 +79,6 @@ export const leaveSession = async (sessionId: number) => {
   return response.data.data;
 };
 
-// 자동 제안 거절 → 다음 제안을 돌려줌 (다시 /proposal 을 부르면 처음부터라 같은 방이 또 옴)
-export const rejectProposal = async (sessionId: number) => {
-  const response = await api.post<ApiResponse<SessionProposal>>(
-    `${SESSIONS_URL}/${sessionId}/reject`,
-  );
-
-  return response.data.data;
-};
-
 /* ---------- 조회 ---------- */
 
 // 내가 참여 중인 세션 (없으면 null)
@@ -105,17 +95,6 @@ export const getWaitingRooms = async (category: TopicCategory, page = 0) => {
   const response = await api.get<ApiResponse<WaitingRoomsResponse>>(
     `${SESSIONS_URL}/waiting`,
     { params: { category, page } },
-  );
-
-  return response.data.data;
-};
-
-// "랜덤 주제로 시작하기": 고른 카테고리부터 8개를 돌며 대기 방을 하나씩 제안
-// 다시 부르면 처음부터 다시 돎 (입장이 SESSION_NOT_WAITING 이면 다시 부르면 됨)
-export const getProposal = async (category: TopicCategory) => {
-  const response = await api.get<ApiResponse<SessionProposal>>(
-    `${SESSIONS_URL}/proposal`,
-    { params: { category } },
   );
 
   return response.data.data;
