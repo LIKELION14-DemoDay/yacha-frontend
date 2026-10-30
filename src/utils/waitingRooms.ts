@@ -9,7 +9,7 @@ import { CATEGORIES } from "./category";
 
 // 대기 방이 하나도 없을 때 안내
 export const NO_ROOM_MESSAGE =
-  "현재 야차 중인 방이 없습니다.\n직접 방을 생성해주세요.";
+  "야차 대기 중인 방이 없습니다.\n직접 방을 생성해주세요.";
 
 const getRoomsInCategory = async (category: TopicCategory) => {
   const rooms: WaitingRoom[] = [];
