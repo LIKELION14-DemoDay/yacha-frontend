@@ -23,6 +23,7 @@ export type BalanceGameResult = {
   type: PhilosopherType;
   name: string;
   alias: string;
+  imageUrl: string;
   sections: { title: string; content: string }[];
 };
 

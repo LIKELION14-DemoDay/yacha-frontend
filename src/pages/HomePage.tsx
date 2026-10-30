@@ -12,6 +12,7 @@ import trueIcon from "../assets/home/temporary-true-home.svg";
 import homeImage from "../assets/home-image1.png";
 import homeLogo from "../assets/home-logo.svg";
 import StatusBar from "../components/StatusBar";
+import PhilosopherImage from "../components/PhilosopherImage";
 import ConfirmModal from "../components/ConfirmModal";
 import Toast from "../components/Toast";
 import { skipBalanceGame } from "../apis/balanceGame";
@@ -146,9 +147,12 @@ function HomePage() {
             type="button"
             aria-label="프로필 보기"
             onClick={() => navigate("/mypage")}
-            className="flex size-8 cursor-pointer items-center justify-center rounded-md bg-neutral-001 text-[8px] text-neutral-006 transition-colors hover:bg-neutral-003 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-main"
+            className="flex size-8 cursor-pointer items-center justify-center rounded-[2px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-main"
           >
-            profile
+            <PhilosopherImage
+              imageUrl={profile?.philosopher?.imageUrl}
+              size="sm"
+            />
           </button>
         </div>
       </header>

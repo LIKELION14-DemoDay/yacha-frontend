@@ -12,6 +12,7 @@ export type UserProfile = {
     type: string | null;
     name: string;
     alias: string | null;
+    imageUrl: string;
   } | null;
   balanceGameRequired: boolean;
 };

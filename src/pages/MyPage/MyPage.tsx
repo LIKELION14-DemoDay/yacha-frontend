@@ -8,13 +8,14 @@ import linkIcon from "../../assets/link-solid.svg";
 import logoLeft from "../../assets/logo-left.svg";
 import logoRight from "../../assets/logo-right.svg";
 import LongButton from "../../components/Button";
+import PhilosopherImage from "../../components/PhilosopherImage";
 import StatusBar from "../../components/StatusBar";
 import { useUserProfile } from "../../hooks/useUserProfile";
 import type { UserProfile } from "../../types/user";
 import { isPhilosopherType } from "../../types/balanceGame";
 import { getApiErrorMessage } from "../../utils/apiError";
 
-function ProfileHero() {
+function ProfileHero({ imageUrl }: { imageUrl?: string }) {
   return (
     <section className="relative h-24.5 shrink-0">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_55%_45%_at_50%_110%,#4d4747_0%,transparent_100%)]" />
@@ -28,8 +29,8 @@ function ProfileHero() {
         alt=""
         className="absolute top-0 left-[calc(50%+48px)] h-9 w-11"
       />
-      <div className="absolute bottom-0 left-1/2 flex size-20 -translate-x-1/2 items-center justify-center rounded-[5px] border-[0.5px] border-neutral-003 bg-neutral-001 text-[10px] text-neutral-006">
-        profile
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2">
+        <PhilosopherImage imageUrl={imageUrl} />
       </div>
     </section>
   );
@@ -136,7 +137,7 @@ function MyPage() {
 
       {profile ? (
         <>
-          <ProfileHero />
+          <ProfileHero imageUrl={profile.philosopher?.imageUrl} />
 
           <section className="flex shrink-0 flex-col items-center gap-1 px-6 pt-4 pb-7">
             <p className="text-subhead-r8 text-neutral-006">
