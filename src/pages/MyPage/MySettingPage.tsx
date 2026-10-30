@@ -7,6 +7,7 @@ import { changeMyPassword, updateMyNickname } from "../../apis/users";
 import angleLeft from "../../assets/angle-left.svg";
 import LongButton from "../../components/Button";
 import InputContainer from "../../components/InputContainer";
+import PhilosopherImage from "../../components/PhilosopherImage";
 import StatusBar from "../../components/StatusBar";
 import { useUserProfile } from "../../hooks/useUserProfile";
 import type { UserProfile } from "../../types/user";
@@ -22,12 +23,13 @@ function ProfileSettings({
   const navigate = useNavigate();
   const [nickname, setNickname] = useState(profile.nickname);
   const [savedNickname, setSavedNickname] = useState(profile.nickname);
+  const [philosopher, setPhilosopher] = useState(profile.philosopher);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const isRequestPending = useRef(false);
-  const philosopherName = profile.philosopher?.name;
+  const philosopherName = philosopher?.name;
   const canChangePassword = !profile.isGuest && profile.provider === "LOCAL";
   const hasNicknameChange = initialSetup || nickname.trim() !== savedNickname;
   const hasPasswordChange =
@@ -55,6 +57,7 @@ function ProfileSettings({
         // 비밀번호 변경이 실패해도 저장된 닉네임을 중복 요청하지 않습니다.
         setSavedNickname(updatedProfile.nickname);
         setNickname(updatedProfile.nickname);
+        setPhilosopher(updatedProfile.philosopher);
       }
       if (hasPasswordChange) {
         await changeMyPassword({ currentPassword, newPassword });
@@ -84,9 +87,7 @@ function ProfileSettings({
   return (
     <form noValidate onSubmit={handleSave} className="flex flex-1 flex-col">
       <div className="flex shrink-0 items-center px-6 py-5">
-        <div className="flex size-20 items-center justify-center rounded-[5px] border-[0.5px] border-neutral-003 bg-neutral-001 text-[10px] text-neutral-006">
-          profile
-        </div>
+        <PhilosopherImage imageUrl={philosopher?.imageUrl} />
       </div>
 
       <section className="flex shrink-0 flex-col items-start gap-1 px-6 py-1">
