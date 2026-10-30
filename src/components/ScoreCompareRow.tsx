@@ -22,7 +22,8 @@ const ScoreCompareRow = ({
   const fillPercent = Math.max(leftScore, rightScore);
 
   return (
-    <div className="flex w-full flex-col items-center pt-2 pb-4">
+    // 줄 사이 여백은 쓰는 쪽(결과 화면)에서 화면 높이에 맞춰 늘고 줄어드는 빈 공간으로 둠
+    <div className="flex w-full flex-col items-center">
       <div className="flex w-63.75 items-center justify-center gap-2 px-5">
         <img src={scoreLineLeft} alt="" className="h-[0.5px] min-w-0 flex-1" />
         <p className="shrink-0 text-body-r6 whitespace-nowrap text-neutral-004">
