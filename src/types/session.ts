@@ -160,7 +160,8 @@ export type SessionResult = {
   // 무승부면 null
   winnerParticipantId: number | null;
   criteria: ResultCriterion[] | null;
-  participants: ResultParticipant[];
+  // 판정에 실패(FAILED)하면 null
+  participants: ResultParticipant[] | null;
 };
 
 /* ---------- 실시간 이벤트 (/topic/sessions/{id}) ---------- */
