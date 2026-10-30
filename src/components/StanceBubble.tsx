@@ -2,7 +2,7 @@ import { useLayoutEffect, useRef } from "react";
 
 import chatTailMine from "../assets/chat-tail-mine.svg";
 import chatTailOpponent from "../assets/chat-tail-opponent.svg";
-import ProfilePlaceholder from "./ProfilePlaceholder";
+import ProfileImage from "./ProfileImage";
 import type { Stance } from "../types/session";
 import { STANCE_LABEL } from "../utils/stance";
 
@@ -13,7 +13,7 @@ interface StanceBubbleProps {
   isMine: boolean;
   name: string;
   stance: Stance;
-  // 입장 문장 (예: 주제의 agreeText / disagreeText) 또는 공개된 주장
+  // 입장 문장 (철학자 유형 말투의 stanceText) 또는 공개된 주장
   content: string;
   // 따옴표로 감싸기 (입장 문장), 주장 본문은 끔
   quoted?: boolean;
@@ -54,7 +54,7 @@ const StanceBubble = ({
         }`}
       >
         <div className="flex items-center gap-2">
-          <ProfilePlaceholder />
+          <ProfileImage />
           <p className="flex min-w-0 items-center gap-1 whitespace-nowrap">
             <span className={`truncate text-subhead-m7 ${textColor}`}>
               {name}

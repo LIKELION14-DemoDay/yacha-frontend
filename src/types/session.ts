@@ -60,6 +60,8 @@ export type WaitingRoom = {
   host: {
     nickname: string;
     philosopherType: string | null;
+    // 철학자 유형 이미지 (유형이 없으면 기본 이미지)
+    imageUrl: string;
   };
   topic: {
     id: number;
@@ -93,6 +95,10 @@ export type SessionParticipant = {
   stance: Stance;
   // 지금 작성 구간에서 제출했는지 (작성 구간이 아니면 null)
   submitted: boolean | null;
+  nickname: string;
+  philosopherType: string | null;
+  // 철학자 유형 말투로 쓴 입장 문장 (예: "만인의 투쟁이 시작되겠군")
+  stanceText: string;
 };
 
 // GET /sessions/{id}/state
@@ -148,6 +154,8 @@ export type ResultParticipant = {
   // 봇은 null
   nickname: string | null;
   philosopherType: string | null;
+  // 철학자 유형 이미지 (유형이 없으면 기본, 봇은 봇 이미지)
+  imageUrl: string;
   stance: Stance;
   isMe: boolean;
   // 게스트는 결과가 사라진 뒤 null

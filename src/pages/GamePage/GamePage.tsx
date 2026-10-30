@@ -22,10 +22,10 @@ import { useToast } from "../../hooks/useToast";
 import type {
   SessionEvent,
   SessionMessage,
+  SessionParticipant,
   SessionPhase,
   SessionSocketError,
   SessionState,
-  Stance,
 } from "../../types/session";
 import { getChatErrorMessage } from "../../utils/chatError";
 import { STANCE_LABEL } from "../../utils/stance";
@@ -237,11 +237,12 @@ const GamePage = () => {
     };
   };
 
-  // 입장 말풍선 · 작성 화면에 보일 입장 문장
-  const getStanceText = (stance: Stance) =>
-    stance === "AGREE"
+  // 입장 말풍선에 보일 문장: 서버가 철학자 유형 말투로 보내줌 (없으면 주제의 예 / 아니오)
+  const getStanceText = (participant: SessionParticipant) =>
+    participant.stanceText ||
+    (participant.stance === "AGREE"
       ? (gameState?.topic.agreeText ?? "")
-      : (gameState?.topic.disagreeText ?? "");
+      : (gameState?.topic.disagreeText ?? ""));
 
   const me = gameState?.participants.find(
     (item) => item.participantId === gameState.myParticipantId,
@@ -302,12 +303,12 @@ const GamePage = () => {
           mine={{
             name: "나",
             stance: me.stance,
-            content: getStanceText(me.stance),
+            content: getStanceText(me),
           }}
           opponent={{
             name: opponentName,
             stance: opponent.stance,
-            content: getStanceText(opponent.stance),
+            content: getStanceText(opponent),
           }}
         />
       ) : gameState && me && opponent && isReveal ? (

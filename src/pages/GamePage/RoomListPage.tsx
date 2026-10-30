@@ -288,6 +288,7 @@ const RoomListContent = ({ category }: { category: TopicCategory }) => {
           {rooms?.map((room) => (
             <RoomCard
               key={room.sessionId}
+              imageUrl={room.host.imageUrl}
               statement={room.topic.statement}
               wantedStance={room.wantedStance}
               disabled={isBusy}
