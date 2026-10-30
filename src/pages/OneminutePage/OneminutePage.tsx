@@ -7,8 +7,13 @@ import {
 } from "../../apis/philosophy";
 import angleLeft from "../../assets/angle-left.svg";
 import OneminuteCard from "../../components/OneminuteCard";
-import StatusBar from "../../components/StatusBar";
-import type { PhilosophyArticle } from "../../types/philosophy";
+import Toast from "../../components/Toast";
+import { useToast } from "../../hooks/useToast";
+import {
+  GUEST_ONLY_MESSAGE,
+  type PhilosophyArticle,
+} from "../../types/philosophy";
+import { getApiErrorCode } from "../../utils/apiError";
 
 const periods = [
   { id: "current", label: "금주의 1분 철학" },
@@ -35,6 +40,7 @@ function OneMinutePage() {
   const isRequestPending = useRef(true);
   const listRef = useRef<HTMLElement>(null);
   const selectedPeriod = request.period;
+  const { toastMessage, showToast } = useToast();
 
   useEffect(() => {
     const controller = new AbortController();
@@ -66,6 +72,10 @@ function OneMinutePage() {
 
         // traceId를 포함한 오류 원본을 보존하고 화면에는 안내를 추가하지 않습니다.
         setError(cause);
+        // 게스트는 회원 전용이라는 것만 토스트로 알려 줍니다.
+        if (getApiErrorCode(cause) === "GUEST_NOT_ALLOWED") {
+          showToast(GUEST_ONLY_MESSAGE);
+        }
       } finally {
         if (!controller.signal.aborted) {
           isRequestPending.current = false;
@@ -75,7 +85,7 @@ function OneMinutePage() {
 
     void load();
     return () => controller.abort();
-  }, [request]);
+  }, [request, showToast]);
 
   const handlePeriodChange = (period: Period) => {
     if (period === selectedPeriod) return;
@@ -114,11 +124,7 @@ function OneMinutePage() {
   };
 
   return (
-    <main className="mx-auto flex h-dvh w-full max-w-100.5 flex-col overflow-hidden bg-secondary text-white">
-      <div className="shrink-0">
-        <StatusBar />
-      </div>
-
+    <main className="mx-auto flex h-full w-full max-w-100.5 flex-col overflow-hidden bg-secondary text-white">
       <header className="flex h-12 shrink-0 items-center justify-between px-6 py-2">
         <button
           type="button"
@@ -170,6 +176,7 @@ function OneMinutePage() {
 
       {/* 추후 광고를 삽입할 독립 영역입니다. */}
       <aside className="h-17.5 shrink-0 bg-green" />
+      <Toast message={toastMessage} />
     </main>
   );
 }
