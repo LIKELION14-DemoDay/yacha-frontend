@@ -1,5 +1,5 @@
 import ChatBubble from "./ChatBubble";
-import ProfilePlaceholder from "./ProfilePlaceholder";
+import ProfileImage from "./ProfileImage";
 import type { Stance } from "../types/session";
 import { STANCE_LABEL } from "../utils/stance";
 
@@ -21,7 +21,7 @@ const ChatMessageGroup = ({
     <div
       className={`flex w-full items-start gap-2 px-5 ${isMine ? "flex-row-reverse" : ""}`}
     >
-      <ProfilePlaceholder />
+      <ProfileImage />
 
       <div
         className={`flex min-w-0 flex-col gap-2 ${isMine ? "items-end" : "items-start"}`}

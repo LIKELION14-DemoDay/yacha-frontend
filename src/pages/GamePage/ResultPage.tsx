@@ -13,7 +13,7 @@ import yachaLogo from "../../assets/loading-logo.svg";
 import resultGlow from "../../assets/result-glow.svg";
 import LongButton from "../../components/Button";
 import LogoLoading from "../../components/LogoLoading";
-import ProfilePlaceholder from "../../components/ProfilePlaceholder";
+import ProfileImage from "../../components/ProfileImage";
 import ScoreCompareRow from "../../components/ScoreCompareRow";
 import TopBar from "../../components/TopBar";
 import type {
@@ -132,10 +132,11 @@ const ResultPage = () => {
     );
   }
 
-  const isWin = me.result === "WIN";
-  const isLose = me.result === "LOSE";
-  const isForfeitWin = isWin && result.finishReason === "FORFEIT";
+  // 승패는 승자 기준 (게스트는 몰수패해도 내 result 가 null 로 와서 무승부로 보이던 문제)
   const winnerId = result.winnerParticipantId;
+  const isWin = winnerId === me.participantId;
+  const isLose = winnerId !== null && !isWin;
+  const isForfeitWin = isWin && result.finishReason === "FORFEIT";
 
   const title = isWin
     ? `${getName(me)}님의 승리!!`
@@ -169,7 +170,7 @@ const ResultPage = () => {
 
       <section className="flex shrink-0 flex-col items-center gap-3 pt-12.5">
         <div className="relative">
-          <ProfilePlaceholder size="xl" />
+          <ProfileImage src={me.imageUrl} size="xl" />
           {/* 이기면 로고, 지면 로고를 뒤집어서 */}
           <img
             src={yachaLogo}
@@ -186,14 +187,14 @@ const ResultPage = () => {
       <section aria-label="기준별 점수" className="shrink-0 pt-8 pb-5">
         <div className="relative flex items-center justify-between px-6 pt-5">
           <div className="flex w-[39px] flex-col items-center gap-[9px]">
-            <ProfilePlaceholder />
+            <ProfileImage src={me.imageUrl} />
             <p className="w-full truncate text-center text-caption-r1 text-white">
               {getName(me)}
             </p>
           </div>
           <p className="text-right text-subhead-m7 text-neutral-007">VS</p>
           <div className="flex w-[39px] flex-col items-center gap-[9px]">
-            <ProfilePlaceholder />
+            <ProfileImage src={opponent?.imageUrl} />
             <p className="w-full truncate text-center text-caption-r1 text-white">
               {getName(opponent)}
             </p>
