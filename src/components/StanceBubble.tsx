@@ -2,7 +2,7 @@ import { useLayoutEffect, useRef } from "react";
 
 import chatTailMine from "../assets/chat-tail-mine.svg";
 import chatTailOpponent from "../assets/chat-tail-opponent.svg";
-import ProfileImage from "./ProfileImage";
+import PhilosopherImage from "./PhilosopherImage";
 import type { Stance } from "../types/session";
 import { STANCE_LABEL } from "../utils/stance";
 
@@ -54,7 +54,7 @@ const StanceBubble = ({
         }`}
       >
         <div className="flex items-center gap-2">
-          <ProfileImage />
+          <PhilosopherImage alt="" size="xs" />
           <p className="flex min-w-0 items-center gap-1 whitespace-nowrap">
             <span className={`truncate text-subhead-m7 ${textColor}`}>
               {name}

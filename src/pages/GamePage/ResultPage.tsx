@@ -13,7 +13,7 @@ import yachaLogo from "../../assets/loading-logo.svg";
 import resultGlow from "../../assets/result-glow.svg";
 import LongButton from "../../components/Button";
 import LogoLoading from "../../components/LogoLoading";
-import ProfileImage from "../../components/ProfileImage";
+import PhilosopherImage from "../../components/PhilosopherImage";
 import ScoreCompareRow from "../../components/ScoreCompareRow";
 import TopBar from "../../components/TopBar";
 import type {
@@ -170,7 +170,7 @@ const ResultPage = () => {
 
       <section className="flex shrink-0 flex-col items-center gap-3 pt-12.5">
         <div className="relative">
-          <ProfileImage src={me.imageUrl} size="xl" />
+          <PhilosopherImage imageUrl={me.imageUrl} alt="" size="xl" />
           {/* 이기면 로고, 지면 로고를 뒤집어서 */}
           <img
             src={yachaLogo}
@@ -187,14 +187,14 @@ const ResultPage = () => {
       <section aria-label="기준별 점수" className="shrink-0 pt-8 pb-5">
         <div className="relative flex items-center justify-between px-6 pt-5">
           <div className="flex w-[39px] flex-col items-center gap-[9px]">
-            <ProfileImage src={me.imageUrl} />
+            <PhilosopherImage imageUrl={me.imageUrl} alt="" size="xs" />
             <p className="w-full truncate text-center text-caption-r1 text-white">
               {getName(me)}
             </p>
           </div>
           <p className="text-right text-subhead-m7 text-neutral-007">VS</p>
           <div className="flex w-[39px] flex-col items-center gap-[9px]">
-            <ProfileImage src={opponent?.imageUrl} />
+            <PhilosopherImage imageUrl={opponent?.imageUrl} alt="" size="xs" />
             <p className="w-full truncate text-center text-caption-r1 text-white">
               {getName(opponent)}
             </p>
