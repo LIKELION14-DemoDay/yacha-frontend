@@ -125,13 +125,13 @@ const PhilosophyCard = ({
       </div>
 
       {/* 한 줄에 두 명까지, 나머지는 +N 으로 */}
-      <div className="flex min-w-0 gap-1">
+      <div className="flex w-full min-w-0 gap-1">
         {card.philosophers
           .slice(0, MAX_VISIBLE_PHILOSOPHERS)
           .map((philosopher) => (
             <span
               key={philosopher}
-              className="truncate rounded-full border border-neutral-007 px-2 py-1 text-caption-r2 whitespace-nowrap text-neutral-003"
+              className="min-w-0 truncate rounded-full border border-neutral-007 px-2 py-1 text-caption-r2 whitespace-nowrap text-neutral-003"
             >
               {philosopher}
             </span>
