@@ -19,6 +19,7 @@ import MyBookmarkPage from "./pages/MyPage/MyBookmarkPage";
 import MySettingPage from "./pages/MyPage/MySettingPage";
 import GamePage from "./pages/GamePage/GamePage";
 import ResultPage from "./pages/GamePage/ResultPage";
+import QuickMatchPage from "./pages/GamePage/QuickMatchPage";
 import RoomListPage from "./pages/GamePage/RoomListPage";
 import StanceSelectPage from "./pages/GamePage/StanceSelectPage";
 import WaitingPage from "./pages/GamePage/WaitingPage";
@@ -49,6 +50,7 @@ function App() {
         <Route path="/my/bookmarks" element={<MyBookmarkPage />} />
         <Route path="/my/setting" element={<MySettingPage />} />
         <Route path="/game/rooms" element={<RoomListPage />} />
+        <Route path="/game/quick" element={<QuickMatchPage />} />
         <Route path="/game/select" element={<StanceSelectPage />} />
         <Route path="/game/waiting/:sessionId" element={<WaitingPage />} />
         <Route path="/game/:sessionId" element={<GamePage />} />
