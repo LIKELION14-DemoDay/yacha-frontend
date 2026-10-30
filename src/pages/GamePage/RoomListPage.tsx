@@ -178,7 +178,7 @@ const RoomListContent = ({ category }: { category: TopicCategory }) => {
   };
 
   return (
-    <main className="mx-auto flex h-dvh w-full max-w-100.5 flex-col bg-secondary">
+    <main className="mx-auto flex h-full w-full max-w-100.5 flex-col bg-secondary">
       <TopBar onBack={() => navigate(-1)} />
 
       <section className="shrink-0">

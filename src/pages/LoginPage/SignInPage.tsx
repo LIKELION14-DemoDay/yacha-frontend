@@ -7,7 +7,6 @@ import type { ApiResponse } from "../../apis/types";
 import angleLeft from "../../assets/angle-left.svg";
 import LongButton from "../../components/Button";
 import InputContainer from "../../components/InputContainer";
-import StatusBar from "../../components/StatusBar";
 
 type SignUpStep = "nickname" | "email" | "password";
 type FieldName = SignUpStep | "passwordConfirmation";
@@ -165,7 +164,7 @@ function SignInPage() {
   };
 
   return (
-    <main className="mx-auto flex h-dvh min-h-166.75 w-full max-w-100.5 flex-col bg-secondary">
+    <main className="mx-auto flex h-full w-full max-w-100.5 flex-col bg-secondary">
       <form
         noValidate
         onSubmit={handleSubmit}
@@ -173,8 +172,6 @@ function SignInPage() {
         className="flex min-h-0 flex-1 flex-col justify-between"
       >
         <div className="min-h-0 flex-1 overflow-y-auto">
-          <StatusBar />
-
           <header className="flex h-12 items-center gap-2.5 px-6 py-2 text-white">
             <button
               type="button"

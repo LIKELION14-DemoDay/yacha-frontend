@@ -134,7 +134,7 @@ const WaitingPage = () => {
   };
 
   return (
-    <main className="relative mx-auto flex h-dvh w-full max-w-100.5 flex-col bg-secondary">
+    <main className="relative mx-auto flex h-full w-full max-w-100.5 flex-col bg-secondary">
       <TopBar
         title="랜덤 주제로 야차 뜨기"
         onBack={() => setIsLeaveModalOpen(true)}

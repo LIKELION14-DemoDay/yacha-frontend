@@ -8,7 +8,6 @@ import angleLeft from "../../assets/angle-left.svg";
 import LongButton from "../../components/Button";
 import InputContainer from "../../components/InputContainer";
 import PhilosopherImage from "../../components/PhilosopherImage";
-import StatusBar from "../../components/StatusBar";
 import { useUserProfile } from "../../hooks/useUserProfile";
 import type { UserProfile } from "../../types/user";
 import { getApiErrorCode, getApiErrorMessage } from "../../utils/apiError";
@@ -174,10 +173,7 @@ function MySettingPage() {
     profile?.provider !== "LOCAL";
 
   return (
-    <main className="mx-auto flex min-h-dvh w-full max-w-100.5 flex-col bg-secondary text-white">
-      <div className="shrink-0">
-        <StatusBar />
-      </div>
+    <main className="mx-auto flex min-h-full w-full max-w-100.5 flex-col bg-secondary text-white">
       <header className="flex h-12 shrink-0 items-center gap-2.5 px-6 py-2">
         <button
           type="button"

@@ -58,8 +58,8 @@ export default defineConfig(({ mode }) => {
           scope: "/",
           display: "standalone",
 
-          theme_color: "#111111",
-          background_color: "#111111",
+          theme_color: "#0c0c0c",
+          background_color: "#0c0c0c",
 
           icons: [
             {

@@ -6,14 +6,22 @@
     <!-- 브라우저 탭 아이콘 -->
     <link rel="icon" href="/applogo.png" />
 
-    <!-- 모바일 화면 및 PWA 전체 화면 대응 -->
+    <!-- 모바일 화면 및 PWA 전체 화면 대응 (앱처럼 확대 막기) -->
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
     />
 
-    <!-- PWA 테마 색상 -->
-    <meta name="theme-color" content="#111111" />
+    <!-- 상단 노치 · 브라우저 바 색을 앱 배경색과 맞춤 -->
+    <meta name="theme-color" content="#0c0c0c" />
+
+    <!-- iOS 홈 화면 앱: 전체 화면 + 상태 표시줄을 앱 배경 위에 투명하게 -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
 
     <!-- iOS 홈 화면 아이콘 -->
     <link rel="apple-touch-icon" href="/applogo.png" />
