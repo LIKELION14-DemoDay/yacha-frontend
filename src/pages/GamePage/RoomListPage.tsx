@@ -5,25 +5,18 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
-import {
-  getProposal,
-  getWaitingRooms,
-  joinSession,
-  rejectProposal,
-} from "../../apis/sessions";
+import { getWaitingRooms, joinSession } from "../../apis/sessions";
 import randomStartIcon from "../../assets/random-start.svg";
 import LongButton from "../../components/Button";
-import ConfirmModal from "../../components/ConfirmModal";
 import RoomCard from "../../components/RoomCard";
 import Toast from "../../components/Toast";
 import TopBar from "../../components/TopBar";
 import { useToast } from "../../hooks/useToast";
-import type { SessionProposal, WaitingRoom } from "../../types/session";
+import type { WaitingRoom } from "../../types/session";
 import type { TopicCategory } from "../../types/topic";
 import { getApiErrorCode } from "../../utils/apiError";
 import { CATEGORY_LABEL, toCategory } from "../../utils/category";
 import { getCurrentSessionPath } from "../../utils/currentSession";
-import { STANCE_LABEL } from "../../utils/stance";
 
 const JOIN_ERROR_MESSAGES: Record<string, string> = {
   SESSION_NOT_WAITING: "이미 시작된 방이에요.",
@@ -39,7 +32,7 @@ const withObjectParticle = (word: string) => {
   return `${word}${hasFinalConsonant ? "을" : "를"}`;
 };
 
-// 카테고리가 바뀌면 목록 · 페이지 · 제안 상태를 처음부터 다시 시작
+// 카테고리가 바뀌면 목록 · 페이지 상태를 처음부터 다시 시작
 const RoomListPage = () => {
   const [searchParams] = useSearchParams();
   const category = toCategory(searchParams.get("category"));
@@ -66,8 +59,6 @@ const RoomListContent = ({ category }: { category: TopicCategory }) => {
   const [nextPage, setNextPage] = useState<number | null>(null);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [isJoining, setIsJoining] = useState(false);
-  const [isProposing, setIsProposing] = useState(false);
-  const [proposal, setProposal] = useState<SessionProposal | null>(null);
   const { toastMessage, showToast } = useToast();
 
   // 매칭 대기에서 끝나고 돌아오면 넘겨받은 안내를 한 번 띄움 (뒤로 와도 다시 안 뜨게 지움)
@@ -153,43 +144,13 @@ const RoomListContent = ({ category }: { category: TopicCategory }) => {
     return () => observer.disconnect();
   }, [loadMore, nextPage]);
 
-  // 제안할 방이 있으면 모달, 없으면 새 주제로 입장 선택 화면
-  const showProposal = (nextProposal: SessionProposal) => {
-    if (nextProposal.result === "NEW_TOPIC") {
-      navigate(`/game/select?category=${category}`, {
-        state: { topic: nextProposal.topic },
-      });
-      return;
-    }
-    setProposal(nextProposal);
-  };
-
-  // 제안 요청 · 거절을 같은 흐름으로 처리 (늦게 온 응답은 무시)
-  const runProposal = async (fetchProposal: () => Promise<SessionProposal>) => {
-    setIsProposing(true);
-    try {
-      const nextProposal = await fetchProposal();
-      if (!isActiveRef.current) return;
-
-      showProposal(nextProposal);
-    } catch {
-      showToast("방을 찾지 못했어요.");
-    } finally {
-      setIsProposing(false);
-    }
-  };
-
-  // "랜덤 주제로 시작하기": 대기 방을 하나씩 제안
-  const requestProposal = () => runProposal(() => getProposal(category));
-
-  // 성공하면 토론방으로, 실패하면 false
+  // 방 카드를 누르면 바로 입장 → 토론방(매칭 완료 화면부터 시작)
   const joinRoom = async (sessionId: number) => {
     setIsJoining(true);
     try {
       await joinSession(sessionId);
       // 들어간 방은 떠났어도 진행 중이므로 토론방으로 이동
       navigate(`/game/${sessionId}`);
-      return true;
     } catch (error) {
       const code = getApiErrorCode(error);
 
@@ -198,7 +159,7 @@ const RoomListContent = ({ category }: { category: TopicCategory }) => {
         const path = await getCurrentSessionPath().catch(() => null);
         if (path) {
           navigate(path, { replace: true });
-          return true;
+          return;
         }
       }
 
@@ -213,33 +174,8 @@ const RoomListContent = ({ category }: { category: TopicCategory }) => {
         (code && JOIN_ERROR_MESSAGES[code]) ?? "방에 들어가지 못했어요.",
       );
       setIsJoining(false);
-      return false;
     }
   };
-
-  // 제안 수락 (그사이 시작된 방이면 다음 방 제안)
-  const acceptProposal = async () => {
-    if (!proposal?.sessionId) return;
-
-    const { sessionId } = proposal;
-    setProposal(null);
-
-    if (!(await joinRoom(sessionId))) {
-      void requestProposal();
-    }
-  };
-
-  // 제안 거절 → 응답으로 온 다음 방 제안
-  const declineProposal = () => {
-    if (!proposal?.sessionId) return;
-
-    const { sessionId } = proposal;
-    setProposal(null);
-
-    void runProposal(() => rejectProposal(sessionId));
-  };
-
-  const isBusy = isJoining || isProposing;
 
   return (
     <main className="mx-auto flex h-dvh w-full max-w-100.5 flex-col bg-secondary">
@@ -253,11 +189,12 @@ const RoomListContent = ({ category }: { category: TopicCategory }) => {
         </h1>
 
         <div className="px-6 pb-5">
+          {/* 바로 새 랜덤 주제의 입장 선택으로 */}
           <LongButton
-            disabled={isBusy}
-            onClick={requestProposal}
+            disabled={isJoining}
+            onClick={() => navigate(`/game/select?category=${category}`)}
             className={
-              isBusy
+              isJoining
                 ? "!bg-main-009 !text-neutral-004"
                 : "!bg-main !text-white hover:!bg-main-006"
             }
@@ -291,7 +228,7 @@ const RoomListContent = ({ category }: { category: TopicCategory }) => {
               imageUrl={room.host.imageUrl}
               statement={room.topic.statement}
               wantedStance={room.wantedStance}
-              disabled={isBusy}
+              disabled={isJoining}
               onClick={() => void joinRoom(room.sessionId)}
             />
           ))}
@@ -320,20 +257,6 @@ const RoomListContent = ({ category }: { category: TopicCategory }) => {
       <aside aria-label="광고 영역" className="h-17.5 shrink-0 bg-green" />
 
       <Toast message={toastMessage} />
-
-      <ConfirmModal
-        open={proposal !== null}
-        title="이 야차판에 들어갈까요?"
-        description={
-          proposal?.myStance
-            ? `“${proposal.topic.statement}” · ${STANCE_LABEL[proposal.myStance]}`
-            : undefined
-        }
-        cancelLabel="다른 판 보기"
-        confirmLabel="들어가기"
-        onCancel={declineProposal}
-        onConfirm={acceptProposal}
-      />
     </main>
   );
 };
