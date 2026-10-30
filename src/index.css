@@ -214,8 +214,10 @@
 
   /* 앱 화면 틀: 기기 화면 높이에서 노치 · 홈 바 영역을 뺀 만큼만 씀
      (페이지는 h-full 로 이 높이를 채우고, 길면 이 안에서만 스크롤) */
+  /* 높이(100dvh) 대신 화면 네 모서리에 고정: iOS 홈 화면 앱(PWA)은 상태 표시줄을 투명하게 쓰면
+     100dvh 를 상태 표시줄만큼 짧게 계산해 화면 아래에 빈 띠가 생김 */
   #root {
-    @apply h-dvh overflow-y-auto overscroll-none;
+    @apply fixed inset-0 overflow-y-auto overscroll-none;
     padding-top: env(safe-area-inset-top);
     padding-bottom: env(safe-area-inset-bottom);
   }
@@ -242,6 +244,7 @@
     position: fixed;
     inset-inline: 0;
     top: var(--viewport-top);
+    bottom: auto;
     height: var(--viewport-height);
     /* 홈 바는 키보드에 가려지므로 그만큼 띄우지 않음 */
     padding-bottom: 0;
