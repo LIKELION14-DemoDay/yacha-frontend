@@ -50,8 +50,8 @@ export default defineConfig(({ mode }) => {
 
         // PWA 앱 정보 설정
         manifest: {
-          name: "야차판",
-          short_name: "야차판",
+          name: "야차철학",
+          short_name: "야차철학",
           description: "철학을 게임처럼 즐기는 실시간 토론 서비스",
 
           start_url: "/",
@@ -61,18 +61,26 @@ export default defineConfig(({ mode }) => {
           theme_color: "#0c0c0c",
           background_color: "#0c0c0c",
 
+          // 배경색이 모서리까지 꽉 찬 정사각형 아이콘 (투명한 모서리가 있으면 흰 여백이 생김)
+          // maskable: 안드로이드가 원 · 둥근 사각형으로 잘라도 로고가 안 잘리게 로고를 작게 둔 아이콘
           icons: [
             {
-              src: "/applogo.png",
-              sizes: "200x200",
+              src: "/icons/icon-192.png",
+              sizes: "192x192",
               type: "image/png",
               purpose: "any",
             },
             {
-              src: "/applogo.png",
-              sizes: "200x200",
+              src: "/icons/icon-512.png",
+              sizes: "512x512",
               type: "image/png",
               purpose: "any",
+            },
+            {
+              src: "/icons/maskable-512.png",
+              sizes: "512x512",
+              type: "image/png",
+              purpose: "maskable",
             },
           ],
         },
