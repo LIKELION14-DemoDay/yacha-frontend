@@ -4,7 +4,7 @@
 
 > 생각이 다른 사람과 철학으로 맞붙는 1:1 토론 배틀 플랫폼
 
-[서비스 바로가기](https://yachapan.cloud) · [Frontend Repository](https://github.com/LIKELION14-DemoDay/yacha-frontend) · [협업 가이드](https://github.com/LIKELION14-DemoDay/yacha-frontend)
+[서비스 바로가기](https://yachapan.cloud) · [Frontend Repository](https://github.com/LIKELION14-DemoDay/yacha-frontend) · [협업 가이드](https://github.com/LIKELION14-DemoDay/yacha-frontend/blob/main/%20CONTRIBUTING.md)
 
 ## 📑 목차
 
