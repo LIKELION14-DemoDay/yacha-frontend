@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import brandLogo from "../assets/brand-logo.svg";
@@ -75,6 +75,13 @@ function OnboardingPage() {
     setShowIntro(false);
   }, []);
 
+  // 다음 슬라이드 그림이 눌렀을 때 비었다가 뜨지 않게 미리 받아 둠
+  useEffect(() => {
+    onboardingSlides.forEach(({ image }) => {
+      new Image().src = image;
+    });
+  }, []);
+
   const slide = onboardingSlides[currentSlide];
   const isLastSlide = currentSlide === onboardingSlides.length - 1;
 
@@ -103,7 +110,8 @@ function OnboardingPage() {
     <main className="mx-auto flex h-full w-full max-w-100.5 flex-col overflow-y-auto bg-secondary [container-type:size] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       <section className="flex shrink-0 flex-col gap-6">
         <div className="flex flex-col items-start self-stretch px-6 py-4">
-          <img src={brandLogo} alt="야차철학" />
+          {/* 크기를 미리 정해 로고가 늦게 떠도 아래 내용이 밀리지 않게 */}
+          <img src={brandLogo} alt="야차철학" width={128} height={26} />
         </div>
 
         <div
