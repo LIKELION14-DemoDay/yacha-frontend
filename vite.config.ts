@@ -45,8 +45,7 @@ export default defineConfig(({ mode }) => {
       tailwindcss(),
 
       VitePWA({
-        // 새 버전이 배포되면 사용자에게 업데이트 안내
-        registerType: "prompt",
+        registerType: "autoUpdate",
 
         // PWA 앱 정보 설정
         manifest: {
