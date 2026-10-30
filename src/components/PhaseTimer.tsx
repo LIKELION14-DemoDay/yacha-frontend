@@ -7,6 +7,8 @@ interface PhaseTimerProps {
   isUrgent?: boolean;
   // 진행 막대를 좌우 여백 안쪽에 둠 (작성 화면), 아니면 화면 끝까지 (채팅)
   inset?: boolean;
+  // 시간 아래 한 줄 안내 (예: 채팅 중 토론 주제), 시간과 같은 색
+  caption?: string;
 }
 
 const formatTime = (seconds: number) => {
@@ -22,6 +24,7 @@ const PhaseTimer = ({
   totalSeconds,
   isUrgent = false,
   inset = false,
+  caption,
 }: PhaseTimerProps) => {
   const progress =
     totalSeconds > 0
@@ -37,6 +40,13 @@ const PhaseTimer = ({
       >
         {formatTime(remainingSeconds)}
       </p>
+      {caption ? (
+        <p
+          className={`line-clamp-2 px-6 pb-2.5 text-center text-caption-r1 break-keep ${isUrgent ? "text-main" : "text-white"}`}
+        >
+          {caption}
+        </p>
+      ) : null}
 
       <div className={inset ? "px-6 py-5" : "pt-0.5"}>
         <div className="h-1.25 w-full bg-neutral-008">

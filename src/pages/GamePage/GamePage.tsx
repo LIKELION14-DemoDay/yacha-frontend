@@ -251,11 +251,14 @@ const GamePage = () => {
     (item) => item.participantId !== gameState.myParticipantId,
   );
 
-  // 공개된 주장 (아직 안 왔으면 null)
-  const getArgument = (participantId: number | undefined) =>
+  // 공개된 주장 · 반론 (아직 안 왔으면 null)
+  const getArgument = (
+    participantId: number | undefined,
+    argumentPhase: "PREP" | "REBUTTAL" = "PREP",
+  ) =>
     argumentMessages.find(
       (message) =>
-        message.senderId === participantId && message.phase === "PREP",
+        message.senderId === participantId && message.phase === argumentPhase,
     )?.content ?? null;
 
   const opponentName = opponent?.type === "AI" ? "AI" : "상대";
@@ -294,6 +297,8 @@ const GamePage = () => {
             totalSeconds={PHASE_SECONDS[phase]}
             isUrgent={isFinalNotice}
             inset={phase !== "CHAT"}
+            // 채팅 중에는 시간 아래에 토론 주제
+            caption={phase === "CHAT" ? gameState?.topic.statement : undefined}
           />
         ) : null}
       </div>
@@ -348,8 +353,18 @@ const GamePage = () => {
           canUseHints={phase === "PREP"}
           onError={showToast}
         />
-      ) : gameState && phase === "CHAT" ? (
+      ) : gameState && me && opponent && phase === "CHAT" ? (
         <ChatPhase
+          myRebuttal={{
+            name: "나",
+            stance: me.stance,
+            content: getArgument(me.participantId, "REBUTTAL"),
+          }}
+          opponentRebuttal={{
+            name: opponentName,
+            stance: opponent.stance,
+            content: getArgument(opponent.participantId, "REBUTTAL"),
+          }}
           messages={chatMessages}
           myParticipantId={gameState.myParticipantId}
           getSender={getSender}
