@@ -1,4 +1,4 @@
-import ProfileImage from "./ProfileImage";
+import PhilosopherImage from "./PhilosopherImage";
 import type { Stance } from "../types/session";
 import { STANCE_LABEL } from "../utils/stance";
 
@@ -27,7 +27,7 @@ const RoomCard = ({
       disabled={disabled}
       className="flex w-full shrink-0 cursor-pointer items-center gap-3 rounded-[10px] border border-neutral-008 bg-neutral-008 px-3 py-3.5 text-left transition-colors hover:border-neutral-007 disabled:cursor-not-allowed"
     >
-      <ProfileImage src={imageUrl} size="md" />
+      <PhilosopherImage imageUrl={imageUrl} alt="방장 프로필" size="md" />
       <span className="flex min-w-0 flex-1 flex-col gap-1">
         <span className="text-subhead-m7 break-keep text-neutral-003">
           “{statement}”

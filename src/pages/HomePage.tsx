@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import ethicsIcon from "../assets/balance-scale-solid.svg";
 import humanIcon from "../assets/home/temporary-human-home.svg";
@@ -12,6 +12,7 @@ import trueIcon from "../assets/home/temporary-true-home.svg";
 import homeImage from "../assets/home-image1.png";
 import homeLogo from "../assets/home-logo.svg";
 import StatusBar from "../components/StatusBar";
+import LongButton from "../components/Button";
 import PhilosopherImage from "../components/PhilosopherImage";
 import ConfirmModal from "../components/ConfirmModal";
 import Toast from "../components/Toast";
@@ -22,6 +23,7 @@ import { useResumeSession } from "../hooks/useResumeSession";
 import { getApiErrorMessage } from "../utils/apiError";
 import type { TopicCategory } from "../types/topic";
 import { CATEGORIES, CATEGORY_LABEL } from "../utils/category";
+import { getAllWaitingRooms, NO_ROOM_MESSAGE } from "../utils/waitingRooms";
 
 const CATEGORY_ICONS: Record<TopicCategory, string> = {
   HUMAN: humanIcon,
@@ -105,6 +107,35 @@ function HomePage() {
   const [balancePromptDismissed, setBalancePromptDismissed] = useState(false);
   const skipPendingRef = useRef(false);
   const { toastMessage, showToast } = useToast();
+  const [isFindingRoom, setIsFindingRoom] = useState(false);
+
+  // 빠른 방 찾기에서 돌아오면 넘겨받은 안내를 한 번 띄움 (뒤로 와도 다시 안 뜨게 지움)
+  const location = useLocation();
+  const returnedToast = (location.state as { toast?: string } | null)?.toast;
+
+  useEffect(() => {
+    if (!returnedToast) return;
+
+    showToast(returnedToast);
+    navigate(location.pathname, { replace: true, state: null });
+  }, [returnedToast, showToast, navigate, location.pathname]);
+
+  // 빠른 방 찾기: 모든 카테고리의 대기 방을 불러와 있으면 하나씩 보는 화면으로, 없으면 안내
+  const handleQuickMatch = async () => {
+    setIsFindingRoom(true);
+    try {
+      const rooms = await getAllWaitingRooms();
+      if (rooms.length === 0) {
+        showToast(NO_ROOM_MESSAGE);
+        return;
+      }
+      navigate("/game/quick", { state: { rooms } });
+    } catch {
+      showToast("방 목록을 불러오지 못했어요.");
+    } finally {
+      setIsFindingRoom(false);
+    }
+  };
 
   const handleSkipBalance = async () => {
     if (skipPendingRef.current) return;
@@ -159,18 +190,33 @@ function HomePage() {
 
       <section
         aria-labelledby="colosseum-title"
-        className="flex h-80 shrink-0 flex-col gap-4 py-5"
+        className="flex shrink-0 flex-col gap-4 py-5"
       >
         <div className="flex flex-col items-start gap-1 px-6">
           <h1 id="colosseum-title" className="text-subhead-m5 text-white">
             야차 콜로세움
           </h1>
           <p className="text-subhead-r8 text-neutral-006">
-            주제를 고르고 1대1 키배를 해보세요.
+            다양한 주제로 1대1 키배를 해보세요
           </p>
         </div>
 
-        <div className="grid flex-1 grid-cols-4 gap-x-5 gap-y-5 px-6.5">
+        <div className="px-6">
+          <LongButton
+            disabled={isFindingRoom}
+            aria-busy={isFindingRoom}
+            onClick={handleQuickMatch}
+            className={
+              isFindingRoom
+                ? "!bg-main-009 !text-neutral-004"
+                : "!bg-main !text-white hover:!bg-main-006"
+            }
+          >
+            빠른 방 찾기
+          </LongButton>
+        </div>
+
+        <div className="grid grid-cols-4 gap-x-5 gap-y-5 px-6.5">
           {CATEGORIES.map((category) => (
             <TopicCard
               key={category}

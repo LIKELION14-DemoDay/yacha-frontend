@@ -11,7 +11,7 @@ const Toast = ({ message }: ToastProps) => {
       className="pointer-events-none fixed inset-x-0 bottom-25 z-50 flex justify-center px-6"
     >
       {message ? (
-        <p className="overflow-hidden rounded-[74px] bg-black/70 px-8 py-4 text-center text-subhead-m7 text-white shadow-[0_14px_33.4px_0_rgba(0,0,0,0.25)] backdrop-blur-[3.5px]">
+        <p className="overflow-hidden rounded-[74px] bg-black/70 px-8 py-4 text-center text-subhead-m7 whitespace-pre-line text-white shadow-[0_14px_33.4px_0_rgba(0,0,0,0.25)] backdrop-blur-[3.5px]">
           {message}
         </p>
       ) : null}
