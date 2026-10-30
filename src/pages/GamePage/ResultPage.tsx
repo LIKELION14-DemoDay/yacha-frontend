@@ -3,7 +3,7 @@
  * 판정 중(PENDING)이면 대기 화면을 보여주며 다시 조회하고, 끝나면 승패와 기준별 점수를 보여줌
  * 새로고침해도 서버 결과를 다시 받아 같은 화면이 나옴
  */
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { getResult } from "../../apis/sessions";
@@ -134,6 +134,7 @@ const ResultPage = () => {
 
   // 승패는 승자 기준 (게스트는 몰수패해도 내 result 가 null 로 와서 무승부로 보이던 문제)
   const winnerId = result.winnerParticipantId;
+  const hasScores = Boolean(me.scores && opponent?.scores);
   const isWin = winnerId === me.participantId;
   const isLose = winnerId !== null && !isWin;
   const isForfeitWin = isWin && result.finishReason === "FORFEIT";
@@ -152,8 +153,9 @@ const ResultPage = () => {
         : "팽팽한 승부였어요.";
 
   return (
-    // 남는 높이는 광고 영역이 채우고, 작은 폰에서는 광고는 아래에 고정한 채 그 위만 스크롤
-    <main className="relative isolate mx-auto flex h-full w-full max-w-100.5 flex-col overflow-hidden bg-secondary">
+    // 402×818 에서 피그마와 같고, 키가 다른 화면에서는 세로 여백 · 프로필 · 광고가 화면 높이 비율로 늘고 줄어듦
+    // (cqh = 화면 높이의 1%, 여백은 피그마 간격 50 · 32 · 20 비율의 빈 공간)
+    <main className="relative isolate mx-auto flex h-full w-full max-w-100.5 flex-col overflow-hidden bg-secondary [container-type:size]">
       {/* 위쪽 빨간 빛 번짐 배경 (화면 밖으로 넘치는 부분은 잘라서 가로 스크롤이 안 생기게) */}
       <div
         aria-hidden="true"
@@ -168,15 +170,17 @@ const ResultPage = () => {
 
       <TopBar onBack={goHome} backLabel="홈으로" />
 
-      <div className="flex min-h-0 shrink flex-col overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        <section className="flex shrink-0 flex-col items-center gap-3 pt-12.5">
+      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {/* 프로필 위로 튀어나온 로고 자리는 줄어들지 않게 */}
+        <div aria-hidden="true" className="min-h-8 flex-50" />
+        <section className="flex shrink-0 flex-col items-center gap-[1.5cqh]">
           <div className="relative">
             <PhilosopherImage imageUrl={me.imageUrl} alt="" size="xl" />
             {/* 이기면 로고, 지면 로고를 뒤집어서 */}
             <img
               src={yachaLogo}
               alt=""
-              className={`absolute -top-7.25 left-19.25 h-8.75 w-10.75 ${isLose ? "rotate-180" : ""}`}
+              className={`absolute -top-7.25 left-[77%] h-8.75 w-10.75 ${isLose ? "rotate-180" : ""}`}
             />
           </div>
           <div className="flex flex-col items-center gap-1 text-center whitespace-nowrap">
@@ -185,8 +189,15 @@ const ResultPage = () => {
           </div>
         </section>
 
-        <section aria-label="기준별 점수" className="shrink-0 pt-8 pb-5">
-          <div className="relative flex items-center justify-between px-6 pt-5">
+        <div aria-hidden="true" className="flex-32" />
+        {/* 안쪽 여백 합(20 · 8 · 24×3 · 16)만큼 남는 높이를 나눠 받음 */}
+        <section
+          aria-label="기준별 점수"
+          className="flex shrink-0 flex-col"
+          style={{ flexGrow: hasScores ? 116 : 20 }}
+        >
+          <div aria-hidden="true" className="flex-20" />
+          <div className="relative flex items-center justify-between px-6">
             <div className="flex w-[39px] flex-col items-center gap-[9px]">
               <PhilosopherImage imageUrl={me.imageUrl} alt="" size="xs" />
               <p className="w-full truncate text-center text-caption-r1 text-white">
@@ -231,28 +242,35 @@ const ResultPage = () => {
           </div>
 
           {/* 몰수승 · 시간 초과로 점수가 없으면 기준별 점수는 생략 */}
-          {me.scores && opponent?.scores ? (
-            <div className="flex w-full flex-col">
-              {CRITERIA.map(({ key, label }) => {
+          {hasScores ? (
+            <>
+              {CRITERIA.map(({ key, label }, index) => {
                 const [mineShare, opponentShare] = toShares(
                   me.scores?.[key] ?? 0,
-                  opponent.scores?.[key] ?? 0,
+                  opponent?.scores?.[key] ?? 0,
                 );
 
                 return (
-                  <ScoreCompareRow
-                    key={key}
-                    label={label}
-                    leftScore={mineShare}
-                    rightScore={opponentShare}
-                  />
+                  <Fragment key={key}>
+                    <div
+                      aria-hidden="true"
+                      className={index === 0 ? "flex-8" : "flex-24"}
+                    />
+                    <ScoreCompareRow
+                      label={label}
+                      leftScore={mineShare}
+                      rightScore={opponentShare}
+                    />
+                  </Fragment>
                 );
               })}
-            </div>
+              <div aria-hidden="true" className="flex-16" />
+            </>
           ) : null}
         </section>
+        <div aria-hidden="true" className="flex-40" />
 
-        <div className="shrink-0 px-6 py-5">
+        <div className="shrink-0 px-6">
           <LongButton
             onClick={goHome}
             className="!bg-main !text-white hover:!bg-main-006"
@@ -260,9 +278,13 @@ const ResultPage = () => {
             홈으로 돌아가기
           </LongButton>
         </div>
+        <div aria-hidden="true" className="flex-20" />
       </div>
 
-      <aside aria-label="광고 영역" className="min-h-17.5 flex-1 bg-green" />
+      <aside
+        aria-label="광고 영역"
+        className="h-[8.8cqh] max-h-25 min-h-12.5 shrink-0 bg-green"
+      />
     </main>
   );
 };

@@ -6,8 +6,20 @@ import type {
 } from "../types/balanceGame";
 import { BALANCE_QUESTION_COUNT, isPhilosopherType } from "../types/balanceGame";
 import { ApiResponseError } from "../utils/apiError";
+import { writeProfileCache } from "../utils/profileCache";
 import api from "./client";
 import type { ApiResponse } from "./types";
+import { getMyProfile } from "./users";
+
+// 철학자 유형이 바뀌면 다음 화면 프로필 사진에 바로 보이게 저장해 둔 내 정보를 새로 받음
+// (실패해도 결과는 이미 저장됐으므로 무시하고, 다음 화면에서 다시 받음)
+const syncMyProfile = async () => {
+  try {
+    writeProfileCache(await getMyProfile());
+  } catch {
+    // 다음 화면의 내 정보 조회가 다시 갱신함
+  }
+};
 
 const BASE_PATH = "/api/v1/balance-game";
 
@@ -87,7 +99,9 @@ export const submitBalanceAnswers = async (
     `${BASE_PATH}/${isAuthenticated ? "result" : "preview"}`,
     { answers },
   );
-  return readResult(response.data);
+  const result = readResult(response.data);
+  if (isAuthenticated) await syncMyProfile();
+  return result;
 };
 
 export const skipBalanceGame = async (isAuthenticated: boolean) => {
@@ -95,4 +109,5 @@ export const skipBalanceGame = async (isAuthenticated: boolean) => {
     `${BASE_PATH}/${isAuthenticated ? "skip" : "preview/skip"}`,
   );
   unwrap(response.data);
+  if (isAuthenticated) await syncMyProfile();
 };

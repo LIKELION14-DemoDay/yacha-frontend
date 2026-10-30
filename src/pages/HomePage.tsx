@@ -125,13 +125,13 @@ const PhilosophyCard = ({
       </div>
 
       {/* 한 줄에 두 명까지, 나머지는 +N 으로 */}
-      <div className="flex min-w-0 gap-1">
+      <div className="flex w-full min-w-0 gap-1">
         {card.philosophers
           .slice(0, MAX_VISIBLE_PHILOSOPHERS)
           .map((philosopher) => (
             <span
               key={philosopher}
-              className="truncate rounded-full border border-neutral-007 px-2 py-1 text-caption-r2 whitespace-nowrap text-neutral-003"
+              className="min-w-0 truncate rounded-full border border-neutral-007 px-2 py-1 text-caption-r2 whitespace-nowrap text-neutral-003"
             >
               {philosopher}
             </span>
@@ -248,10 +248,14 @@ function HomePage() {
   return (
     // 높이는 화면(앱 틀) 비율로 나눔: cqh = 화면 높이의 1%, 남는 공간은 상단 이미지가 채움
     // 아주 작은 화면에서는 광고는 아래에 고정하고 그 위만 스크롤
-    <main className="mx-auto flex h-full w-full max-w-100.5 flex-col overflow-hidden bg-secondary [container-type:size]">
+    // 상단 이미지는 노치 뒤까지 이어지고, 로고 · 프로필만 노치 아래로 띄움 (data-under-notch)
+    <main
+      data-under-notch
+      className="mx-auto flex h-full w-full max-w-100.5 flex-col overflow-hidden bg-secondary [container-type:size]"
+    >
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <header
-          className="min-h-12 flex-1 bg-cover bg-center"
+          className="min-h-[calc(3rem+env(safe-area-inset-top))] flex-1 bg-cover bg-center pt-[env(safe-area-inset-top)]"
           style={{
             backgroundImage: `linear-gradient(to bottom, rgba(12, 12, 12, 0.08) 0%, rgba(12, 12, 12, 0.14) 45%, #0c0c0c 100%), url(${homeImage})`,
           }}

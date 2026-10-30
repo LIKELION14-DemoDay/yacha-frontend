@@ -15,8 +15,15 @@ const isOAuthCallback = ["/oauth/google", "/oauth/kakao"].includes(
 )
 const authReady = isOAuthCallback ? Promise.resolve() : restoreLogin()
 
-// 일반 페이지는 로그인 복구가 끝난 뒤 표시합니다.
-authReady.finally(() => {
+// 첫 화면에서 기본 글꼴 → 앱 글꼴로 바뀌며 글자가 움찔하지 않게 글꼴을 먼저 받습니다.
+// (느린 네트워크에서도 화면이 너무 늦게 뜨지 않게 1.5초까지만 기다림)
+const fontReady = Promise.race([
+  document.fonts.load('400 16px "Noto Sans KR Variable"', '야차철학'),
+  new Promise((resolve) => setTimeout(resolve, 1500)),
+]).catch(() => undefined)
+
+// 일반 페이지는 로그인 복구와 글꼴 준비가 끝난 뒤 표시합니다.
+Promise.allSettled([authReady, fontReady]).then(() => {
   createRoot(document.getElementById('root')!).render(
     <StrictMode>
       <BrowserRouter>

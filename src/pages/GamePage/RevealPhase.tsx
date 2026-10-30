@@ -2,7 +2,7 @@
  * 주장 공개 화면 (REVEAL 구간, 20초)
  * 양측 주장을 말풍선으로 보여주고, 남은 시간 뒤 반론 작성으로 넘어간다고 알림
  */
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import StanceBubble from "../../components/StanceBubble";
 import type { Stance } from "../../types/session";
@@ -20,6 +20,9 @@ interface RevealPhaseProps {
   remainingSeconds: number;
 }
 
+// 말풍선이 날아와 자리를 잡는 시간 (duration-900 과 같게)
+const BUBBLE_MOTION_MS = 900;
+
 // 빈 제출일 때 말풍선에 보일 문구 (도착 전에는 말풍선을 숨겨 둠)
 const getArgumentText = (content: string | null) =>
   content === null ? "" : content.trim() || "작성한 주장이 없어요";
@@ -30,6 +33,35 @@ const RevealPhase = ({
   remainingSeconds,
 }: RevealPhaseProps) => {
   const isArrived = mine.content !== null && opponent.content !== null;
+  // 날아오기 시작했는지 · 자리를 잡았는지
+  const [isEntered, setIsEntered] = useState(false);
+  const [isSettled, setIsSettled] = useState(false);
+
+  // 두 주장이 오면 다음 프레임에 날아오기 시작 (화면에 들어올 때 이미 와 있어도 모션이 보이게)
+  useEffect(() => {
+    if (!isArrived) return;
+
+    let frame = requestAnimationFrame(() => {
+      frame = requestAnimationFrame(() => setIsEntered(true));
+    });
+
+    return () => cancelAnimationFrame(frame);
+  }, [isArrived]);
+
+  // 말풍선이 자리를 잡은 뒤에 넘어가는 안내를 보여 줌 (모션 줄이기 설정이면 바로)
+  useEffect(() => {
+    if (!isEntered) return;
+
+    const isReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    const timeoutId = setTimeout(
+      () => setIsSettled(true),
+      isReducedMotion ? 0 : BUBBLE_MOTION_MS,
+    );
+
+    return () => clearTimeout(timeoutId);
+  }, [isEntered]);
   const motionClassName =
     "transition-transform duration-900 ease-spring motion-reduce:transition-none";
   const seconds = Math.max(0, Math.ceil(remainingSeconds));
@@ -63,9 +95,9 @@ const RevealPhase = ({
       </div>
 
       {/* 두 주장이 도착하면 매칭 완료 때처럼 양옆에서 날아와 부딪힘 */}
-      <div aria-hidden={!isArrived} className="flex shrink-0 flex-col gap-2">
+      <div aria-hidden={!isEntered} className="flex shrink-0 flex-col gap-2">
         <div
-          className={`${motionClassName} ${isArrived ? "translate-x-0" : "translate-x-[462.5px]"}`}
+          className={`${motionClassName} ${isEntered ? "translate-x-0" : "translate-x-[462.5px]"}`}
         >
           <StanceBubble
             isMine
@@ -78,13 +110,13 @@ const RevealPhase = ({
         </div>
         <p
           className={`text-center text-body-r2 text-neutral-008 transition-opacity duration-150 motion-reduce:transition-none ${
-            isArrived ? "opacity-100" : "opacity-0"
+            isEntered ? "opacity-100" : "opacity-0"
           }`}
         >
           VS
         </p>
         <div
-          className={`${motionClassName} ${isArrived ? "translate-x-0" : "-translate-x-[462.5px]"}`}
+          className={`${motionClassName} ${isEntered ? "translate-x-0" : "-translate-x-[462.5px]"}`}
         >
           <StanceBubble
             isMine={false}
@@ -96,10 +128,13 @@ const RevealPhase = ({
         </div>
       </div>
 
-      {/* 화면에는 매초 줄어드는 숫자, 스크린 리더에는 10초 · 5초 남았을 때만 알림 */}
+      {/* 화면에는 매초 줄어드는 숫자, 스크린 리더에는 10초 · 5초 남았을 때만 알림
+          말풍선이 자리를 잡은 뒤에 나타남 (자리는 미리 잡아 둬서 나타날 때 화면이 밀리지 않음) */}
       <p
         aria-hidden="true"
-        className="shrink-0 py-10 text-center text-subhead-r8 text-neutral-007"
+        className={`shrink-0 py-10 text-center text-subhead-r8 text-neutral-007 transition-opacity duration-300 motion-reduce:transition-none ${
+          isSettled ? "opacity-100" : "opacity-0"
+        }`}
       >
         <span className="text-main">{seconds}</span>초 뒤 반론 작성 페이지로
         넘어갑니다.
