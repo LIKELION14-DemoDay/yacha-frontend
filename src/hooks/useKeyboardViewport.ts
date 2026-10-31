@@ -34,6 +34,11 @@ const getStandaloneBottomGap = () => {
   return Math.max(0, screenHeight - window.innerHeight);
 };
 
+// 터치 기기를 가로로 돌렸는지 (키보드로 화면이 가로로 길어져도 바뀌지 않게 화면 비율이 아닌 기기 방향으로 판단)
+const isTouchLandscape = () =>
+  window.matchMedia("(pointer: coarse)").matches &&
+  (screen.orientation?.type.startsWith("landscape") ?? false);
+
 export const useKeyboardViewport = () => {
   useEffect(() => {
     const viewport = window.visualViewport;
@@ -64,6 +69,8 @@ export const useKeyboardViewport = () => {
         html.style.setProperty("--viewport-height", `${viewport.height}px`);
         html.style.setProperty("--viewport-top", `${viewport.offsetTop}px`);
         html.toggleAttribute("data-keyboard-open", isKeyboardOpen);
+        // 세로 전용 앱이라 가로로 돌리면 안내 화면만 보임
+        html.toggleAttribute("data-landscape", isTouchLandscape());
       });
     };
 
@@ -81,6 +88,7 @@ export const useKeyboardViewport = () => {
       document.removeEventListener("focusin", update);
       document.removeEventListener("focusout", update);
       html.removeAttribute("data-keyboard-open");
+      html.removeAttribute("data-landscape");
     };
   }, []);
 };

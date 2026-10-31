@@ -103,6 +103,11 @@ const GamePage = () => {
       }
 
       setGameState(state);
+      // 새로고침 · 재연결 뒤에도 내가 이미 제출한 구간이면 상대 제출 안내를 띄우지 않게 복구
+      const me = state.participants.find(
+        (participant) => participant.participantId === state.myParticipantId,
+      );
+      mySubmittedPhaseRef.current = me?.submitted ? state.phase : null;
       setTiming({
         phase: state.phase,
         endsAt: state.endsAt,

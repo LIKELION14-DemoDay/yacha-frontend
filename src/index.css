@@ -252,6 +252,16 @@
     padding-bottom: 0;
   }
 
+  /* 세로 전용 앱: 폰을 가로로 돌리면 앱 대신 안내만 보임 (useKeyboardViewport 가 판단) */
+  html[data-landscape] #root {
+    display: none;
+  }
+
+  html[data-landscape] body::after {
+    content: "세로 화면으로 이용해 주세요";
+    @apply fixed inset-0 flex items-center justify-center bg-secondary text-subhead-m5 text-white;
+  }
+
   /* 입력창과 키보드 사이에 광고가 끼지 않게 키보드가 있는 동안 숨김 */
   html[data-keyboard-open] aside.bg-green {
     display: none;
