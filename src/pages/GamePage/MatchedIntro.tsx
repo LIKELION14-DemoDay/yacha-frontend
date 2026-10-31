@@ -15,6 +15,7 @@ const BUBBLES_DELAY_MS = 100;
 type BubbleInfo = {
   name: string;
   stance: Stance;
+  imageUrl: string;
   content: string;
 };
 

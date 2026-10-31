@@ -16,6 +16,7 @@ import type { Stance } from "../../types/session";
 type ArgumentInfo = {
   name: string;
   stance: Stance;
+  imageUrl: string;
   // 아직 공개 전이면 null
   content: string | null;
 };
@@ -77,6 +78,7 @@ const RevealPhase = ({
             isMine
             name={mine.name}
             stance={mine.stance}
+            imageUrl={mine.imageUrl}
             content={getArgumentText(mine.content)}
             quoted={false}
             clamped
@@ -96,6 +98,7 @@ const RevealPhase = ({
             isMine={false}
             name={opponent.name}
             stance={opponent.stance}
+            imageUrl={opponent.imageUrl}
             content={getArgumentText(opponent.content)}
             quoted={false}
           />

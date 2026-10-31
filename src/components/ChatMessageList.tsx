@@ -6,6 +6,7 @@ import type { SessionMessage, Stance } from "../types/session";
 export type ChatSender = {
   name: string;
   stance: Stance;
+  imageUrl?: string | null;
 };
 
 interface ChatMessageListProps {
@@ -103,6 +104,7 @@ const ChatMessageList = ({
             isMine={group.senderId === myParticipantId}
             name={sender.name}
             stance={sender.stance}
+            imageUrl={sender.imageUrl}
             messages={group.messages}
           />
         );

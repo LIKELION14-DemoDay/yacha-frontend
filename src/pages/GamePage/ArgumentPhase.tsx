@@ -219,7 +219,7 @@ const ArgumentPhase = ({
           </div>
         </section>
 
-        <aside aria-label="광고 영역" className="h-25 shrink-0 bg-green" />
+        <aside aria-label="광고 영역" className="h-17.5 shrink-0 bg-green" />
       </>
     );
   }
@@ -256,7 +256,7 @@ const ArgumentPhase = ({
       )}
 
       <section
-        className={`flex min-h-0 flex-1 flex-col px-6 ${canUseHints ? "" : "pt-2 pb-8"}`}
+        className={`flex min-h-fit flex-1 flex-col px-6 ${canUseHints ? "" : "pt-2 pb-8"}`}
       >
         <CountedTextArea
           value={content}

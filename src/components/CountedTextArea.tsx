@@ -33,7 +33,8 @@ const CountedTextArea = ({
   };
 
   return (
-    <div className="flex min-h-0 w-full flex-1 flex-col">
+    // 키보드로 공간이 줄어도 글 칸이 찌그러져 아래 글자 수와 겹치지 않게 최소 높이를 지킴
+    <div className="flex min-h-fit w-full flex-1 flex-col">
       <textarea
         value={value}
         onChange={handleChange}
@@ -42,7 +43,7 @@ const CountedTextArea = ({
         disabled={disabled}
         aria-label={label}
         aria-describedby={countId}
-        className={`min-h-0 w-full flex-1 resize-none rounded-[10px] ${spaced ? "mb-2" : ""} bg-neutral-009 p-4 text-body-r4 text-neutral-004 outline-none placeholder:text-neutral-007 disabled:cursor-not-allowed`}
+        className={`min-h-24 w-full flex-1 resize-none rounded-[10px] ${spaced ? "mb-2" : ""} bg-neutral-009 p-4 text-body-r4 text-neutral-004 outline-none placeholder:text-neutral-007 disabled:cursor-not-allowed`}
       />
 
       <div className="flex items-start justify-between gap-2 py-2 text-body-r4">

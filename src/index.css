@@ -218,6 +218,8 @@
      100dvh 를 상태 표시줄만큼 짧게 계산해 화면 아래에 빈 띠가 생김 */
   #root {
     @apply fixed inset-0 overflow-y-auto overscroll-none;
+    /* iPhone 홈 화면 앱이 화면을 짧게 알려 줄 때 그만큼 아래로 늘림 (useKeyboardViewport 가 잼) */
+    bottom: calc(-1 * var(--standalone-bottom-gap, 0px));
     padding-top: env(safe-area-inset-top);
     padding-bottom: env(safe-area-inset-bottom);
   }
@@ -248,6 +250,16 @@
     height: var(--viewport-height);
     /* 홈 바는 키보드에 가려지므로 그만큼 띄우지 않음 */
     padding-bottom: 0;
+  }
+
+  /* 세로 전용 앱: 폰을 가로로 돌리면 앱 대신 안내만 보임 (useKeyboardViewport 가 판단) */
+  html[data-landscape] #root {
+    display: none;
+  }
+
+  html[data-landscape] body::after {
+    content: "세로 화면으로 이용해 주세요";
+    @apply fixed inset-0 flex items-center justify-center bg-secondary text-subhead-m5 text-white;
   }
 
   /* 입력창과 키보드 사이에 광고가 끼지 않게 키보드가 있는 동안 숨김 */

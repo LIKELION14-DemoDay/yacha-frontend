@@ -13,6 +13,8 @@ interface StanceBubbleProps {
   isMine: boolean;
   name: string;
   stance: Stance;
+  // 철학자 유형 사진 (없으면 기본 아이콘)
+  imageUrl?: string | null;
   // 입장 문장 (철학자 유형 말투의 stanceText) 또는 공개된 주장
   content: string;
   // 따옴표로 감싸기 (입장 문장), 주장 본문은 끔
@@ -26,6 +28,7 @@ const StanceBubble = ({
   isMine,
   name,
   stance,
+  imageUrl,
   content,
   quoted = true,
   clamped = false,
@@ -54,7 +57,7 @@ const StanceBubble = ({
         }`}
       >
         <div className="flex items-center gap-2">
-          <PhilosopherImage alt="" size="xs" />
+          <PhilosopherImage imageUrl={imageUrl} alt="" size="xs" />
           <p className="flex min-w-0 items-center gap-1 whitespace-nowrap">
             <span className={`truncate text-subhead-m7 ${textColor}`}>
               {name}

@@ -8,6 +8,8 @@ interface ChoiceOptionsProps {
   selectedIndex: number | null;
   onSelect: (index: number) => void;
   label?: string;
+  // 글 영역을 이 줄 수만큼 미리 잡아 두 카드의 아이콘 높이를 맞춤 (밸런스 게임처럼 길이가 다른 선택지)
+  minTextLines?: number;
 }
 
 const OPTION_ICONS = [balanceScaleFirst, balanceScaleSecond];
@@ -18,6 +20,7 @@ const ChoiceOptions = ({
   selectedIndex,
   onSelect,
   label = "선택지",
+  minTextLines,
 }: ChoiceOptionsProps) => {
   return (
     <div role="radiogroup" aria-label={label} className="flex w-full gap-4">
@@ -40,8 +43,17 @@ const ChoiceOptions = ({
                 : `border-transparent bg-neutral-009 ${isOtherSelected ? "scale-[0.947]" : ""}`
             }`}
           >
-            <img src={OPTION_ICONS[index]} alt="" className="size-11.5 shrink-0" />
-            <span className="w-full text-center text-subhead-m5 break-keep text-white">
+            <img
+              src={OPTION_ICONS[index]}
+              alt=""
+              className="size-11.5 shrink-0"
+            />
+            <span
+              className="flex w-full items-center justify-center text-center text-subhead-m5 break-keep text-white"
+              style={
+                minTextLines ? { minHeight: `${minTextLines}lh` } : undefined
+              }
+            >
               {option}
             </span>
           </button>

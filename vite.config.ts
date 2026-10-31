@@ -77,6 +77,8 @@ export default defineConfig(({ mode }) => {
           start_url: "/",
           scope: "/",
           display: "standalone",
+          // 세로 화면 전용 (안드로이드 홈 화면 앱은 세로로 고정, iOS 는 무시해서 가로 안내 화면을 따로 띄움)
+          orientation: "portrait",
 
           theme_color: "#0c0c0c",
           background_color: "#0c0c0c",
