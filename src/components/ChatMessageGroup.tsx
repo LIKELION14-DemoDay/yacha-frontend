@@ -7,6 +7,8 @@ interface ChatMessageGroupProps {
   isMine: boolean;
   name: string;
   stance: Stance;
+  // 철학자 유형 사진 (없으면 기본 아이콘)
+  imageUrl?: string | null;
   // 같은 사람이 연달아 보낸 메시지 (보낸 순서대로)
   messages: { seqNo: number; content: string }[];
 }
@@ -15,13 +17,14 @@ const ChatMessageGroup = ({
   isMine,
   name,
   stance,
+  imageUrl,
   messages,
 }: ChatMessageGroupProps) => {
   return (
     <div
       className={`flex w-full items-start gap-2 px-5 ${isMine ? "flex-row-reverse" : ""}`}
     >
-      <PhilosopherImage alt="" size="xs" />
+      <PhilosopherImage imageUrl={imageUrl} alt="" size="xs" />
 
       <div
         className={`flex min-w-0 flex-col gap-2 ${isMine ? "items-end" : "items-start"}`}

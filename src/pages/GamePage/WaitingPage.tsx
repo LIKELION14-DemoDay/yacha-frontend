@@ -162,7 +162,7 @@ const WaitingPage = () => {
         />
       </div>
 
-      <aside aria-label="광고 영역" className="h-25 shrink-0 bg-green" />
+      <aside aria-label="광고 영역" className="h-17.5 shrink-0 bg-green" />
 
       <Toast message={toastMessage} />
 

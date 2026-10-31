@@ -96,7 +96,7 @@ function TopicCard({
       <img
         src={icon}
         alt=""
-        className="aspect-square w-full max-w-[8cqh] object-contain"
+        className="aspect-square w-full max-w-[7.6cqh] object-contain"
       />
       <span className="w-full truncate text-center">{topic}</span>
     </button>
@@ -279,7 +279,7 @@ function HomePage() {
 
         <section
           aria-labelledby="colosseum-title"
-          className="flex shrink-0 flex-col gap-[1.6cqh] py-[2cqh]"
+          className="flex shrink-0 flex-col gap-[1.6cqh] py-[1.6cqh]"
         >
           <div className="flex flex-col items-start gap-1 px-6">
             <h1 id="colosseum-title" className="text-subhead-m5 text-white">
@@ -323,7 +323,7 @@ function HomePage() {
 
         <section
           aria-labelledby="philosophy-title"
-          className="flex shrink-0 flex-col gap-[2cqh] pt-[2.4cqh] pb-[2cqh]"
+          className="flex shrink-0 flex-col gap-[2cqh] pt-[2cqh] pb-[2cqh]"
         >
           <div className="flex flex-col gap-1 px-6">
             <div className="flex items-center justify-between">

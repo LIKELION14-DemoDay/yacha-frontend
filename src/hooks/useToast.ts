@@ -91,5 +91,14 @@ export const useToast = () => {
     };
   }, []);
 
-  return { toastMessage, showToast };
+  // 떠 있는 알림을 바로 닫음 (화면이 바뀌어 더 이상 맞지 않는 안내)
+  const hideToast = useCallback(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    setToastMessage(null);
+    shownAtRef.current = null;
+  }, []);
+
+  return { toastMessage, showToast, hideToast };
 };

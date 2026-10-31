@@ -2,7 +2,7 @@ import ChatInput from "../../components/ChatInput";
 import ChatMessageList, {
   type ChatSender,
 } from "../../components/ChatMessageList";
-import StanceBubble from "../../components/StanceBubble";
+import ChatMessageGroup from "../../components/ChatMessageGroup";
 import {
   SLAM_FROM_LEFT_CLASS_NAME,
   SLAM_FROM_RIGHT_CLASS_NAME,
@@ -14,6 +14,7 @@ import type { SessionMessage, Stance } from "../../types/session";
 type RebuttalInfo = {
   name: string;
   stance: Stance;
+  imageUrl: string;
   // 아직 공개 전이면 null
   content: string | null;
 };
@@ -27,7 +28,7 @@ interface ChatPhaseProps {
   canSend: boolean;
   // 입력을 막은 이유 (예: 다시 연결하는 중)
   inputPlaceholder?: string;
-  // 채팅 시작 때 공개되는 양측 반론 (첫 채팅처럼 맨 위에 보임)
+  // 채팅 시작 때 공개되는 양측 반론 (채팅으로 보내지는 않지만 첫 채팅과 똑같은 모양으로 맨 위에 보임)
   myRebuttal: RebuttalInfo;
   opponentRebuttal: RebuttalInfo;
 }
@@ -61,23 +62,27 @@ const ChatPhase = ({
       <div
         className={`${SLAM_MOTION_CLASS_NAME} ${isEntered ? "translate-x-0" : SLAM_FROM_RIGHT_CLASS_NAME}`}
       >
-        <StanceBubble
+        <ChatMessageGroup
           isMine
           name={myRebuttal.name}
           stance={myRebuttal.stance}
-          content={getRebuttalText(myRebuttal.content)}
-          quoted={false}
+          imageUrl={myRebuttal.imageUrl}
+          messages={[
+            { seqNo: -2, content: getRebuttalText(myRebuttal.content) },
+          ]}
         />
       </div>
       <div
         className={`${SLAM_MOTION_CLASS_NAME} ${isEntered ? "translate-x-0" : SLAM_FROM_LEFT_CLASS_NAME}`}
       >
-        <StanceBubble
+        <ChatMessageGroup
           isMine={false}
           name={opponentRebuttal.name}
           stance={opponentRebuttal.stance}
-          content={getRebuttalText(opponentRebuttal.content)}
-          quoted={false}
+          imageUrl={opponentRebuttal.imageUrl}
+          messages={[
+            { seqNo: -1, content: getRebuttalText(opponentRebuttal.content) },
+          ]}
         />
       </div>
     </div>

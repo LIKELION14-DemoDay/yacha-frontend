@@ -77,7 +77,9 @@ const GamePage = () => {
     [],
   );
   const [isLeaveModalOpen, setIsLeaveModalOpen] = useState(false);
-  const { toastMessage, showToast } = useToast();
+  const { toastMessage, showToast, hideToast } = useToast();
+  // 내가 이미 제출한 구간 (상대까지 내면 바로 다음 화면으로 넘어가서 상대 제출 안내가 필요 없음)
+  const mySubmittedPhaseRef = useRef<SessionPhase | null>(null);
   // 상대 끊김 안내는 잠깐 미뤘다가 띄움 (그사이 다시 연결되면 취소)
   const disconnectToastTimeoutRef =
     useRef<ReturnType<typeof setTimeout>>(undefined);
@@ -116,7 +118,9 @@ const GamePage = () => {
     (event: SessionEvent) => {
       switch (event.type) {
         case "ARGUMENT_SUBMITTED":
-          if (event.senderId !== myParticipantId) {
+          if (event.senderId === myParticipantId) {
+            mySubmittedPhaseRef.current = event.phase;
+          } else if (mySubmittedPhaseRef.current !== event.phase) {
             showToast(
               event.phase === "REBUTTAL"
                 ? "상대가 반론을 제출했어요."
@@ -131,6 +135,8 @@ const GamePage = () => {
           setChatMessages((messages) => addMessage(messages, event));
           break;
         case "PHASE_CHANGED":
+          // 앞 구간 안내(상대 제출 등)가 다음 화면 위에 남지 않게 닫음
+          hideToast();
           if (event.phase === "JUDGING") {
             goToResult();
             break;
@@ -182,7 +188,7 @@ const GamePage = () => {
           break;
       }
     },
-    [myParticipantId, showToast, goToResult],
+    [myParticipantId, showToast, hideToast, goToResult],
   );
 
   const handleError = useCallback(
@@ -224,7 +230,7 @@ const GamePage = () => {
     return isSent;
   };
 
-  // 상대 닉네임은 아직 서버에서 안 줘서 임시 이름으로 표시
+  // 닉네임 · 철학자 사진은 서버가 주는 값 (혹시 비어 있으면 나 · 상대 · AI 로)
   const getSender = (participantId: number): ChatSender => {
     const participant = gameState?.participants.find(
       (item) => item.participantId === participantId,
@@ -232,8 +238,11 @@ const GamePage = () => {
     const isMine = participantId === gameState?.myParticipantId;
 
     return {
-      name: isMine ? "나" : participant?.type === "AI" ? "AI" : "상대",
+      name:
+        participant?.nickname ||
+        (isMine ? "나" : participant?.type === "AI" ? "AI" : "상대"),
       stance: participant?.stance ?? "AGREE",
+      imageUrl: participant?.imageUrl,
     };
   };
 
@@ -261,6 +270,7 @@ const GamePage = () => {
         message.senderId === participantId && message.phase === argumentPhase,
     )?.content ?? null;
 
+  // 닉네임이 비어 있을 때 쓸 상대 이름
   const opponentName = opponent?.type === "AI" ? "AI" : "상대";
 
   const openLeaveModal = () => setIsLeaveModalOpen(true);
@@ -279,7 +289,8 @@ const GamePage = () => {
 
   return (
     <main
-      className={`mx-auto flex h-full w-full max-w-100.5 flex-col ${
+      // 키보드가 올라와 공간이 모자라면 요소가 겹치지 않고 이 안에서 스크롤
+      className={`mx-auto flex h-full w-full max-w-100.5 flex-col overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${
         phase === "CHAT" ? "bg-neutral-009" : "bg-secondary"
       }`}
     >
@@ -306,26 +317,30 @@ const GamePage = () => {
       {gameState && me && opponent && isMatchedIntro ? (
         <MatchedIntro
           mine={{
-            name: "나",
+            name: me.nickname || "나",
             stance: me.stance,
+            imageUrl: me.imageUrl,
             content: getStanceText(me),
           }}
           opponent={{
-            name: opponentName,
+            name: opponent.nickname || opponentName,
             stance: opponent.stance,
+            imageUrl: opponent.imageUrl,
             content: getStanceText(opponent),
           }}
         />
       ) : gameState && me && opponent && isReveal ? (
         <RevealPhase
           mine={{
-            name: "나",
+            name: me.nickname || "나",
             stance: me.stance,
+            imageUrl: me.imageUrl,
             content: getArgument(me.participantId),
           }}
           opponent={{
-            name: opponentName,
+            name: opponent.nickname || opponentName,
             stance: opponent.stance,
+            imageUrl: opponent.imageUrl,
             content: getArgument(opponent.participantId),
           }}
           remainingSeconds={remainingSeconds}
@@ -356,13 +371,15 @@ const GamePage = () => {
       ) : gameState && me && opponent && phase === "CHAT" ? (
         <ChatPhase
           myRebuttal={{
-            name: "나",
+            name: me.nickname || "나",
             stance: me.stance,
+            imageUrl: me.imageUrl,
             content: getArgument(me.participantId, "REBUTTAL"),
           }}
           opponentRebuttal={{
-            name: opponentName,
+            name: opponent.nickname || opponentName,
             stance: opponent.stance,
+            imageUrl: opponent.imageUrl,
             content: getArgument(opponent.participantId, "REBUTTAL"),
           }}
           messages={chatMessages}
@@ -390,12 +407,9 @@ const GamePage = () => {
         </div>
       )}
 
-      {/* 작성 · 주장 공개 화면은 광고 없음, 제출 후 대기 화면의 광고는 ArgumentPhase 가 그림 */}
-      {isWriting || isReveal ? null : (
-        <aside
-          aria-label="광고 영역"
-          className={`shrink-0 bg-green ${phase === "CHAT" ? "h-20.75" : "h-25"}`}
-        />
+      {/* 작성 · 주장 공개 · 자유 채팅 화면은 광고 없음, 제출 후 대기 화면의 광고는 ArgumentPhase 가 그림 */}
+      {isWriting || isReveal || phase === "CHAT" ? null : (
+        <aside aria-label="광고 영역" className="h-17.5 shrink-0 bg-green" />
       )}
 
       <Toast message={toastMessage} />

@@ -85,6 +85,8 @@ export type SessionParticipant = {
   submitted: boolean | null;
   nickname: string;
   philosopherType: string | null;
+  // 철학자 유형 사진 (유형이 없으면 기본, 봇은 봇 사진)
+  imageUrl: string;
   // 철학자 유형 말투로 쓴 입장 문장 (예: "만인의 투쟁이 시작되겠군")
   stanceText: string;
 };

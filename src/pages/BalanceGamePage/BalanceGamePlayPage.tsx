@@ -154,6 +154,7 @@ function BalanceGamePlayPage() {
                 options={[question.optionA, question.optionB]}
                 selectedIndex={selectedIndex}
                 onSelect={setSelectedIndex}
+                minTextLines={2}
               />
             </section>
           </>
