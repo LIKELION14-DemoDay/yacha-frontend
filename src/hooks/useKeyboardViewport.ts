@@ -19,6 +19,21 @@ const isEditing = () => {
   );
 };
 
+// iPhone 홈 화면 앱(상태 표시줄 투명)은 화면 높이를 상태 표시줄만큼 짧게 알려 줘서 아래에 빈 띠가 생김
+// 실제 화면 높이와의 차이를 재서 앱 틀을 그만큼 아래로 늘림 (차이가 없는 iOS 에서는 0)
+const getStandaloneBottomGap = () => {
+  const isIosStandalone =
+    (navigator as Navigator & { standalone?: boolean }).standalone === true;
+  if (!isIosStandalone) return 0;
+
+  const isPortrait = window.innerHeight >= window.innerWidth;
+  const screenHeight = isPortrait
+    ? Math.max(screen.width, screen.height)
+    : Math.min(screen.width, screen.height);
+
+  return Math.max(0, screenHeight - window.innerHeight);
+};
+
 export const useKeyboardViewport = () => {
   useEffect(() => {
     const viewport = window.visualViewport;
@@ -37,6 +52,10 @@ export const useKeyboardViewport = () => {
         // 입력 중이 아니면 키보드가 없으니 지금 높이가 기준 (화면 회전 · 주소창 변화 반영)
         if (!editing) {
           fullHeight = Math.max(viewport.height, window.innerHeight);
+          html.style.setProperty(
+            "--standalone-bottom-gap",
+            `${getStandaloneBottomGap()}px`,
+          );
         }
 
         const isKeyboardOpen =

@@ -218,6 +218,8 @@
      100dvh 를 상태 표시줄만큼 짧게 계산해 화면 아래에 빈 띠가 생김 */
   #root {
     @apply fixed inset-0 overflow-y-auto overscroll-none;
+    /* iPhone 홈 화면 앱이 화면을 짧게 알려 줄 때 그만큼 아래로 늘림 (useKeyboardViewport 가 잼) */
+    bottom: calc(-1 * var(--standalone-bottom-gap, 0px));
     padding-top: env(safe-area-inset-top);
     padding-bottom: env(safe-area-inset-bottom);
   }
