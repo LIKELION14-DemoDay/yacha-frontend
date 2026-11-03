@@ -11,6 +11,7 @@ import LongButton from "../../components/Button";
 import CountedTextArea from "../../components/CountedTextArea";
 import HintModal from "../../components/HintModal";
 import type { SessionHints, SessionPhase } from "../../types/session";
+import AdBanner from "../../components/AdBanner";
 
 const ARGUMENT_MAX_LENGTH = 200;
 
@@ -219,7 +220,7 @@ const ArgumentPhase = ({
           </div>
         </section>
 
-        <aside aria-label="광고 영역" className="h-17.5 shrink-0 bg-green" />
+        <AdBanner />
       </>
     );
   }

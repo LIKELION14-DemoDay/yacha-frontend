@@ -16,6 +16,7 @@ import { getApiErrorCode } from "../../utils/apiError";
 import { getCurrentSessionPath } from "../../utils/currentSession";
 import { STANCE_LABEL } from "../../utils/stance";
 import { getAllWaitingRooms, NO_ROOM_MESSAGE } from "../../utils/waitingRooms";
+import AdBanner from "../../components/AdBanner";
 
 const LOAD_ERROR_MESSAGE = "방 목록을 불러오지 못했어요.";
 
@@ -202,7 +203,7 @@ const QuickMatchPage = () => {
         <div aria-hidden="true" className="min-h-6 flex-16" />
       </div>
 
-      <aside aria-label="광고 영역" className="h-17.5 shrink-0 bg-green" />
+      <AdBanner />
 
       <Toast message={toastMessage} />
     </main>

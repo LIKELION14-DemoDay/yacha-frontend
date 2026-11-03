@@ -19,6 +19,7 @@ import { usePhilosophyMemo } from "../../hooks/usePhilosophyMemo";
 import { useToast } from "../../hooks/useToast";
 import type { PhilosophyArticleDetail } from "../../types/philosophy";
 import { getApiErrorCode } from "../../utils/apiError";
+import AdBanner from "../../components/AdBanner";
 
 function OneminuteDetailPage() {
   const { id } = useParams();
@@ -258,7 +259,7 @@ function ArticleDetail({ articleId }: { articleId: number }) {
         />
       </section>
 
-      <aside aria-label="광고 영역" className="h-17.5 shrink-0 bg-green" />
+      <AdBanner />
       <Toast message={toastMessage} />
     </main>
   );

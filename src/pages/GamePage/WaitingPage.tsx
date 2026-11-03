@@ -19,6 +19,7 @@ import TopBar from "../../components/TopBar";
 import { useToast } from "../../hooks/useToast";
 import type { TopicCategory } from "../../types/topic";
 import { getApiErrorCode } from "../../utils/apiError";
+import AdBanner from "../../components/AdBanner";
 
 // 만료 · 봇 실패 안내를 읽을 시간을 주고 홈으로 이동
 const LEAVE_DELAY_MS = 2000;
@@ -162,7 +163,7 @@ const WaitingPage = () => {
         />
       </div>
 
-      <aside aria-label="광고 영역" className="h-17.5 shrink-0 bg-green" />
+      <AdBanner />
 
       <Toast message={toastMessage} />
 

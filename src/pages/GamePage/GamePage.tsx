@@ -33,6 +33,7 @@ import ArgumentPhase from "./ArgumentPhase";
 import ChatPhase from "./ChatPhase";
 import MatchedIntro from "./MatchedIntro";
 import RevealPhase from "./RevealPhase";
+import AdBanner from "../../components/AdBanner";
 
 // 구간별 전체 시간 (초) — 진행 막대 계산용
 const PHASE_SECONDS: Record<SessionPhase, number> = {
@@ -413,9 +414,7 @@ const GamePage = () => {
       )}
 
       {/* 작성 · 주장 공개 · 자유 채팅 화면은 광고 없음, 제출 후 대기 화면의 광고는 ArgumentPhase 가 그림 */}
-      {isWriting || isReveal || phase === "CHAT" ? null : (
-        <aside aria-label="광고 영역" className="h-17.5 shrink-0 bg-green" />
-      )}
+      {isWriting || isReveal || phase === "CHAT" ? null : <AdBanner />}
 
       <Toast message={toastMessage} />
 
