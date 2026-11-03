@@ -1,10 +1,13 @@
 import { lazy, Suspense, useCallback, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 
 import brandLogo from "../assets/brand-logo.svg";
 import onboardingImage from "../assets/onboarding.png";
 import onboardingSecondImage from "../assets/onboarding2.png";
+import { getMyProfile } from "../apis/users";
+import { getAccessToken } from "../apis/tokenStore";
 import LongButton from "../components/Button";
+import { readProfileCache, writeProfileCache } from "../utils/profileCache";
 
 const OnboardingIntro = lazy(() => import("../components/OnboardingIntro"));
 
@@ -61,8 +64,39 @@ const onboardingSlides = [
   },
 ] as const;
 
+// 다시 들어온 사용자 처리: 로그인한 상태에서 밸런스 게임을 이미 했거나 건너뛰었으면 온보딩 없이 홈으로
+// (저장해 둔 내 정보가 있으면 바로, 없으면 서버에 확인하는 동안 빈 화면)
+type EntryStatus = "checking" | "onboarding" | "home";
+
+const getInitialEntryStatus = (): EntryStatus => {
+  if (!getAccessToken()) return "onboarding";
+
+  const cachedProfile = readProfileCache();
+  if (!cachedProfile) return "checking";
+  return cachedProfile.balanceGameRequired ? "onboarding" : "home";
+};
+
 function OnboardingPage() {
   const navigate = useNavigate();
+  const [entryStatus, setEntryStatus] = useState(getInitialEntryStatus);
+
+  useEffect(() => {
+    if (entryStatus !== "checking") return;
+
+    const controller = new AbortController();
+
+    getMyProfile(controller.signal)
+      .then((profile) => {
+        writeProfileCache(profile);
+        setEntryStatus(profile.balanceGameRequired ? "onboarding" : "home");
+      })
+      .catch(() => {
+        // 확인하지 못하면 처음 온 사용자처럼 온보딩을 보여 줌
+        if (!controller.signal.aborted) setEntryStatus("onboarding");
+      });
+
+    return () => controller.abort();
+  }, [entryStatus]);
   const [showIntro, setShowIntro] = useState(shouldShowIntro);
   const [currentSlide, setCurrentSlide] = useState(0);
 
@@ -93,6 +127,14 @@ function OnboardingPage() {
 
     setCurrentSlide((index) => Math.min(index + 1, onboardingSlides.length - 1));
   };
+
+  if (entryStatus === "home") {
+    return <Navigate to="/home" replace />;
+  }
+
+  if (entryStatus === "checking") {
+    return <main className="h-full bg-secondary" />;
+  }
 
   if (showIntro) {
     return (
