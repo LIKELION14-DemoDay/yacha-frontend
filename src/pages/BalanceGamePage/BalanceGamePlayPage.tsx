@@ -19,6 +19,7 @@ import {
   type BalanceQuestion,
 } from "../../types/balanceGame";
 import { getApiErrorMessage } from "../../utils/apiError";
+import AdBanner from "../../components/AdBanner";
 
 function BalanceGamePlayPage() {
   const navigate = useNavigate();
@@ -191,7 +192,7 @@ function BalanceGamePlayPage() {
           {isPending ? "처리 중..." : "확인"}
         </LongButton>
       </div>
-      <aside className="h-17.5 shrink-0 bg-green" />
+      <AdBanner />
       <ConfirmModal
         open={quitOpen}
         title="밸런스 게임을 종료할까요?"

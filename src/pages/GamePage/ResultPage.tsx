@@ -21,6 +21,7 @@ import type {
   ResultParticipant,
   SessionResult,
 } from "../../types/session";
+import AdBanner from "../../components/AdBanner";
 
 // 판정 중이면 다시 조회하는 간격 · 최대 횟수 (서버는 10분이 지나면 판정을 포기함)
 const RESULT_POLL_MS = 1500;
@@ -93,7 +94,7 @@ const ResultPage = () => {
         <section className="flex min-h-0 flex-1 items-center justify-center">
           <LogoLoading message="AI가 승패판정 중..." />
         </section>
-        <aside aria-label="광고 영역" className="h-17.5 shrink-0 bg-green" />
+        <AdBanner />
       </main>
     );
   }
@@ -127,7 +128,7 @@ const ResultPage = () => {
             홈으로 돌아가기
           </LongButton>
         </div>
-        <aside aria-label="광고 영역" className="h-17.5 shrink-0 bg-green" />
+        <AdBanner />
       </main>
     );
   }
@@ -281,7 +282,7 @@ const ResultPage = () => {
         <div aria-hidden="true" className="flex-20" />
       </div>
 
-      <aside aria-label="광고 영역" className="h-17.5 shrink-0 bg-green" />
+      <AdBanner />
     </main>
   );
 };

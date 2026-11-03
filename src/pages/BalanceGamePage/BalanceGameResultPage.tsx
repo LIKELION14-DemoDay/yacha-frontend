@@ -9,8 +9,12 @@ import LongButton from "../../components/Button";
 import Toast from "../../components/Toast";
 import TopBar from "../../components/TopBar";
 import { useToast } from "../../hooks/useToast";
-import { isPhilosopherType, type BalanceGameResult } from "../../types/balanceGame";
+import {
+  isPhilosopherType,
+  type BalanceGameResult,
+} from "../../types/balanceGame";
 import { getApiErrorMessage } from "../../utils/apiError";
+import AdBanner from "../../components/AdBanner";
 
 function BalanceGameResultPage() {
   const { type } = useParams();
@@ -144,13 +148,15 @@ function PhilosopherResult({ type }: { type: string | undefined }) {
 
       <div className="shrink-0 px-6 pt-2.5 pb-5">
         <LongButton
-          onClick={() => navigate(token ? "/home" : "/login", { replace: true })}
+          onClick={() =>
+            navigate(token ? "/home" : "/login", { replace: true })
+          }
           className="!bg-main !text-white hover:!bg-main-006"
         >
           야차뜨러 가기
         </LongButton>
       </div>
-      <aside className="h-17.5 shrink-0 bg-green" />
+      <AdBanner />
       <Toast message={toastMessage} />
     </main>
   );

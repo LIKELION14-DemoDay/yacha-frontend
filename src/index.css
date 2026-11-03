@@ -230,12 +230,12 @@
   }
 
   /* 광고가 있는 화면은 광고가 화면 맨 아래(홈 바 뒤)까지 닿게 */
-  #root:has(aside.bg-green) {
+  #root:has(aside[data-ad]) {
     padding-bottom: 0;
   }
 
   /* 광고 높이는 그대로 두고, 홈 바 영역만큼 광고 배경을 아래로 늘림 */
-  aside.bg-green {
+  aside[data-ad] {
     box-sizing: content-box;
     padding-bottom: env(safe-area-inset-bottom);
   }
@@ -263,7 +263,7 @@
   }
 
   /* 입력창과 키보드 사이에 광고가 끼지 않게 키보드가 있는 동안 숨김 */
-  html[data-keyboard-open] aside.bg-green {
+  html[data-keyboard-open] aside[data-ad] {
     display: none;
   }
 

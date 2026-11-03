@@ -13,6 +13,7 @@ import { useUserProfile } from "../../hooks/useUserProfile";
 import type { UserProfile } from "../../types/user";
 import { isPhilosopherType } from "../../types/balanceGame";
 import { getApiErrorMessage } from "../../utils/apiError";
+import AdBanner from "../../components/AdBanner";
 
 function ProfileHero({ imageUrl }: { imageUrl?: string }) {
   return (
@@ -126,9 +127,7 @@ function MyPage() {
       </header>
 
       {logoutError && (
-        <p className="px-6 py-2 text-caption-r1 text-main">
-          {logoutError}
-        </p>
+        <p className="px-6 py-2 text-caption-r1 text-main">{logoutError}</p>
       )}
 
       {profile ? (
@@ -209,8 +208,7 @@ function MyPage() {
         <div className="flex-1" />
       )}
 
-      {/* 추후 Google 광고를 삽입할 독립 영역입니다. */}
-      <aside className="h-17.5 shrink-0 bg-green" />
+      <AdBanner />
     </main>
   );
 }

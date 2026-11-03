@@ -14,6 +14,7 @@ import {
   type PhilosophyArticle,
 } from "../../types/philosophy";
 import { getApiErrorCode } from "../../utils/apiError";
+import AdBanner from "../../components/AdBanner";
 
 const periods = [
   { id: "current", label: "금주의 1분 철학" },
@@ -174,8 +175,7 @@ function OneMinutePage() {
         </ul>
       </section>
 
-      {/* 추후 광고를 삽입할 독립 영역입니다. */}
-      <aside className="h-17.5 shrink-0 bg-green" />
+      <AdBanner />
       <Toast message={toastMessage} />
     </main>
   );

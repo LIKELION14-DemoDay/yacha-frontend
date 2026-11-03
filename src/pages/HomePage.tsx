@@ -28,6 +28,7 @@ import {
   GUEST_ONLY_MESSAGE,
   type PhilosophyArticle,
 } from "../types/philosophy";
+import AdBanner from "../components/AdBanner";
 
 const CATEGORY_ICONS: Record<TopicCategory, string> = {
   HUMAN: humanIcon,
@@ -366,7 +367,7 @@ function HomePage() {
         </section>
       </div>
 
-      <aside aria-label="광고 영역" className="h-17.5 shrink-0 bg-green" />
+      <AdBanner />
       <ConfirmModal
         open={profile?.balanceGameRequired === true && !balancePromptDismissed}
         title="밸런스 게임을 시작할까요?"
