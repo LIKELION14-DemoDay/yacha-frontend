@@ -17,7 +17,6 @@ import type { TopicCategory } from "../../types/topic";
 import { getApiErrorCode } from "../../utils/apiError";
 import { CATEGORY_LABEL, toCategory } from "../../utils/category";
 import { getCurrentSessionPath } from "../../utils/currentSession";
-import AdBanner from "../../components/AdBanner";
 
 const JOIN_ERROR_MESSAGES: Record<string, string> = {
   SESSION_NOT_WAITING: "이미 시작된 방이에요.",
@@ -254,8 +253,6 @@ const RoomListContent = ({ category }: { category: TopicCategory }) => {
           <div ref={sentinelRef} className="h-px shrink-0" />
         </div>
       </section>
-
-      <AdBanner />
 
       <Toast message={toastMessage} />
     </main>

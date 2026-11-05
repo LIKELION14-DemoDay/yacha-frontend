@@ -19,7 +19,6 @@ import TopBar from "../../components/TopBar";
 import { useToast } from "../../hooks/useToast";
 import type { TopicCategory } from "../../types/topic";
 import { getApiErrorCode } from "../../utils/apiError";
-import AdBanner from "../../components/AdBanner";
 
 // 만료 · 봇 실패 안내를 읽을 시간을 주고 홈으로 이동
 const LEAVE_DELAY_MS = 2000;
@@ -148,7 +147,7 @@ const WaitingPage = () => {
         <LogoLoading message="대결 상대를 찾고 있습니다..." pulse size="sm" />
       </section>
 
-      {/* 시트는 광고 바로 위에서 자람 (광고는 가리지 않고 배경과 함께 어두워짐) */}
+      {/* 시트는 화면 맨 아래에서 자람 */}
       <div className="relative h-0 shrink-0">
         <BottomSheet
           open={isSheetOpen}
@@ -162,8 +161,6 @@ const WaitingPage = () => {
           onConfirm={startWithBot}
         />
       </div>
-
-      <AdBanner />
 
       <Toast message={toastMessage} />
 

@@ -28,7 +28,6 @@ import {
   GUEST_ONLY_MESSAGE,
   type PhilosophyArticle,
 } from "../types/philosophy";
-import AdBanner from "../components/AdBanner";
 
 const CATEGORY_ICONS: Record<TopicCategory, string> = {
   HUMAN: humanIcon,
@@ -248,7 +247,7 @@ function HomePage() {
 
   return (
     // 높이는 화면(앱 틀) 비율로 나눔: cqh = 화면 높이의 1%, 남는 공간은 상단 이미지가 채움
-    // 아주 작은 화면에서는 광고는 아래에 고정하고 그 위만 스크롤
+    // 아주 작은 화면에서는 이 안에서 스크롤
     // 상단 이미지는 노치 뒤까지 이어지고, 로고 · 프로필만 노치 아래로 띄움 (data-under-notch)
     <main
       data-under-notch
@@ -366,8 +365,6 @@ function HomePage() {
           </div>
         </section>
       </div>
-
-      <AdBanner />
       <ConfirmModal
         open={profile?.balanceGameRequired === true && !balancePromptDismissed}
         title="밸런스 게임을 시작할까요?"

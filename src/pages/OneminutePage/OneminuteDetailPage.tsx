@@ -19,7 +19,6 @@ import { usePhilosophyMemo } from "../../hooks/usePhilosophyMemo";
 import { useToast } from "../../hooks/useToast";
 import type { PhilosophyArticleDetail } from "../../types/philosophy";
 import { getApiErrorCode } from "../../utils/apiError";
-import AdBanner from "../../components/AdBanner";
 
 function OneminuteDetailPage() {
   const { id } = useParams();
@@ -258,8 +257,6 @@ function ArticleDetail({ articleId }: { articleId: number }) {
           className="min-h-0 w-full flex-1 resize-none bg-transparent text-body-r6 text-neutral-004 outline-none placeholder:text-neutral-006"
         />
       </section>
-
-      <AdBanner />
       <Toast message={toastMessage} />
     </main>
   );

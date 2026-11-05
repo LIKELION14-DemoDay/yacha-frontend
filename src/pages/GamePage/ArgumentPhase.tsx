@@ -11,7 +11,6 @@ import LongButton from "../../components/Button";
 import CountedTextArea from "../../components/CountedTextArea";
 import HintModal from "../../components/HintModal";
 import type { SessionHints, SessionPhase } from "../../types/session";
-import AdBanner from "../../components/AdBanner";
 
 const ARGUMENT_MAX_LENGTH = 200;
 
@@ -203,25 +202,21 @@ const ArgumentPhase = ({
 
   if (isWaiting) {
     return (
-      <>
-        <section className="flex min-h-0 flex-1 flex-col justify-center py-2.5 text-center">
-          <p role="status" className="px-6 py-2.5 text-headline-sb5 text-white">
-            상대방이 아직 작성 중입니다...
-          </p>
-          <div className="px-6 py-1">
-            <button
-              type="button"
-              onClick={() => setIsEditing(true)}
-              disabled={isTimeOver}
-              className="cursor-pointer text-body-m3 text-neutral-007 transition-colors hover:text-neutral-005 disabled:cursor-not-allowed"
-            >
-              수정하러 가기
-            </button>
-          </div>
-        </section>
-
-        <AdBanner />
-      </>
+      <section className="flex min-h-0 flex-1 flex-col justify-center py-2.5 text-center">
+        <p role="status" className="px-6 py-2.5 text-headline-sb5 text-white">
+          상대방이 아직 작성 중입니다...
+        </p>
+        <div className="px-6 py-1">
+          <button
+            type="button"
+            onClick={() => setIsEditing(true)}
+            disabled={isTimeOver}
+            className="cursor-pointer text-body-m3 text-neutral-007 transition-colors hover:text-neutral-005 disabled:cursor-not-allowed"
+          >
+            수정하러 가기
+          </button>
+        </div>
+      </section>
     );
   }
 

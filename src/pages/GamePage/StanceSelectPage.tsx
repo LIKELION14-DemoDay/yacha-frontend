@@ -18,7 +18,6 @@ import type { Topic } from "../../types/topic";
 import { getApiErrorCode } from "../../utils/apiError";
 import { toCategory } from "../../utils/category";
 import { getCurrentSessionPath } from "../../utils/currentSession";
-import AdBanner from "../../components/AdBanner";
 
 // 왼쪽 agreeText(예) = 찬성, 오른쪽 disagreeText(아니오) = 반대
 const STANCES: [Stance, Stance] = ["AGREE", "DISAGREE"];
@@ -155,8 +154,6 @@ const StanceSelectPage = () => {
           확인
         </LongButton>
       </div>
-
-      <AdBanner />
 
       <Toast message={toastMessage} />
     </main>
