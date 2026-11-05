@@ -14,7 +14,6 @@ import {
   type BalanceGameResult,
 } from "../../types/balanceGame";
 import { getApiErrorMessage } from "../../utils/apiError";
-import AdBanner from "../../components/AdBanner";
 
 function BalanceGameResultPage() {
   const { type } = useParams();
@@ -156,7 +155,6 @@ function PhilosopherResult({ type }: { type: string | undefined }) {
           야차뜨러 가기
         </LongButton>
       </div>
-      <AdBanner />
       <Toast message={toastMessage} />
     </main>
   );

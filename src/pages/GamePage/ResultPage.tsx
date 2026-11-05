@@ -21,7 +21,6 @@ import type {
   ResultParticipant,
   SessionResult,
 } from "../../types/session";
-import AdBanner from "../../components/AdBanner";
 
 // 판정 중이면 다시 조회하는 간격 · 최대 횟수 (서버는 10분이 지나면 판정을 포기함)
 const RESULT_POLL_MS = 1500;
@@ -94,7 +93,6 @@ const ResultPage = () => {
         <section className="flex min-h-0 flex-1 items-center justify-center">
           <LogoLoading message="AI가 승패판정 중..." />
         </section>
-        <AdBanner />
       </main>
     );
   }
@@ -128,7 +126,6 @@ const ResultPage = () => {
             홈으로 돌아가기
           </LongButton>
         </div>
-        <AdBanner />
       </main>
     );
   }
@@ -154,7 +151,7 @@ const ResultPage = () => {
         : "팽팽한 승부였어요.";
 
   return (
-    // 402×818 에서 피그마와 같고, 키가 다른 화면에서는 세로 여백 · 프로필이 화면 높이 비율로 늘고 줄어듦 (광고는 70px 고정)
+    // 402×818 에서 피그마와 같고, 키가 다른 화면에서는 세로 여백 · 프로필이 화면 높이 비율로 늘고 줄어듦
     // (cqh = 화면 높이의 1%, 여백은 피그마 간격 50 · 32 · 20 비율의 빈 공간)
     <main className="relative isolate mx-auto flex h-full w-full max-w-100.5 flex-col overflow-hidden bg-secondary [container-type:size]">
       {/* 위쪽 빨간 빛 번짐 배경 (화면 밖으로 넘치는 부분은 잘라서 가로 스크롤이 안 생기게) */}
@@ -281,8 +278,6 @@ const ResultPage = () => {
         </div>
         <div aria-hidden="true" className="flex-20" />
       </div>
-
-      <AdBanner />
     </main>
   );
 };

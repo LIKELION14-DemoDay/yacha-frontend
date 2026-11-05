@@ -13,7 +13,6 @@ import { useUserProfile } from "../../hooks/useUserProfile";
 import type { UserProfile } from "../../types/user";
 import { isPhilosopherType } from "../../types/balanceGame";
 import { getApiErrorMessage } from "../../utils/apiError";
-import AdBanner from "../../components/AdBanner";
 
 function ProfileHero({ imageUrl }: { imageUrl?: string }) {
   return (
@@ -207,8 +206,6 @@ function MyPage() {
       ) : (
         <div className="flex-1" />
       )}
-
-      <AdBanner />
     </main>
   );
 }

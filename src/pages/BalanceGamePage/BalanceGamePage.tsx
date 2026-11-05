@@ -33,7 +33,7 @@ function BalanceGamePage() {
   };
 
   return (
-    // 화면이 아주 짧으면 줄어들지 않고 스크롤 (광고가 없는 화면)
+    // 화면이 아주 짧으면 줄어들지 않고 스크롤
     <main className="mx-auto flex h-full w-full max-w-100.5 flex-col justify-between overflow-y-auto bg-secondary [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       <section className="flex flex-1 flex-col">
         <div className="flex flex-1 flex-col">

@@ -227,17 +227,6 @@
     padding-top: 0;
   }
 
-  /* 광고가 있는 화면은 광고가 화면 맨 아래(홈 바 뒤)까지 닿게 */
-  #root:has(aside[data-ad]) {
-    padding-bottom: 0;
-  }
-
-  /* 광고 높이는 그대로 두고, 홈 바 영역만큼 광고 배경을 아래로 늘림 */
-  aside[data-ad] {
-    box-sizing: content-box;
-    padding-bottom: env(safe-area-inset-bottom);
-  }
-
   /* 화면 키보드가 올라오면 (useKeyboardViewport) 앱을 실제로 보이는 영역에 고정
      위쪽은 제자리, 맨 아래(입력창)는 키보드 · 폼 이동 바 바로 위에 붙음 */
   html[data-keyboard-open] #root {
@@ -258,11 +247,6 @@
   html[data-landscape] body::after {
     content: "세로 화면으로 이용해 주세요";
     @apply fixed inset-0 flex items-center justify-center bg-secondary text-subhead-m5 text-white;
-  }
-
-  /* 입력창과 키보드 사이에 광고가 끼지 않게 키보드가 있는 동안 숨김 */
-  html[data-keyboard-open] aside[data-ad] {
-    display: none;
   }
 
   /* 브라우저 자동완성 시에도 어두운 배경과 입력 상태별 글자색을 유지 */
