@@ -221,7 +221,18 @@ function LoginPage() {
           </button>
         </div>
       </section>
-      <div aria-hidden="true" className="flex-86" />
+      <footer className="relative min-h-10 flex-86">
+        <div className="absolute inset-x-0 bottom-0 flex items-center justify-center py-2.5 text-body-r6 text-neutral-007">
+          <button
+            type="button"
+            disabled={isBusy}
+            onClick={() => navigate("/privacy")}
+            className="cursor-pointer disabled:cursor-not-allowed"
+          >
+            개인정보처리방침
+          </button>
+        </div>
+      </footer>
     </main>
   );
 }

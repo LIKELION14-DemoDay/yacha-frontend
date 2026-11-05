@@ -24,6 +24,7 @@ import QuickMatchPage from "./pages/GamePage/QuickMatchPage";
 import RoomListPage from "./pages/GamePage/RoomListPage";
 import StanceSelectPage from "./pages/GamePage/StanceSelectPage";
 import WaitingPage from "./pages/GamePage/WaitingPage";
+import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
 
 function RequireAuth() {
   const token = useSyncExternalStore(subscribeAccessToken, getAccessToken);
@@ -47,6 +48,7 @@ function App() {
       <Route path="/balance/game" element={<BalanceGamePlayPage />} />
       <Route path="/balance/result/:type" element={<BalanceGameResultPage />} />
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/privacy" element={<PrivacyPolicyPage />} />
       <Route path="/signin" element={<SignInPage />} />
       <Route path="/resetpw" element={<ResetPwPage />} />
       <Route path="/complete" element={<CompleteSignInPage />} />
