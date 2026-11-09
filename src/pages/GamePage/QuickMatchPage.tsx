@@ -22,9 +22,19 @@ const LOAD_ERROR_MESSAGE = "방 목록을 불러오지 못했어요.";
 
 const QuickMatchPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   // 홈에서 미리 불러온 방 목록 (새로고침 등으로 없으면 여기서 불러옴)
   const initialRooms =
-    (useLocation().state as { rooms?: WaitingRoom[] } | null)?.rooms ?? null;
+    (location.state as { rooms?: WaitingRoom[] } | null)?.rooms ?? null;
+
+  // 주소로 바로 들어와 앱 안의 이전 화면이 없으면 홈으로
+  const goBack = () => {
+    if (location.key === "default") {
+      navigate("/home", { replace: true });
+      return;
+    }
+    navigate(-1);
+  };
 
   const [rooms, setRooms] = useState<WaitingRoom[] | null>(initialRooms);
   const [index, setIndex] = useState(0);
@@ -143,7 +153,7 @@ const QuickMatchPage = () => {
   return (
     // 세로 여백은 화면 높이 비율로 늘고 줄어듦 (cqh = 화면 높이의 1%)
     <main className="mx-auto flex h-full w-full max-w-100.5 flex-col bg-secondary [container-type:size]">
-      <TopBar title="빠른 방 찾기" onBack={() => navigate(-1)} />
+      <TopBar title="빠른 방 찾기" onBack={goBack} />
 
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {room && rooms ? (
@@ -166,13 +176,15 @@ const QuickMatchPage = () => {
             </section>
 
             <section className="flex flex-1 flex-col items-center justify-center gap-4 py-6">
-              <div className="flex flex-col items-center gap-1">
+              <div className="flex max-w-full flex-col items-center gap-1">
                 <PhilosopherImage
                   imageUrl={room.host.imageUrl}
                   alt=""
                   size="host"
                 />
-                <p className="text-body-r6 text-white">{room.host.nickname}</p>
+                <p className="max-w-full text-body-r6 break-all text-white">
+                  {room.host.nickname}
+                </p>
               </div>
 
               {/* 방장 프로필을 가리키는 말풍선 */}

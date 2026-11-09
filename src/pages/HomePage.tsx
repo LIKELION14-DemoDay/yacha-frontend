@@ -157,6 +157,19 @@ function HomePage() {
   const skipPendingRef = useRef(false);
   const { toastMessage, showToast } = useToast();
   const [isFindingRoom, setIsFindingRoom] = useState(false);
+  // 슬라이더 양 끝에 닿으면 그쪽 흐림은 숨김
+  const [sliderEdge, setSliderEdge] = useState({ start: false, end: false });
+
+  const updateSliderEdge = () => {
+    const slider = philosophySliderRef.current;
+    if (!slider) return;
+
+    const maxScroll = slider.scrollWidth - slider.clientWidth;
+    setSliderEdge({
+      start: slider.scrollLeft <= 1,
+      end: slider.scrollLeft >= maxScroll - 1,
+    });
+  };
 
   // 빠른 방 찾기에서 돌아오면 넘겨받은 안내를 한 번 띄움 (뒤로 와도 다시 안 뜨게 지움)
   const location = useLocation();
@@ -244,6 +257,7 @@ function HomePage() {
 
     slider.scrollLeft =
       centerCard.offsetLeft - (slider.clientWidth - centerCard.offsetWidth) / 2;
+    updateSliderEdge();
   }, [weeklyCards, isLoadingCards]);
 
   return (
@@ -372,6 +386,7 @@ function HomePage() {
             <div
               ref={philosophySliderRef}
               aria-busy={isLoadingCards}
+              onScroll={updateSliderEdge}
               className={`flex snap-x snap-mandatory gap-3 overflow-x-auto scrollbar-none [&::-webkit-scrollbar]:hidden ${isLoadingCards ? "invisible" : ""}`}
             >
               {philosophyCards.map((card) => (
@@ -384,11 +399,11 @@ function HomePage() {
             </div>
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-y-0 left-0 w-17.25 bg-linear-to-r from-secondary to-transparent"
+              className={`pointer-events-none absolute inset-y-0 left-0 w-17.25 bg-linear-to-r from-secondary to-transparent transition-opacity ${sliderEdge.start ? "opacity-0" : ""}`}
             />
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-y-0 right-0 w-17.25 bg-linear-to-l from-secondary to-transparent"
+              className={`pointer-events-none absolute inset-y-0 right-0 w-17.25 bg-linear-to-l from-secondary to-transparent transition-opacity ${sliderEdge.end ? "opacity-0" : ""}`}
             />
           </div>
         </section>
