@@ -1,16 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import ethicsIcon from "../assets/balance-scale-solid.svg";
-import humanIcon from "../assets/home/temporary-human-home.svg";
-import lifeIcon from "../assets/home/temporary-life-home.svg";
-import moneyIcon from "../assets/home/temporary-money-home.svg";
-import relationIcon from "../assets/home/temporary-relation-home.svg";
-import socialIcon from "../assets/home/temporary-social-home.svg";
-import techIcon from "../assets/home/temporary-tech-home.svg";
-import trueIcon from "../assets/home/temporary-true-home.svg";
+import ethicsIcon from "../assets/home/category-ethics.svg";
+import humanIcon from "../assets/home/category-human.svg";
+import lifeIcon from "../assets/home/category-life.svg";
+import moneyIcon from "../assets/home/category-money.svg";
+import relationIcon from "../assets/home/category-relation.svg";
+import socialIcon from "../assets/home/category-society.svg";
+import techIcon from "../assets/home/category-tech.svg";
+import trueIcon from "../assets/home/category-truth.svg";
 import homeImage from "../assets/home-image1.png";
 import homeLogo from "../assets/home-logo.svg";
+import quickMatchIcon from "../assets/random-start.svg";
 import LongButton from "../components/Button";
 import PhilosopherImage from "../components/PhilosopherImage";
 import ConfirmModal from "../components/ConfirmModal";
@@ -92,11 +93,11 @@ function TopicCard({
       className="group flex min-w-0 cursor-pointer flex-col items-center gap-1 text-body-r6 text-white"
       aria-label={`${topic} 주제 선택`}
     >
-      {/* 폭에 맞추되 키가 작은 화면에서는 높이 비율로 줄어듦 */}
+      {/* 좁은 화면에서는 칸 폭에 맞춰 줄어듦 */}
       <img
         src={icon}
         alt=""
-        className="aspect-square w-full max-w-[7.6cqh] object-contain"
+        className="aspect-square w-full max-w-[72.5px] object-contain"
       />
       <span className="w-full truncate text-center">{topic}</span>
     </button>
@@ -114,7 +115,7 @@ const PhilosophyCard = ({
     <button
       type="button"
       onClick={onClick}
-      className="flex h-[14cqh] min-h-28 w-52.5 shrink-0 cursor-pointer snap-center flex-col items-start justify-between rounded-[10px] bg-neutral-009 px-3 py-2.5 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-main"
+      className="flex h-32 w-52.5 shrink-0 cursor-pointer snap-center flex-col items-start justify-between rounded-[10px] bg-neutral-009 px-3 py-2.5 text-left focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-main"
     >
       <div className="flex flex-col items-start gap-1">
         <p className="text-body-r6 text-main">{card.category}</p>
@@ -246,21 +247,20 @@ function HomePage() {
   }, [weeklyCards, isLoadingCards]);
 
   return (
-    // 높이는 화면(앱 틀) 비율로 나눔: cqh = 화면 높이의 1%, 남는 공간은 상단 이미지가 채움
-    // 아주 작은 화면에서는 이 안에서 스크롤
+    // 내용이 화면보다 길면 이 안에서 스크롤
     // 상단 이미지는 노치 뒤까지 이어지고, 로고 · 프로필만 노치 아래로 띄움 (data-under-notch)
     <main
       data-under-notch
-      className="mx-auto flex h-full w-full max-w-100.5 flex-col overflow-hidden bg-secondary [container-type:size]"
+      className="mx-auto flex h-full w-full max-w-100.5 flex-col overflow-hidden bg-secondary"
     >
       <div className="flex min-h-0 flex-1 flex-col overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         <header
-          className="min-h-[calc(3rem+env(safe-area-inset-top))] flex-1 bg-cover bg-center pt-[env(safe-area-inset-top)]"
+          className="shrink-0 bg-cover bg-center pt-[env(safe-area-inset-top)]"
           style={{
             backgroundImage: `linear-gradient(to bottom, rgba(12, 12, 12, 0.08) 0%, rgba(12, 12, 12, 0.14) 45%, #0c0c0c 100%), url(${homeImage})`,
           }}
         >
-          <div className="flex items-start justify-between px-6 pt-3">
+          <div className="flex items-start justify-between px-6 pt-3 pb-20">
             <img src={homeLogo} alt="야차철학" className="object-contain" />
 
             <button
@@ -278,34 +278,51 @@ function HomePage() {
         </header>
 
         <section
-          aria-labelledby="colosseum-title"
-          className="flex shrink-0 flex-col gap-[1.6cqh] py-[1.6cqh]"
+          aria-labelledby="quick-match-title"
+          className="flex shrink-0 flex-col gap-4 px-6 py-5"
         >
-          <div className="flex flex-col items-start gap-1 px-6">
-            <h1 id="colosseum-title" className="text-subhead-m5 text-white">
-              야차 콜로세움
+          <div className="flex flex-col items-start gap-1">
+            <h1 id="quick-match-title" className="text-subhead-m5 text-white">
+              야차뜨기
             </h1>
             <p className="text-subhead-r8 text-neutral-006">
-              다양한 주제로 1대1 키배를 해보세요
+              지금 바로 상대를 찾아보세요.
             </p>
           </div>
 
-          <div className="px-6">
-            <LongButton
-              disabled={isFindingRoom}
-              aria-busy={isFindingRoom}
-              onClick={handleQuickMatch}
-              className={
-                isFindingRoom
-                  ? "!bg-main-009 !text-neutral-004"
-                  : "!bg-main !text-white hover:!bg-main-006"
-              }
-            >
-              빠른 방 찾기
-            </LongButton>
+          <LongButton
+            disabled={isFindingRoom}
+            aria-busy={isFindingRoom}
+            onClick={handleQuickMatch}
+            className={
+              isFindingRoom
+                ? "!bg-main-009 !text-neutral-004"
+                : "!bg-main !text-white hover:!bg-main-006"
+            }
+          >
+            <img src={quickMatchIcon} alt="" />
+            빠른 방 찾기
+          </LongButton>
+        </section>
+
+        <div className="shrink-0 py-1" aria-hidden="true">
+          <div className="h-1 bg-neutral-009" />
+        </div>
+
+        <section
+          aria-labelledby="colosseum-title"
+          className="flex shrink-0 flex-col gap-4 py-5"
+        >
+          <div className="flex flex-col items-start gap-1 px-6">
+            <h2 id="colosseum-title" className="text-subhead-m5 text-white">
+              야차 콜로세움
+            </h2>
+            <p className="text-subhead-r8 text-neutral-006">
+              주제를 고르고 1대1 키배를 해보세요.
+            </p>
           </div>
 
-          <div className="grid grid-cols-4 gap-x-5 gap-y-[2cqh] px-6.5">
+          <div className="grid grid-cols-4 gap-5 px-6.5">
             {CATEGORIES.map((category) => (
               <TopicCard
                 key={category}
@@ -317,13 +334,13 @@ function HomePage() {
           </div>
         </section>
 
-        <div className="shrink-0 pt-[1.5cqh] pb-[1cqh]" aria-hidden="true">
+        <div className="shrink-0 py-1" aria-hidden="true">
           <div className="h-1 bg-neutral-009" />
         </div>
 
         <section
           aria-labelledby="philosophy-title"
-          className="flex shrink-0 flex-col gap-[2cqh] pt-[2cqh] pb-[2cqh]"
+          className="flex shrink-0 flex-col gap-4 pt-5 pb-10"
         >
           <div className="flex flex-col gap-1 px-6">
             <div className="flex items-center justify-between">
@@ -350,18 +367,29 @@ function HomePage() {
             </p>
           </div>
 
-          <div
-            ref={philosophySliderRef}
-            aria-busy={isLoadingCards}
-            className={`flex snap-x snap-mandatory gap-3 overflow-x-auto scrollbar-none [&::-webkit-scrollbar]:hidden ${isLoadingCards ? "invisible" : ""}`}
-          >
-            {philosophyCards.map((card) => (
-              <PhilosophyCard
-                key={card.id ?? card.question}
-                card={card}
-                onClick={() => openPhilosophyCard(card)}
-              />
-            ))}
+          {/* 양 끝 카드는 배경색으로 흐려짐 */}
+          <div className="relative">
+            <div
+              ref={philosophySliderRef}
+              aria-busy={isLoadingCards}
+              className={`flex snap-x snap-mandatory gap-3 overflow-x-auto scrollbar-none [&::-webkit-scrollbar]:hidden ${isLoadingCards ? "invisible" : ""}`}
+            >
+              {philosophyCards.map((card) => (
+                <PhilosophyCard
+                  key={card.id ?? card.question}
+                  card={card}
+                  onClick={() => openPhilosophyCard(card)}
+                />
+              ))}
+            </div>
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-y-0 left-0 w-17.25 bg-linear-to-r from-secondary to-transparent"
+            />
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-y-0 right-0 w-17.25 bg-linear-to-l from-secondary to-transparent"
+            />
           </div>
         </section>
       </div>

@@ -6,6 +6,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { joinSession } from "../../apis/sessions";
+import tooltipTail from "../../assets/stance-tooltip-tail.svg";
 import LongButton from "../../components/Button";
 import PhilosopherImage from "../../components/PhilosopherImage";
 import Toast from "../../components/Toast";
@@ -140,45 +141,65 @@ const QuickMatchPage = () => {
   const canAct = Boolean(room) && !isBusy;
 
   return (
-    <main className="mx-auto flex h-full w-full max-w-100.5 flex-col bg-secondary">
-      <TopBar onBack={() => navigate(-1)} />
+    // 세로 여백은 화면 높이 비율로 늘고 줄어듦 (cqh = 화면 높이의 1%)
+    <main className="mx-auto flex h-full w-full max-w-100.5 flex-col bg-secondary [container-type:size]">
+      <TopBar title="빠른 방 찾기" onBack={() => navigate(-1)} />
 
-      <div className="flex min-h-0 flex-1 flex-col px-6">
-        <div aria-hidden="true" className="flex-11" />
-
-        {room ? (
-          <section
+      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {room && rooms ? (
+          <div
             aria-live="polite"
-            className="flex shrink-0 flex-col items-center gap-17 text-center"
+            className="flex flex-1 flex-col items-center pt-[9cqh] text-center"
           >
-            <h1 className="text-headline-sb2 break-keep text-white">
-              {room.topic.statement}
-            </h1>
-            <div className="flex flex-col items-center gap-3">
-              <PhilosopherImage
-                imageUrl={room.host.imageUrl}
-                alt="방장 프로필"
-                size="md"
-              />
-              <p
-                className={`text-subhead-m7 ${room.wantedStance === "AGREE" ? "text-green" : "text-main"}`}
-              >
-                {STANCE_LABEL[room.wantedStance]}입장인 사람을 찾아요!
+            <section className="flex w-full shrink-0 flex-col items-center gap-10">
+              <p className="text-subhead-r8 text-neutral-006">
+                {index + 1}/{rooms.length}
               </p>
-            </div>
-          </section>
+              <div className="flex w-full flex-col gap-3">
+                <h1 className="text-headline-sb4 break-keep text-white">
+                  {room.topic.statement}
+                </h1>
+                <p className="text-subhead-m5 text-neutral-006">
+                  당신의 선택은?
+                </p>
+              </div>
+            </section>
+
+            <section className="flex flex-1 flex-col items-center justify-center gap-4 py-6">
+              <div className="flex flex-col items-center gap-1">
+                <PhilosopherImage
+                  imageUrl={room.host.imageUrl}
+                  alt=""
+                  size="host"
+                />
+                <p className="text-body-r6 text-white">{room.host.nickname}</p>
+              </div>
+
+              {/* 방장 프로필을 가리키는 말풍선 */}
+              <div className="relative max-w-67.5 rounded-[10px] bg-neutral-008 px-4 py-3">
+                <img
+                  src={tooltipTail}
+                  alt=""
+                  className="absolute -top-3.75 left-1/2 -translate-x-1/2 -rotate-90"
+                />
+                <p
+                  className={`relative text-subhead-m7 ${room.wantedStance === "AGREE" ? "text-green" : "text-main"}`}
+                >
+                  {STANCE_LABEL[room.wantedStance]} 입장인 사람을 찾아요
+                </p>
+              </div>
+            </section>
+          </div>
         ) : (
           <p
             role="status"
-            className="shrink-0 text-center text-body-r6 text-neutral-006"
+            className="flex flex-1 items-center justify-center text-body-r6 text-neutral-006"
           >
             야차판을 불러오는 중이에요
           </p>
         )}
 
-        <div aria-hidden="true" className="min-h-8 flex-10" />
-
-        <div className="flex shrink-0 flex-col gap-3">
+        <div className="flex shrink-0 flex-col gap-3 pt-2.5 pb-[5.7cqh]">
           <LongButton
             disabled={!canAct}
             onClick={joinRoom}
@@ -198,8 +219,6 @@ const QuickMatchPage = () => {
             다음 방으로
           </LongButton>
         </div>
-
-        <div aria-hidden="true" className="min-h-6 flex-16" />
       </div>
 
       <Toast message={toastMessage} />
