@@ -25,6 +25,13 @@ import RoomListPage from "./pages/GamePage/RoomListPage";
 import StanceSelectPage from "./pages/GamePage/StanceSelectPage";
 import WaitingPage from "./pages/GamePage/WaitingPage";
 import PrivacyPolicyPage from "./pages/PrivacyPolicyPage";
+import PricingPage from "./pages/PricingPage";
+import TermsPage from "./pages/TermsPage";
+import RefundPolicyPage from "./pages/RefundPolicyPage";
+import PricingPageEn from "./pages/en/PricingPageEn";
+import TermsPageEn from "./pages/en/TermsPageEn";
+import RefundPolicyPageEn from "./pages/en/RefundPolicyPageEn";
+import PrivacyPolicyPageEn from "./pages/en/PrivacyPolicyPageEn";
 
 function RequireAuth() {
   const token = useSyncExternalStore(subscribeAccessToken, getAccessToken);
@@ -49,6 +56,13 @@ function App() {
       <Route path="/balance/result/:type" element={<BalanceGameResultPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/privacy" element={<PrivacyPolicyPage />} />
+      <Route path="/terms" element={<TermsPage />} />
+      <Route path="/refund" element={<RefundPolicyPage />} />
+      <Route path="/pricing" element={<PricingPage />} />
+      <Route path="/en/privacy" element={<PrivacyPolicyPageEn />} />
+      <Route path="/en/terms" element={<TermsPageEn />} />
+      <Route path="/en/refund" element={<RefundPolicyPageEn />} />
+      <Route path="/en/pricing" element={<PricingPageEn />} />
       <Route path="/signin" element={<SignInPage />} />
       <Route path="/resetpw" element={<ResetPwPage />} />
       <Route path="/complete" element={<CompleteSignInPage />} />
