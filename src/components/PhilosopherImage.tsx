@@ -6,8 +6,9 @@ type PhilosopherImageProps = {
   // 빈 문자열이면 꾸밈용으로 숨김 (옆에 닉네임이 함께 나오는 경우)
   alt?: string;
   // xs: 28px (채팅 · 입장 말풍선 · 결과 대진), sm: 32px (홈), md: 40px (방 카드),
-  // lg: 80px (마이페이지), xl: 100px (결과 주인공, 키 작은 화면에서는 화면 높이 비율로 줄어듦)
-  size?: "xs" | "sm" | "md" | "lg" | "xl";
+  // host: 66px (빠른 방 찾기 방장), lg: 80px (마이페이지),
+  // xl: 100px (결과 주인공, 키 작은 화면에서는 화면 높이 비율로 줄어듦)
+  size?: "xs" | "sm" | "md" | "host" | "lg" | "xl";
 };
 
 const GAME_PROFILE_CLASS_NAME =
@@ -17,6 +18,7 @@ const SIZE_CLASS_NAMES = {
   xs: `size-7 ${GAME_PROFILE_CLASS_NAME}`,
   sm: "size-8 rounded-[2px]",
   md: `size-10 ${GAME_PROFILE_CLASS_NAME}`,
+  host: "size-16.5 rounded-[16px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]",
   lg: "size-20 rounded-[8px]",
   xl: `size-[min(6.25rem,12.2cqh)] ${GAME_PROFILE_CLASS_NAME}`,
 };
