@@ -13,6 +13,13 @@ import InputContainer from "../../components/InputContainer";
 import { startGoogleLogin } from "../../utils/google";
 import { startKakaoLogin } from "../../utils/kakao";
 
+const POLICY_LINKS = [
+  { path: "/terms", label: "이용약관" },
+  { path: "/privacy", label: "개인정보처리방침" },
+  { path: "/refund", label: "환불 정책" },
+  { path: "/pricing", label: "가격 안내" },
+];
+
 function LoginPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -67,7 +74,9 @@ function LoginPage() {
       ) {
         setErrorMessage("아이디 또는 비밀번호가 일치하지 않습니다.");
       } else if (axios.isAxiosError(error) && !error.response) {
-        setErrorMessage("서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.");
+        setErrorMessage(
+          "서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.",
+        );
       } else {
         setErrorMessage("로그인에 실패했습니다. 잠시 후 다시 시도해주세요.");
       }
@@ -127,7 +136,9 @@ function LoginPage() {
             value={password}
             disabled={isBusy}
             errorMessage={
-              errorMessage ? <span role="alert">{errorMessage}</span> : undefined
+              errorMessage ? (
+                <span role="alert">{errorMessage}</span>
+              ) : undefined
             }
             onChange={(event) => {
               setPassword(event.currentTarget.value);
@@ -222,15 +233,18 @@ function LoginPage() {
         </div>
       </section>
       <footer className="relative min-h-10 flex-86">
-        <div className="absolute inset-x-0 bottom-0 flex items-center justify-center py-2.5 text-body-r6 text-neutral-007">
-          <button
-            type="button"
-            disabled={isBusy}
-            onClick={() => navigate("/privacy")}
-            className="cursor-pointer disabled:cursor-not-allowed"
-          >
-            개인정보처리방침
-          </button>
+        <div className="absolute inset-x-0 bottom-0 flex flex-wrap items-center justify-center gap-x-3 py-2.5 text-body-r6 text-neutral-007">
+          {POLICY_LINKS.map(({ path, label }) => (
+            <button
+              key={path}
+              type="button"
+              disabled={isBusy}
+              onClick={() => navigate(path)}
+              className="cursor-pointer disabled:cursor-not-allowed"
+            >
+              {label}
+            </button>
+          ))}
         </div>
       </footer>
     </main>
